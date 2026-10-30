@@ -1,11 +1,15 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.1.1 (Türkçe / Deutsch).
+Futbol kulübü başkanlık simülasyonu — v1.2 (Türkçe / Deutsch).
 
 ## Oyun
 
 - **Site:** https://onurqlp.github.io/club-president/
 - **Kaynak dosya:** [index.html](./index.html)
+
+## Dil desteği
+
+Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, transfer ve kariyer verileri dil değişikliğinde korunur. Ekranlar, diyaloglar, maç olayları, transfer ekranları ve uyarılar çevrilmiştir.
 
 ## Yayın ayarı
 
