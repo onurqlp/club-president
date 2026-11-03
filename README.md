@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.9 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.10 (Türkçe arayüz).
 
 ## Oyun
 
@@ -55,6 +55,12 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Beş oyun gününde bir scout seviyesine göre 2–3 genç aday raporlar; tahmini potansiyel, yaş, mevki ve oyun içi değer görünür.
 - Adaylar kısa listeye eklenebilir ve transfer görüşmesine doğrudan taşınabilir. Öneri kartı kadroda eksik veya zayıf mevkiyi öne çıkarır.
 - Genç oyuncular oyun içinde üretilmiş kurgusal adaylardır; var olan kariyer kayıtlarına ek alanlar eklenir, kayıt sıfırlanmaz.
+
+## v1.10 — Menü geçişi ve telefon pencereleri
+
+- Bir menüye geçildiğinde açık olan önceki modal/pencere kapanır; içerik yeni ekranla birlikte temizlenir.
+- Pencere dışına dokunma ve Escape ile kapatma eklendi; modal erişilebilirlik etiketleri tamamlandı.
+- Telefonda modallar alt sayfa paneli olarak açılır; düğmeler ve kapatma alanı büyütüldü, uzun listeler kaydırılabilir.
 
 ## Yayın ayarı
 
