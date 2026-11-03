@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.8 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.9 (Türkçe arayüz).
 
 ## Oyun
 
@@ -47,6 +47,14 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Maçlar artık 76'ya kadar değişken uzunlukta topa sahip olma sekanslarıyla üretiliyor. Pas, çalım, top kaybı ve şutlar maç dakikasına ve sahanın konumuna bağlı.
 - Mevki, pas/karar/teknik kalitesi, oyuncu kondisyonu ve formu; teknik direktör ve takım taktiği maç hesabına katılıyor. Kaleci şut çekmiyor; şut xG hesabı rakip kalecinin yeteneğine göre değişiyor.
 - Mevcut kariyer kayıtları korunur; yeni motor mevcut kariyerlerin sonraki maçlarında kullanılır.
+
+## v1.9 — Scout ve genç yetenek sistemi
+
+- İki gözlemciye genç yetenek, kadro açığı veya belirli mevki için görev verilebilir.
+- Haftalık scout bütçesi kullanıcı tarafından belirlenir; her 7 oyun gününde kasadan düşer. Yeterli bütçe yoksa gözlem durur.
+- Beş oyun gününde bir scout seviyesine göre 2–3 genç aday raporlar; tahmini potansiyel, yaş, mevki ve oyun içi değer görünür.
+- Adaylar kısa listeye eklenebilir ve transfer görüşmesine doğrudan taşınabilir. Öneri kartı kadroda eksik veya zayıf mevkiyi öne çıkarır.
+- Genç oyuncular oyun içinde üretilmiş kurgusal adaylardır; var olan kariyer kayıtlarına ek alanlar eklenir, kayıt sıfırlanmaz.
 
 ## Yayın ayarı
 
