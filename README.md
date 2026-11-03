@@ -68,6 +68,7 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Resmî fikstür mevcutsa alternatif takvim tarafından ezilmez; oluşturulan fikstür açıkça oyun üretimi olarak etiketlenir.
 - Maç ekranı gerçek iç saha/deplasman sırasını gösterir; maç sırasında dakika, skor, top konumu, olaylar ve taktik geçmişi kaydedilerek yenileme sonrası sürdürülebilir.
 - Taktik değişikliği kalan maçı mevcut dakika ve top konumundan devam ettirir; rakip planı ve takım planı maçın tamamına tek etiket olarak yazılmaz.
+- Kaleciler saha oyuncusu eylem havuzundan çıkarıldı; rakip kalecinin kalitesi şutun xG’sini, isabetini ve olay kaydını etkiler.
 - Transfer oyuncu kaydı yeni kulübe taşınır; satışta asgari kadro ve mevki derinliği denetlenir.
 
 ## Yayın ayarı
