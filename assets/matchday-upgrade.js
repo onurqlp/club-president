@@ -57,7 +57,7 @@
       var live = insights.querySelector('#live');
       if (statPanel) page.querySelector('#cp-commentary-stats').appendChild(statPanel);
       if (log) page.querySelector('#cp-commentary-feed').appendChild(log);
-      if (live) { live.id = 'cp-live-label'; live.className = 'cp-live-label'; page.querySelector('#cp-live-label').replaceWith(live); }
+      if (live) { live.className = 'cp-live-label'; page.querySelector('#cp-live-label').replaceWith(live); }
       page.querySelector('.cp-engine-hidden').appendChild(insights);
     }
     sceneRoot.replaceChildren(page);
@@ -148,7 +148,7 @@
     var feed = document.querySelector('#log .event');
     var clock = document.getElementById('cp-watch-clock');
     var stageMinute = document.getElementById('cp-commentary-minute');
-    var live = document.getElementById('cp-live-label');
+    var live = document.getElementById('live');
     var m = minute ? (minute.textContent || '0′').trim() : '0′';
     if (clock) clock.textContent = (m.replace(/[^0-9]/g, '').padStart(2, '0')) + ':00';
     if (stageMinute) stageMinute.textContent = m;
