@@ -1,4 +1,4 @@
-<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><title>CLUB PRESIDENT 1.4 — Türkçe / Deutsch</title><style>
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><title>CLUB PRESIDENT 1.5 — Türkçe / Deutsch</title><style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap');
 :root{--lime:#baf361;--bg:#06111a;--light:#eaf2ec;--muted:#aabcb8;--gold:#ebc581;--red:#ff8e86}
 *{box-sizing:border-box}html,body{margin:0;background:#030a10;color:var(--light);font-family:Barlow,Arial,sans-serif;overflow:hidden}button{font:inherit;border:0;cursor:pointer}button:disabled{opacity:.35;cursor:not-allowed}#game{height:100dvh;min-height:520px;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}.hd{font-family:'Barlow Condensed',Impact,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.02em}.small{font-size:12px;color:var(--muted)}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;color:var(--lime);text-transform:uppercase}#hud{height:64px;flex-shrink:0;background:#0e2028;border-bottom:1px solid #6e8c785e;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 20px}#logo{display:flex;gap:11px;align-items:center}.logo-box{background:var(--lime);color:#0c251b;padding:7px 9px;transform:skew(-7deg);font:900 23px 'Barlow Condensed'}.logo-type{font:900 22px/.83 'Barlow Condensed';white-space:nowrap}.logo-type small{display:block;font:800 8px Barlow;color:var(--lime);letter-spacing:.12em;margin-top:7px}.hud-info{display:flex;gap:22px;align-items:center}.hud-info div{display:flex;flex-direction:column;gap:3px}.hud-info span{font-size:9px;color:#92aaa7;letter-spacing:.12em}.hud-info strong{font:800 18px 'Barlow Condensed'}.tiny-btn{background:#264048;color:#ddf1df;border:1px solid #5d8983;border-radius:3px;font-weight:800;padding:8px 11px}#view{position:relative;flex:1;min-height:0;overflow:hidden;background:radial-gradient(circle at 55% 36%,#36584f,#081722 75%)}#content{position:absolute;inset:0;overflow:hidden}#nav{height:80px;flex-shrink:0;background:linear-gradient(#1c3138,#0a151d);border-top:1px solid #839b8060;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 10px calc(6px + env(safe-area-inset-bottom))}.nav-btn{min-width:76px;max-width:140px;flex:1;height:100%;border-radius:5px;background:transparent;color:#9dafa9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}.nav-btn b{font-size:22px;font-weight:500}.nav-btn small{font-size:10px;font-weight:800;text-transform:uppercase}.nav-btn.on{color:var(--lime);background:#b6f27315;border-top:3px solid var(--lime)}.btn{background:var(--lime);color:#14241a;padding:12px 18px;border-radius:3px;font:900 17px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.04em}.btn:hover:not(:disabled){filter:brightness(1.12)}.btn.dark{background:#28444c;color:#edf7ed;border:1px solid #6c9e91}.btn.red{background:#a5404b;color:white}.btn:active{transform:scale(.97)}
@@ -1006,6 +1006,54 @@ document.addEventListener('click',function(e){
  if(a.dataset.cpGame!==undefined){var p=a.dataset.cpGame.split('|');return cpMatchDetail14(p[0],p[1])}
  if(a.dataset.cpReset!==undefined){if(!confirm('Kariyer kaydı bu cihazdan kalıcı olarak silinecek. Bu işlem geri alınamaz. Önce kariyer yedeği indir. Sıfırlansın mı?'))return;clearInterval(interval);mt=null;localStorage.removeItem(KEY);localStorage.removeItem(OLD);location.reload()}
 },true);
+/* SEASON JOURNEY v1.5 — weekly objectives, derby stories, streaks and milestones */
+var cpRivalMap15={
+ 'Galatasaray':['Fenerbahçe','Beşiktaş'],'Fenerbahçe':['Galatasaray','Beşiktaş'],'Beşiktaş':['Galatasaray','Fenerbahçe'],'Trabzonspor':['Galatasaray','Fenerbahçe'],
+ 'Arsenal':['Tottenham'],'Tottenham':['Arsenal'],'Liverpool':['Manchester United'],'Manchester United':['Liverpool','Manchester City'],'Manchester City':['Manchester United'],
+ 'Real Madrid':['Barcelona','Atlético Madrid'],'Barcelona':['Real Madrid'],'Atlético Madrid':['Real Madrid'],'Dortmund':['Bayern Münih'],'Bayern Münih':['Dortmund'],
+ 'Inter':['AC Milan'],'AC Milan':['Inter'],'Roma':['Lazio'],'Lazio':['Roma'],'PSG':['Marseille'],'Marseille':['PSG']
+};
+function cpArcInit15(s){
+ if(!s)return;
+ var code=s.seasonCode||'2026/27';
+ if(!s.seasonJourney15||s.seasonJourney15.season!==code)s.seasonJourney15={season:code,mission:null,completed:0,failed:0,streak:0,bestStreak:0,rivalryWins:0,milestones:{}};
+ var a=s.seasonJourney15;a.milestones=a.milestones||{};a.completed=Number(a.completed)||0;a.failed=Number(a.failed)||0;a.streak=Number(a.streak)||0;a.bestStreak=Number(a.bestStreak)||0;a.rivalryWins=Number(a.rivalryWins)||0;
+}
+function cpIsDerby15(opp){return !!(cpRivalMap15[state.club]||[]).includes(opp)}
+function cpMission15(round){
+ if(!state||state.seasonFinished)return null;cpArcInit15(state);var a=state.seasonJourney15;
+ if(a.mission&&a.mission.round===round)return a.mission;
+ var f=state.seasonCalendar&&state.seasonCalendar[round],opp=f&&f.opp||rival(),derby=cpIsDerby15(opp),roll=random('season-journey|'+state.club+'|'+a.season+'|'+round)();
+ var pool=[['win','Bu maçı kazan',850000],['score2','En az 2 gol at',750000],['clean','Gol yemeden kazan',1100000],['point','En az 1 puan al',500000],['win2','En az 2 farkla kazan',1450000]];
+ var picked=pool[Math.floor(roll*pool.length)];if(derby)picked=['derby','Derbiyi kazan',1800000];
+ var bonus=Math.min(500000,(state.challengeLevel||0)*100000);
+ a.mission={season:a.season,round:round,opponent:opp,type:picked[0],label:picked[1],reward:picked[2]+bonus,derby:derby,resolved:false};return a.mission
+}
+function cpMissionMarkup15(compact){
+ var m=cpMission15(state.round);if(!m)return'';var a=state.seasonJourney15;
+ return '<div class="'+(compact?'cp15-match-task':'career-panel cp15-season-panel')+'"><b>'+(m.derby?'🔥 DERBİ HAFTASI':'🎯 HAFTANIN GÖREVİ')+'</b><span>'+m.label+' · '+esc(m.opponent)+'</span><small>Ödül: '+cash(m.reward)+' · Tamamlanan görev: '+a.completed+' · En iyi galibiyet serisi: '+a.bestStreak+'</small></div>'
+}
+var cpSetup15=realSetup;realSetup=function(){cpSetup15();cpArcInit15(state)};
+var cpCreate15=create;create=function(i){var s=cpCreate15(i);cpArcInit15(s);return s};
+var cpCareer15=careerScene;careerScene=function(){var html=cpCareer15();return html.replace('<div class="career-grid">',cpMissionMarkup15(false)+'<div class="career-grid">')};
+var cpMatch15=matchScene;matchScene=function(){var html=cpMatch15();return html.replace('<div class="cp13-mini">',cpMissionMarkup15(true)+'<div class="cp13-mini">')};
+function cpMilestone15(key,title,reward,body){var a=state.seasonJourney15,rewardAmount=Number(reward)||0;if(a.milestones[key])return;a.milestones[key]=true;fx({cash:rewardAmount,fans:4,morale:4,trust:2});notice(title,body+' · Ödül '+cash(rewardAmount)+'.')}
+var cpFinish15=finish;
+finish=function(){
+ if(!state||!mt||mt.round!==state.round)return cpFinish15();
+ cpArcInit15(state);var round=state.round,mission=cpMission15(round),derby=mission&&mission.derby;cpFinish15();
+ if(!state||state.round<=round)return;
+ var a=state.seasonJourney15,m=state.history[round],won=m.h>m.a,drawn=m.h===m.a,ok=mission&&(mission.type==='win'||mission.type==='derby'?won:mission.type==='score2'?m.h>=2:mission.type==='clean'?won&&m.a===0:mission.type==='point'?m.h>=m.a:mission.type==='win2'?m.h-m.a>=2:false);
+ if(mission&&!mission.resolved){mission.resolved=true;if(ok){a.completed++;fx({cash:mission.reward,fans:3,morale:4,trust:1});notice(mission.derby?'DERBİ GÖREVİ TAMAMLANDI':'MAÇ GÖREVİ TAMAMLANDI',mission.label+' · '+mission.opponent+' · '+cash(mission.reward)+' ödül kasaya eklendi.')}else{a.failed++;notice(mission.derby?'DERBİDE GÖREV KAÇTI':'MAÇ GÖREVİ KAÇTI',mission.label+' tamamlanamadı. Yeni maçta yeni bir hedef seni bekliyor.')}}
+ if(won){a.streak++;a.bestStreak=Math.max(a.bestStreak,a.streak);if(a.streak===3)cpMilestone15('streak3','ÜÇLÜ GALİBİYET SERİSİ','750000','Üç maç üst üste kazandın; taraftar desteği yükseldi');if(a.streak===5)cpMilestone15('streak5','DURDURULAMIYORSUN','1500000','Beş maçlık seri yönetim kurulunun beklentisini yükseltti')}
+ else a.streak=0;
+ if(derby&&won){a.rivalryWins++;cpMilestone15('derby-'+round,'DERBİ ZAFERİ',1250000,mission.opponent+' karşısındaki galibiyet kulüp tarihine geçti')}
+ if(state.win>=5)cpMilestone15('wins5','SEZONDA 5 GALİBİYET','1000000','Sponsor sezon performans bonusu verdi');
+ if(state.win>=10)cpMilestone15('wins10','ÇİFT HANELİ GALİBİYET','2000000','Ligde on galibiyete ulaştın; sezon primi kazandın');
+ save();var modalBox=$('overlay').querySelector('.modal');if(modalBox&&mission){var msg='<div class="cp13-mvp">'+(ok?'✅ GÖREV TAMAMLANDI':'📌 GÖREV SONUCU')+' · '+esc(mission.label)+' · '+(ok?cash(mission.reward)+' ödül':'Bu maçta tamamlanmadı')+'</div>',row=modalBox.querySelector('.row-btn');if(row)row.insertAdjacentHTML('beforebegin',msg)}
+ if(state.seasonFinished){notice('SEZON HİKÂYESİ TAMAMLANDI',a.completed+' maç görevi tamamlandı · '+a.rivalryWins+' derbi zaferi · en iyi seri '+a.bestStreak+' maç.');save()}
+};
+document.body.insertAdjacentHTML('beforeend','<style>.cp15-season-panel{margin:10px 0;padding:12px 14px;border-color:#a4cb70;background:linear-gradient(120deg,#193b35,#10242c)}.cp15-season-panel>b,.cp15-match-task>b{display:block;font:900 19px Barlow Condensed;color:#c9f68e}.cp15-season-panel>span,.cp15-match-task>span{display:block;font-weight:850;margin:5px 0}.cp15-season-panel>small,.cp15-match-task>small{color:#b6cdbd;font-size:11px}.cp15-match-task{background:#24463b;border:1px solid #a4cb70;padding:8px 11px;margin-bottom:7px;border-radius:4px;font-size:11px}.cp15-match-task>b{font-size:15px}.cp15-match-task>span{margin:3px 0}</style>');
 document.addEventListener('click',onClick);
 try {
   state=load();
