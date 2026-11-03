@@ -1248,6 +1248,18 @@ try {
     if (mt && before < 45 && mt.min >= 45 && mt.min < 90) cpPauseAtHalf();
   };
 
+  // A page reload is a natural pause point; persist it so the UI never says
+  // "live" while its interval is gone, and restore the 45' intervention.
+  var cpOriginalRealSetup = realSetup;
+  realSetup = function () {
+    cpOriginalRealSetup();
+    if (state && state.activeMatch) {
+      state.activeMatch.running = false;
+      if (state.activeMatch.min >= 45 && state.activeMatch.min < 90) state.activeMatch.cpHalftimeHold = true;
+      save();
+    }
+  };
+
   // Rebuild the tactical break after a refresh so a saved 45' match cannot
   // resume behind the manager's back without showing the intervention screen.
   var cpOriginalSetup = setup;
