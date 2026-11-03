@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.6 (Türkçe / Deutsch).
+Futbol kulübü başkanlık simülasyonu — v1.7 (Türkçe / Deutsch).
 
 ## Oyun
 
@@ -32,6 +32,13 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Teknik direktörlerin taktik, hücum, savunma, gelişim ve insan yönetimi özellikleri maçları ve antrenman gelişimini etkiler.
 - Yönetim kurulundan hocayı değiştirebilir veya görevden alabilirsin; adayların maliyetleri, maaşları ve sözleşmeleri görünür.
 - Beş maçlık mağlubiyet serisi hocanın görevden alınmasına yol açar; geçici hoca ve yönetim güveni sistemi devreye girer.
+
+## v1.7 — Mevkiye uygun maç ve oyuncu hikâyeleri
+
+- Kaleciler şutör olamaz; goller mevkiye uygun oyuncuların bitiriciliği, kondisyonu, morali ve rakip kalecinin gücüne göre hesaplanır.
+- Oyuncu notu; gol, asist, kurtarış, pas, maç kondisyonu, form ve takım sonucuna göre değişir.
+- İlk 11 seçimi kondisyon, form ve morale bakar. Dinlenme kararı verilen oyuncu bir sonraki maçın dışında kalır.
+- Oyuncular sezon içinde süre, dinlenme, moral veya gelecek planı için başkanla görüşme isteyebilir. Verilen süre sözleri takip edilir.
 
 ## Yayın ayarı
 
