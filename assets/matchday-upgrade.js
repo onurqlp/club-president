@@ -117,7 +117,7 @@
     if (event.target.closest('[data-cp-return]')) {
       event.preventDefault();
       var play = document.querySelector('#play');
-      if (play && /Ⅱ\\s*DURAKLAT/i.test(play.textContent || '')) play.click();
+      if (play && (play.textContent || '').includes('DURAKLAT')) play.click();
       var office = document.querySelector('#nav [data-sc="office"]');
       if (office) office.click();
       if (typeof window.toast === 'function') window.toast(tr('Maç duraklatıldı. İstediğinde devam edebilirsin.', 'Spiel pausiert. Du kannst jederzeit fortfahren.'));
