@@ -158,7 +158,7 @@ function chooseAI(){var opp=rival(),rec=state.opponentMemory[opp]||{games:0,styl
 function coachTip(style){if(style==='Yüksek Pres')return 'Rakip önde baskı kuracak. Kontra taktik ve dinç kanatlar avantaj sağlayabilir.';if(style==='Derin Blok')return 'Rakip alanını daraltacak. Hücum yaklaşımı ve oyun kurucu kalite fark yaratabilir.';return 'Rakip hızlı geçiş kovalıyor. Dengeli veya savunma yaklaşımı savunma güvenliğini artırabilir.'}
 function tacticalAdvantage(own,enemy){var z=0;if(own==='Kontra'&&enemy==='Yüksek Pres')z=.14;if(own==='Hücum'&&enemy==='Derin Blok')z=.10;if(own==='Savunma'&&enemy==='Geçiş Oyunu')z=.10;if(own==='Yüksek Pres'&&enemy==='Geçiş Oyunu')z=-.12;if(own==='Hücum'&&enemy==='Geçiş Oyunu')z=-.08;return z}
 function simEvents(tactic,enemy){
-var r=random('engine3|'+state.club+'|'+state.round+'|'+state.next+'|'+tactic+'|'+enemy+'|'+state.formation),team=lineup(),quality=(strength()-77)/135+(state.morale-70)/720,adv=tacticalAdvantage(tactic,enemy),tempo=tactic==='Hücum'?.065:tactic==='Yüksek Pres'?.045:tactic==='Savunma'?-.05:0,enemyRoster=(typeof CP11OpponentSquad==='function'?CP11OpponentSquad():[]),enemyAvg=enemyRoster.length?enemyRoster.reduce(function(s,p){return s+(p.rate||74)},0)/enemyRoster.length:75;
+ var r=random('engine3|'+state.club+'|'+state.round+'|'+state.next+'|'+tactic+'|'+enemy+'|'+state.formation),team=lineup(),managerEdge=((state.managerAbility||75)-75)/100,quality=(strength()-77)/135+(state.morale-70)/720+managerEdge,adv=tacticalAdvantage(tactic,enemy),tempo=tactic==='Hücum'?.065:tactic==='Yüksek Pres'?.045:tactic==='Savunma'?-.05:0,enemyRoster=(typeof CP11OpponentSquad==='function'?CP11OpponentSquad():[]),enemyAvg=(enemyRoster.length?enemyRoster.reduce(function(s,p){return s+(p.rate||74)},0)/enemyRoster.length:75)+Math.min(8,(state.challengeLevel||0)*2);
 var events=[{m:0,type:'begin',team:0,x:50,y:50,fromX:50,fromY:50,msg:'Başlama vuruşu. Takımlar dizilişlerine yerleşiyor.'}];var tm=.1,owner=0,x=50,y=50,passes=0;
 function emit(kind,side,toX,toY,fromX,fromY,txt,extra){var e={m:Math.round(tm*100)/100,type:kind,team:side,x:Math.max(2,Math.min(98,toX)),y:Math.max(5,Math.min(95,toY)),fromX:fromX,fromY:fromY,msg:txt||''};if(extra)Object.assign(e,extra);events.push(e)}
 for(var z=0;z<720&&tm<89.3;z++){
@@ -956,6 +956,56 @@ document.body.insertAdjacentHTML('beforeend',`<style>
 </style>`);
 })();
 
+/* FEEDBACK UPDATE 1.4 — tougher long careers, manager changes, match archive, reset */
+function cpFeedbackInit(){
+ if(!state)return;
+ state.challengeLevel=Math.max(0,Math.min(4,Number(state.challengeLevel)||0));
+ if(!state.managerName)state.managerName='Murat Kaya';
+ if(!Number.isFinite(state.managerAbility))state.managerAbility=75;
+ state.managerHires=Number(state.managerHires)||0;
+ state.seasonArchive=state.seasonArchive||[]
+}
+var cpRealSetup14=realSetup;
+realSetup=function(){cpRealSetup14();cpFeedbackInit()};
+var cpCoachMeeting14=coachMeeting;
+coachMeeting=function(){cpFeedbackInit();cpCoachMeeting14();var box=$('overlay').querySelector('.modal');if(box)box.innerHTML=box.innerHTML.replace('BAŞKAN • TEKNİK DİREKTÖR TOPLANTISI','BAŞKAN • '+esc(state.managerName.toLocaleUpperCase('tr-TR'))+' · TEKNİK DİREKTÖR TOPLANTISI')};
+var cpCareerBase14=careerScene;
+function cpArchiveButtons14(){
+ var seasons=(state.seasonArchive||[]).map(function(s,i){return'<button class="career-task" data-cp-archive="'+i+'"><i>🏆</i><span><b>'+esc(s.season)+' · '+(s.position===1?'ŞAMPİYON':s.position+'. sıra')+'</b><small>'+s.points+' puan · '+(s.fixtures||[]).length+' maç</small></span><strong>İNCELE</strong></button>'});
+ seasons.unshift('<button class="career-task" data-cp-archive="current"><i>📅</i><span><b>'+esc(state.seasonCode||'2026/27')+' · '+tx13('DEVAM EDEN SEZON','LAUFENDE SAISON')+'</b><small>'+state.points+' '+tx13('puan','Punkte')+' · '+(state.history||[]).length+' '+tx13('tamamlanan maç','abgeschlossene Spiele')+'</small></span><strong>'+tx13('İNCELE','ANSEHEN')+'</strong></button>');
+ return seasons.join('')
+}
+ careerScene=function(){cpFeedbackInit();var html=cpCareerBase14();var manager='<div class="career-panel"><h3>🧠 '+tx13('TEKNİK DİREKTÖR','TRAINER')+'</h3><div class="identity-note"><b>'+esc(state.managerName)+'</b><br>'+tx13('Teknik seviye ','Trainerstärke ')+state.managerAbility+'/100 · '+tx13('Yönetim güveni ','Vertrauen ')+state.coach+'/100 · '+tx13('Kariyer zorluk seviyesi ','Karriereschwierigkeit ')+(state.challengeLevel+1)+'/5</div><div class="next-move"><button class="btn dark" data-cp-manager="1">'+tx13('HOCA DEĞİŞTİR / GÖREVDEN AL','TRAINER WECHSELN / ENTLASSEN')+'</button></div></div>';
+ html=html.replace('<div class="career-panel"><h3>💾 Kariyer yedeği</h3>',manager+'<div class="career-panel"><h3>'+tx13('📚 SEZON VE MAÇ GEÇMİŞİ','📚 SAISON- UND SPIELARCHIV')+'</h3><div class="career-list">'+cpArchiveButtons14()+'</div></div><div class="career-panel"><h3>'+tx13('💾 Kariyer yedeği','💾 Karriere-Backup')+'</h3>');
+ html=html.replace('<button class="btn dark" data-import-save="1">YEDEK YÜKLE</button></div></div>','<button class="btn dark" data-import-save="1">'+tx13('YEDEK YÜKLE','BACKUP LADEN')+'</button><button class="btn red" data-cp-reset="1">'+tx13('KARİYERİ SIFIRLA','KARRIERE ZURÜCKSETZEN')+'</button></div></div>');
+ return html
+};
+function cpManagerModal14(){
+ var options=[['Selim Arslan',88,3500000,'Modern pres, yüksek beklenti'],['Emre Yalçın',81,2100000,'Dengeli oyun, iyi oyuncu ilişkileri'],['Deniz Acar',73,900000,'Genç teknik adam, gelişime açık']];
+  modal('<div class="eyebrow">'+tx13('KULÜP YÖNETİMİ · TEKNİK EKİP','VEREINSFÜHRUNG · TRAINERTEAM')+'</div><h2>'+tx13('YENİ HOCA SEÇ','NEUEN TRAINER WÄHLEN')+'</h2><p>'+tx13('Mevcut teknik direktör ','Der aktuelle Trainer ')+ '<b>'+esc(state.managerName)+'</b> '+tx13('görevden ayrılacak. Yeni hoca değişimi takım uyumunu kısa süreli düşürür; teknik seviyesi maç performansını etkiler.','verlässt den Verein. Ein Wechsel senkt kurzfristig die Teamchemie; die Trainerstärke beeinflusst die Spielleistung.')+'</p><div class="career-list">'+options.map(function(x,i){var total=x[2]+Math.round((state.managerAbility||75)*12000);return'<button class="career-task" data-cp-hire="'+i+'"><i>🧠</i><span><b>'+esc(x[0])+' · '+x[1]+'/100</b><small>'+tx13(x[3],['Modernes Pressing, hohe Erwartungen','Ausgewogen, stark im Umgang mit Spielern','Junger Trainer mit Entwicklungspotenzial'][i])+' · '+tx13('Toplam değişim bedeli ','Gesamtkosten des Wechsels ')+cash(total)+'</small></span><strong>'+tx13('SEÇ','WÄHLEN')+'</strong></button>'}).join('')+'</div><div class="row-btn"><button class="btn dark" data-a="close">'+tx13('VAZGEÇ','ABBRECHEN')+'</button></div>')
+}
+function cpArchiveModal14(which){
+ var s=which==='current'?{season:state.seasonCode,position:null,points:state.points,w:state.win,d:state.draw,l:state.loss,gf:state.gf,ga:state.ga,fixtures:state.history||[]}:state.seasonArchive[Number(which)];if(!s)return;
+ var rows=(s.fixtures||[]).map(function(m,i){return'<button class="career-task" data-cp-game="'+which+'|'+i+'"><i>⚽</i><span><b>'+esc(state.club)+' '+m.h+'–'+m.a+' '+esc(m.op||'Rakip')+'</b><small>'+esc(m.date||'')+' · '+esc(m.own||'')+' / '+esc(m.ai||'')+(m.cpReport13&&m.cpReport13.mvp?' · Maçın oyuncusu: '+esc(m.cpReport13.mvp.name):'')+'</small></span><strong>RAPOR</strong></button>'}).join('');
+ modal('<div class="eyebrow">KARİYER ARŞİVİ</div><h2>'+esc(s.season)+' · '+(s.position===1?'ŞAMPİYON':'SEZON RAPORU')+'</h2><div class="report"><div><span>PUAN</span><b>'+s.points+'</b></div><div><span>G / B / M</span><b>'+s.w+' / '+s.d+' / '+s.l+'</b></div><div><span>AV</span><b>'+(s.gf-s.ga)+'</b></div></div><div class="career-list">'+(rows||'<p class="small">Bu sezonda kayıtlı maç yok.</p>')+'</div><button class="btn dark" data-a="close">KAPAT</button>')
+}
+function cpMatchDetail14(which,index){
+ var archive=which==='current'?{season:state.seasonCode,fixtures:state.history||[]}:state.seasonArchive[Number(which)],m=archive&&archive.fixtures[Number(index)];if(!m)return;
+ var rep=m.cpReport13,players=rep&&rep.topPlayers?rep.topPlayers.map(function(p){return'<div class="decision-row"><b>'+esc(p.name)+' · '+(p.rating||'—')+'</b><small>⚽ '+(p.goals||0)+' · 🎯 '+(p.assists||0)+'</small></div>'}).join(''):'';
+ modal('<div class="eyebrow">'+esc(archive.season)+' · '+tx13('MAÇ GEÇMİŞİ','SPIELVERLAUF')+'</div><h2>'+esc(state.club)+' '+m.h+'–'+m.a+' '+esc(m.op||'Rakip')+'</h2><p>'+esc(m.date||'')+' · '+tx13('Taktikler: ','Taktik: ')+esc(m.own||'—')+' / '+esc(m.ai||'—')+'</p>'+(rep&&rep.mvp?'<div class="cp13-mvp">🏅 '+tx13('MAÇIN OYUNCUSU: ','SPIELER DES SPIELS: ')+esc(rep.mvp.name)+' · '+rep.mvp.rating+'</div>':'<p class="small">'+tx13('Bu eski maç için oyuncu bazlı rapor kaydedilmemiş.','Für dieses ältere Spiel wurde kein Spielerbericht gespeichert.')+'</p>')+(players?'<div class="career-panel"><h3>'+tx13('ÖNE ÇIKAN OYUNCULAR','AUFFÄLLIGE SPIELER')+'</h3>'+players+'</div>':'')+'<button class="btn dark" data-a="close">'+tx13('KAPAT','SCHLIESSEN')+'</button>')
+}
+var cpNextSeason14=nextSeason;
+nextSeason=function(){if(!state||!state.seasonFinished)return;cpNextSeason14();cpFeedbackInit();var latest=state.seasonArchive[state.seasonArchive.length-1],rank=latest&&latest.position,delta=rank===1?2:rank&&rank<=3?1:0;state.challengeLevel=Math.min(4,state.challengeLevel+delta);if(delta)notice('RAKİPLER SEVİYE ATLADI','Geçen sezonu '+(rank===1?'şampiyon tamamladın':'ilk üçte bitirdin')+'. Rakip teknik ekipler daha iyi hazırlandığı için kariyer zorluğu '+(state.challengeLevel+1)+'/5 seviyesine çıktı.');save();render()};
+var cpFinish14=finish;
+finish=function(){cpFinish14();if(!state||!state.seasonFinished)return;var pos=seasonTable().findIndex(function(x){return x.n===state.club})+1;if(pos===1&&state.lastTitleAwardSeason!==state.seasonCode){state.lastTitleAwardSeason=state.seasonCode;state.titles=(state.titles||0)+1;fx({trust:12,fans:10,morale:10,cash:5000000});notice('ŞAMPİYONLUK! '+state.club,'Kulüp tarihindeki '+state.titles+'. lig şampiyonluğu. €5M şampiyonluk primi kasaya eklendi. Sonraki sezonda rakip teknik ekipler daha güçlü hazırlanacak.');save()}var dlg=$('overlay').querySelector('.modal');if(dlg){var banner='<div class="cp13-mvp">🏆 '+(pos===1?tx13('ŞAMPİYON OLDUN!','DU BIST MEISTER!'):tx13('SEZON TAMAMLANDI','SAISON BEENDET'))+' · '+pos+'. '+tx13('sıra','Platz')+' · '+state.points+' '+tx13('puan','Punkte')+' · '+(state.titles||0)+' '+tx13('şampiyonluk','Meisterschaften')+'</div>';var row=dlg.querySelector('.row-btn');if(row)row.insertAdjacentHTML('beforebegin',banner)}};
+document.addEventListener('click',function(e){
+ var a=e.target.closest('[data-cp-manager],[data-cp-hire],[data-cp-archive],[data-cp-game],[data-cp-reset]');if(!a)return;e.preventDefault();e.stopImmediatePropagation();
+ if(a.dataset.cpManager!==undefined)return cpManagerModal14();
+ if(a.dataset.cpHire!==undefined){var c=[['Selim Arslan',88,3500000],['Emre Yalçın',81,2100000],['Deniz Acar',73,900000]][Number(a.dataset.cpHire)],fee=c[2]+Math.round((state.managerAbility||75)*12000);if(state.cash<fee)return toast('Yeni teknik ekip için kasada '+cash(fee)+' gerekli');state.cash-=fee;state.managerName=c[0];state.managerAbility=c[1];state.managerHires++;state.coach=62;state.morale=lim(state.morale-4);state.decisions++;notice('YENİ TEKNİK DİREKTÖR',c[0]+' göreve başladı. Takım uyumu yeniden kurulacak.');save();close();render();return toast('TEKNİK DİREKTÖR DEĞİŞTİ')}
+ if(a.dataset.cpArchive!==undefined)return cpArchiveModal14(a.dataset.cpArchive);
+ if(a.dataset.cpGame!==undefined){var p=a.dataset.cpGame.split('|');return cpMatchDetail14(p[0],p[1])}
+ if(a.dataset.cpReset!==undefined){if(!confirm('Kariyer kaydı bu cihazdan kalıcı olarak silinecek. Bu işlem geri alınamaz. Önce kariyer yedeği indir. Sıfırlansın mı?'))return;clearInterval(interval);mt=null;localStorage.removeItem(KEY);localStorage.removeItem(OLD);location.reload()}
+},true);
 document.addEventListener('click',onClick);
 try {
   state=load();
