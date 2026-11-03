@@ -173,13 +173,12 @@ function simEvents(tactic,enemy,start){
 var events=base<=0?[{m:0,type:'begin',team:0,x:50,y:50,fromX:50,fromY:50,msg:'Başlama vuruşu. Takımlar dizilişlerine yerleşiyor.'}]:[],tm=base+.1,owner=start.owner===1?1:0,x=Number(start.x)||50,y=Number(start.y)||50,passes=0;
 function emit(kind,side,toX,toY,fromX,fromY,txt,extra){var e={id:'match-'+(state.seasonCode||'2026/27')+'-'+state.round+'-'+events.length,m:Math.round(tm*100)/100,type:kind,team:side,x:Math.max(2,Math.min(98,toX)),y:Math.max(5,Math.min(95,toY)),fromX:fromX,fromY:fromY,msg:txt||''};if(extra)Object.assign(e,extra);events.push(e)}
 for(var z=0;z<720&&tm<89.3;z++){
- tm+=.13+r()*.28;var fx=x,fy=y,dir=owner===0?1:-1,actor=owner===0?team[Math.floor(r()*team.length)]:(enemyRoster.length?enemyRoster[Math.floor(r()*enemyRoster.length)]:null),who=actor?actor.name:'rakip futbolcu',club=owner===0?state.club:rival();
+ tm+=.13+r()*.28;var fx=x,fy=y,dir=owner===0?1:-1,actors=(owner===0?team:enemyRoster).filter(function(p){return p&&p.pos!=='KL'}),actor=actors.length?actors[Math.floor(r()*actors.length)]:null,who=actor?actor.name:'rakip futbolcu',club=owner===0?state.club:rival();
  var tech=actor?(actor.technique||actor.rate||75):75,bonus=owner===0?quality+adv+tempo:-quality*.6-tempo*.5+(enemyAvg-75)/105,dist=owner===0?100-x:x;
  if(dist<31&&r()<(.155+(owner===0&&tactic==='Hücum'?.04:0))){
- var angle=Math.abs(y-50)/50,xg=Math.max(.018,Math.min(.52,.28*Math.exp(-Math.max(0,dist-8)/20)*(1-.6*angle)*(1+bonus*.23)));
- var keeper=team.find(function(p){return p.pos==='KL'})||{rate:74};
- var goal=r()<xg,onTarget=goal||r()<.5,toX=owner===0?98:2,toY=goal?38+r()*24:r()<.5?6:94;
- emit(goal?'goal':'shot',owner,toX,toY,x,y,goal?'GOOOOL! '+who+' golü attı!':club+' adına '+who+' şut çekti, '+(onTarget?'kaleci çıkardı.':'top auta gitti.'),{xg:xg,onTarget:onTarget,player:who,playerId:actor&&(actor.id||actor.name)});
+ var angle=Math.abs(y-50)/50,keeper=(owner===0?enemyRoster:team).find(function(p){return p.pos==='KL'})||{rate:74},keeperSkill=keeper.goalkeeping||keeper.rate||74,xgBase=Math.max(.018,Math.min(.52,.28*Math.exp(-Math.max(0,dist-8)/20)*(1-.6*angle)*(1+bonus*.23))),xg=Math.max(.012,Math.min(.52,xgBase*Math.max(.72,Math.min(1.12,1-(keeperSkill-74)*.008))));
+ var goal=r()<xg,onTarget=goal||r()<Math.max(.12,Math.min(.82,.52-(keeperSkill-74)*.006)),toX=owner===0?98:2,toY=goal?38+r()*24:r()<.5?6:94;
+ emit(goal?'goal':'shot',owner,toX,toY,x,y,goal?'GOOOOL! '+who+' golü attı!':club+' adına '+who+' şut çekti, '+(onTarget?'kaleci çıkardı.':'top auta gitti.'),{xg:xg,onTarget:onTarget,player:who,playerId:actor&&(actor.id||actor.name),keeper:keeper.name||null,keeperId:keeper.id||null,keeperSkill:keeperSkill});
  if(!goal&&onTarget&&r()<.14)emit('corner',owner,toX,toY,x,y,club+' köşe vuruşu kazandı.');
  owner=1-owner;x=50;y=50;continue
  }
