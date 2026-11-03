@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.2 (Türkçe / Deutsch).
+Futbol kulübü başkanlık simülasyonu — v1.4 (Türkçe / Deutsch).
 
 ## Oyun
 
@@ -10,6 +10,14 @@ Futbol kulübü başkanlık simülasyonu — v1.2 (Türkçe / Deutsch).
 ## Dil desteği
 
 Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, transfer ve kariyer verileri dil değişikliğinde korunur. Ekranlar, diyaloglar, maç olayları, transfer ekranları ve uyarılar çevrilmiştir.
+
+## v1.4 — Kariyer geri bildirimi
+
+- Şampiyonluk kupası, kariyer şampiyonluk sayısı ve €5M prim.
+- Şampiyon ve ilk üç sezonlardan sonra yükselen rakip zorluğu.
+- Teknik direktörü değiştirme; hoca seviyesi maç simülasyonunu etkiler.
+- Kariyer merkezinde sezon ve maç arşivi, geçmiş maç raporları.
+- Yedek alma/yükleme alanından kariyeri sıfırlama.
 
 ## Yayın ayarı
 
