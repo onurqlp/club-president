@@ -182,7 +182,7 @@
     if (copy) copy.textContent = detail.message || '';
     window.clearTimeout(highlightTimer);
     if (!document.body.classList.contains('cp-3d-fallback')) start3D();
-    highlightTimer = window.setTimeout(function () { stage.classList.remove('is-highlight'); activeHighlight = null; }, detail.type === 'goal' ? 10000 : 7000);
+    highlightTimer = window.setTimeout(function () { returnFallbackPitch(); stage.classList.remove('is-highlight'); activeHighlight = null; }, detail.type === 'goal' ? 10000 : 7000);
     refreshCommentary();
   }
 
@@ -192,6 +192,7 @@
     window.clearTimeout(highlightTimer);
     var stage = document.getElementById('cp-broadcast-stage');
     if (stage) stage.classList.remove('is-highlight');
+    returnFallbackPitch();
     var existing = document.querySelector('.cp-halftime-card'); if (existing) existing.remove();
     var names = data.names || ['EV SAHİBİ', 'DEPLASMAN'];
     var score = data.score || [0, 0];
@@ -220,7 +221,22 @@
       var status = document.getElementById('cp-stage-status');
       if (status) status.textContent = tr('3D tekrar bu cihazda açılamadı', '3D-Wiederholung auf diesem Gerät nicht verfügbar');
       var stage = document.getElementById('cp-broadcast-stage'); if (stage) stage.classList.add('is-highlight-fallback');
+      showFallbackPitch();
     });
+  }
+
+  function showFallbackPitch() {
+    var stage = document.getElementById('cp-broadcast-stage');
+    var pitch = document.querySelector('.cp-engine-hidden .canvas-box');
+    var overlay = document.getElementById('cp-highlight-overlay');
+    if (stage && pitch) stage.insertBefore(pitch, overlay || null);
+  }
+
+  function returnFallbackPitch() {
+    var stage = document.getElementById('cp-broadcast-stage');
+    var hidden = document.querySelector('.cp-engine-hidden');
+    var pitch = stage && stage.querySelector('.canvas-box');
+    if (pitch && hidden) hidden.appendChild(pitch);
   }
 
   function build3D(THREE) {
