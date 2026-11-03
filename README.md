@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.5 (Türkçe / Deutsch).
+Futbol kulübü başkanlık simülasyonu — v1.6 (Türkçe / Deutsch).
 
 ## Oyun
 
@@ -25,6 +25,13 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Derbi haftalarında özel hedef ve derbi galibiyeti primi.
 - Üç/beş maçlık galibiyet serisi ve sezonun 5./10. galibiyeti için ödüller.
 - Görev, derbi, galibiyet serisi ve sezon performansı kariyer kayıtlarında saklanır.
+
+## v1.6 — Olay akışı ve teknik direktör kariyeri
+
+- “Olaylara devam” tarihi bir sonraki yönetim kararına veya maç gününe kadar ilerletir; olaylarda oyun durur.
+- Teknik direktörlerin taktik, hücum, savunma, gelişim ve insan yönetimi özellikleri maçları ve antrenman gelişimini etkiler.
+- Yönetim kurulundan hocayı değiştirebilir veya görevden alabilirsin; adayların maliyetleri, maaşları ve sözleşmeleri görünür.
+- Beş maçlık mağlubiyet serisi hocanın görevden alınmasına yol açar; geçici hoca ve yönetim güveni sistemi devreye girer.
 
 ## Yayın ayarı
 
