@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.7 (Türkçe / Deutsch).
+Futbol kulübü başkanlık simülasyonu — v1.8 (Türkçe arayüz).
 
 ## Oyun
 
@@ -39,6 +39,14 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Oyuncu notu; gol, asist, kurtarış, pas, maç kondisyonu, form ve takım sonucuna göre değişir.
 - İlk 11 seçimi kondisyon, form ve morale bakar. Dinlenme kararı verilen oyuncu bir sonraki maçın dışında kalır.
 - Oyuncular sezon içinde süre, dinlenme, moral veya gelecek planı için başkanla görüşme isteyebilir. Verilen süre sözleri takip edilir.
+
+## v1.8 — Telefon arayüzü ve maç motoru
+
+- Telefonda ana gezinme beş büyük düğmeye sadeleştirildi; Yönetim, Takvim, Telefon ve Kariyer Merkezi “Daha” menüsünde toplandı.
+- Küçük ekranlarda kulüp ana ekranı, maç sahası, taktik düğmeleri ve menüler daha geniş dokunma alanları ve kaydırılabilir yerleşimle düzenlendi.
+- Maçlar artık 76'ya kadar değişken uzunlukta topa sahip olma sekanslarıyla üretiliyor. Pas, çalım, top kaybı ve şutlar maç dakikasına ve sahanın konumuna bağlı.
+- Mevki, pas/karar/teknik kalitesi, oyuncu kondisyonu ve formu; teknik direktör ve takım taktiği maç hesabına katılıyor. Kaleci şut çekmiyor; şut xG hesabı rakip kalecinin yeteneğine göre değişiyor.
+- Mevcut kariyer kayıtları korunur; yeni motor mevcut kariyerlerin sonraki maçlarında kullanılır.
 
 ## Yayın ayarı
 
