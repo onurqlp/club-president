@@ -1253,6 +1253,7 @@ try {
   var cpOriginalSetup = setup;
   setup = function () {
     var match = cpOriginalSetup();
+    if (match && match.min >= 45 && match.min < 46 && !match.running) match.cpHalftimeHold = true;
     if (match && match.cpHalftimeHold) {
       window.CP_HALFTIME_DATA = { minute: 45, names: [state.club, rival()], score: [match.home, match.away], stats: matchStats(match.shown || [], 45) };
     }
@@ -1283,4 +1284,4 @@ try {
 })();
 
 })();
-</script><script src="./assets/matchday-upgrade.js?v=20261104g"></script></body></html>
+</script><script src="./assets/matchday-upgrade.js?v=20261104h"></script></body></html>
