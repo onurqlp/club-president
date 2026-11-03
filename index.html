@@ -1259,6 +1259,12 @@ try {
       save();
     }
   };
+  // The startup realSetup() ran just before this hook was installed.
+  if (state && state.activeMatch) {
+    state.activeMatch.running = false;
+    if (state.activeMatch.min >= 45 && state.activeMatch.min < 90) state.activeMatch.cpHalftimeHold = true;
+    save();
+  }
 
   // Rebuild the tactical break after a refresh so a saved 45' match cannot
   // resume behind the manager's back without showing the intervention screen.
