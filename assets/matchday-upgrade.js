@@ -11,6 +11,9 @@
   var frame = 0;
   var resizeHandler = null;
   var handledFinish = null;
+  var activeHighlight = null;
+  var highlightTimer = 0;
+  var commentaryTimer = 0;
   var language = function () { try { return localStorage.getItem('cp-ui-language-2026') === 'de' ? 'de' : 'tr'; } catch (e) { return 'tr'; } };
   var tr = function (turkish, german) { return language() === 'de' ? german : turkish; };
 
@@ -35,20 +38,28 @@
     var page = document.createElement('main');
     page.id = 'cp-watch-page';
     page.className = 'cp-watch-page';
-    page.innerHTML = '<header class="cp-watch-top"><button type="button" class="cp-return" data-cp-return>‹ <span>' + tr('KULÜBEYE DÖN', 'ZURÜCK ZUR BANK') + '</span></button><div class="cp-broadcast-brand"><span>CP</span><b>CLUB PRESIDENT</b><small>' + tr('MAÇ YAYINI', 'SPIELÜBERTRAGUNG') + '</small></div><span class="cp-live-chip" id="cp-live-chip"><i></i>' + tr('MAÇ GÜNÜ', 'SPIELTAG') + '</span></header>' +
-      '<section class="cp-score-card"><div class="cp-score-inner"></div><div class="cp-score-sub"><span>' + tr('CANLI MAÇ MOTORU', 'LIVE-SPIELSIMULATION') + '</span><span id="cp-watch-clock">00:00</span></div></section>' +
-      '<section class="cp-broadcast-stage"><div class="cp-stadium-lights"></div><div class="cp3d-stage" id="cp3d-stage" aria-label="3D futbol sahası"></div><div class="cp-stage-overlay"><span class="cp-possession-label">' + tr('TAKTİK KAMERA', 'TAKTIKKAMERA') + '</span><span class="cp-stage-status" id="cp-stage-status">' + tr('Maç başlamak üzere', 'Anpfiff steht bevor') + '</span></div></section>' +
+    page.innerHTML = '<header class="cp-watch-top"><button type="button" class="cp-return" data-cp-return>‹ <span>' + tr('KULÜBEYE DÖN', 'ZURÜCK ZUR BANK') + '</span></button><div class="cp-broadcast-brand"><span>CP</span><b>CLUB PRESIDENT</b><small>' + tr('MAÇ YAYINI', 'SPIELÜBERTRAGUNG') + '</small></div><span class="cp-live-chip" id="cp-live-chip"><i></i><b id="cp-live-label">' + tr('MAÇ ÖNCESİ', 'VOR DEM SPIEL') + '</b><em id="cp-live-clock">00′</em></span></header>' +
+      '<section class="cp-score-card"><div class="cp-score-inner"></div><div class="cp-score-sub"><span>' + tr('SPİKER ANLATIMI · CANLI İSTATİSTİK', 'KOMMENTAR · LIVE-STATISTIK') + '</span><span id="cp-watch-clock">00:00</span></div></section>' +
+      '<section class="cp-broadcast-stage" id="cp-broadcast-stage"><div class="cp-stadium-lights"></div><div class="cp-commentary-stage" id="cp-commentary-stage"><div class="cp-commentary-head"><span>🎙 ' + tr('SPİKER ANLATIYOR', 'LIVE-KOMMENTAR') + '</span><span id="cp-commentary-minute">00′</span></div><div class="cp-commentary-main"><div class="cp-commentary-mark">CP<br><small>LIVE</small></div><div><span class="cp-event-type" id="cp-event-type">' + tr('MAÇ GÜNÜ', 'SPIELTAG') + '</span><h2 id="cp-commentary-title">' + tr('Takımlar sahaya çıkıyor', 'Die Teams betreten den Platz') + '</h2><p id="cp-commentary-copy">' + tr('Taktik planlar ve ilk 11 maç boyunca burada güncellenecek.', 'Taktik und Startelf werden hier live aktualisiert.') + '</p></div></div><div class="cp-commentary-stats" id="cp-commentary-stats"></div><div class="cp-commentary-feed" id="cp-commentary-feed"></div></div><div class="cp3d-stage" id="cp3d-stage" aria-label="Kritik anın 3D tekrar görüntüsü"></div><div class="cp-highlight-overlay" id="cp-highlight-overlay"><span id="cp-highlight-minute"></span><b id="cp-highlight-title"></b><p id="cp-highlight-copy"></p><span class="cp-replay-label">● ' + tr('3D KRİTİK AN', '3D-SZENE') + '</span></div><div class="cp-stage-overlay"><span class="cp-possession-label">' + tr('TAKTİK KAMERA', 'TAKTIKKAMERA') + '</span></div></section>' +
       '<section class="cp-watch-controls"><div class="cp-controls-inner"></div><div class="cp-watch-note">' + tr('Kararların ve maç sonucu bu kariyer kaydına işlenir.', 'Taktik und Ergebnis werden in diesem Spielstand gespeichert.') + '</div></section>' +
       '<section class="cp-tactic-card"><div class="cp-tactics-inner"></div></section>' +
       '<section class="cp-watch-data"></section><details class="cp-subs"><summary>' + tr('Oyuncu değişiklikleri', 'Auswechslungen') + '</summary><div class="cp-subs-inner"></div></details><div class="cp-engine-hidden"></div>';
 
     page.querySelector('.cp-score-inner').appendChild(score);
-    page.querySelector('.cp-broadcast-stage').appendChild(pitch);
+    if (pitch) page.querySelector('.cp-engine-hidden').appendChild(pitch);
     page.querySelector('.cp-controls-inner').appendChild(controls);
     if (tactics) page.querySelector('.cp-tactics-inner').appendChild(tactics);
     if (hub) page.querySelector('.cp-watch-data').appendChild(hub);
     if (substitutions) page.querySelector('.cp-subs-inner').appendChild(substitutions);
-    if (insights) page.querySelector('.cp-engine-hidden').appendChild(insights);
+    if (insights) {
+      var statPanel = insights.querySelector('#statPanel');
+      var log = insights.querySelector('#log');
+      var live = insights.querySelector('#live');
+      if (statPanel) page.querySelector('#cp-commentary-stats').appendChild(statPanel);
+      if (log) page.querySelector('#cp-commentary-feed').appendChild(log);
+      if (live) { live.id = 'cp-live-label'; live.className = 'cp-live-label'; page.querySelector('#cp-live-label').replaceWith(live); }
+      page.querySelector('.cp-engine-hidden').appendChild(insights);
+    }
     sceneRoot.replaceChildren(page);
     page.querySelectorAll('.cp13-tab').forEach(function (tab) {
       var label = tab.textContent || '';
@@ -56,7 +67,12 @@
       if (label.indexOf('ANALİZ') >= 0) tab.textContent = '📊 ' + tr('ANALİZ', 'ANALYSE');
       if (label.indexOf('OLAYLAR') >= 0) tab.textContent = '📡 ' + tr('OLAYLAR', 'EREIGNISSE');
     });
-    start3D();
+    refreshCommentary();
+    window.clearInterval(commentaryTimer);
+    commentaryTimer = window.setInterval(refreshCommentary, 350);
+    window.addEventListener('cp:match-event', onMatchEvent);
+    window.addEventListener('cp:halftime', onHalftime);
+    if (window.CP_HALFTIME_DATA) onHalftime({ detail: window.CP_HALFTIME_DATA });
   }
 
   function leaveMatchPage() {
@@ -65,6 +81,10 @@
     if (!active) return;
     active = false;
     document.body.classList.remove('cp-match-active');
+    window.clearInterval(commentaryTimer); commentaryTimer = 0;
+    window.removeEventListener('cp:match-event', onMatchEvent);
+    window.removeEventListener('cp:halftime', onHalftime);
+    window.clearTimeout(highlightTimer); highlightTimer = 0;
     stop3D();
   }
 
@@ -100,10 +120,94 @@
       if (office) office.click();
       if (window.toast) toast(tr('Maç duraklatıldı. İstediğinde devam edebilirsin.', 'Spiel pausiert. Du kannst jederzeit fortfahren.'));
     }
+    var halfChoice = event.target.closest('[data-cp-half-tactic]');
+    if (halfChoice) {
+      event.preventDefault();
+      var tactic = document.querySelector('[data-mt="' + halfChoice.dataset.cpHalfTactic + '"]');
+      if (tactic) tactic.click();
+      document.querySelectorAll('[data-cp-half-tactic]').forEach(function (item) { item.classList.toggle('is-picked', item === halfChoice); });
+    }
+    if (event.target.closest('[data-cp-half-subs]')) {
+      event.preventDefault();
+      var details = document.querySelector('.cp-subs');
+      if (details) { details.open = true; details.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    }
+    if (event.target.closest('[data-cp-half-continue]')) {
+      event.preventDefault();
+      var card = document.querySelector('.cp-halftime-card'); if (card) card.remove();
+      var resume = document.querySelector('.cp-watch-controls [data-a="play"]'); if (resume) resume.click();
+    }
   }, true);
+
+  function refreshCommentary() {
+    if (!active) return;
+    var minute = document.getElementById('minute');
+    var score = document.getElementById('score');
+    var feed = document.querySelector('#log .event');
+    var clock = document.getElementById('cp-watch-clock');
+    var stageMinute = document.getElementById('cp-commentary-minute');
+    var live = document.getElementById('cp-live-label');
+    var m = minute ? (minute.textContent || '0′').trim() : '0′';
+    if (clock) clock.textContent = (m.replace(/[^0-9]/g, '').padStart(2, '0')) + ':00';
+    if (stageMinute) stageMinute.textContent = m;
+    var headerClock = document.getElementById('cp-live-clock'); if (headerClock) headerClock.textContent = m;
+    if (live && live.textContent) live.textContent = /CANLI|LIVE/i.test(live.textContent) ? tr('CANLI', 'LIVE') : live.textContent.replace(/[●•]/g, '').trim();
+    var title = document.getElementById('cp-commentary-title');
+    var copy = document.getElementById('cp-commentary-copy');
+    var kind = document.getElementById('cp-event-type');
+    if (feed && title) {
+      var content = (feed.innerText || '').replace(/\s+/g, ' ').trim();
+      var split = content.match(/^([0-9]+(?:\.[0-9]+)?′?)\s*(.*)$/);
+      title.textContent = split ? split[2] || tr('Oyun devam ediyor', 'Das Spiel läuft') : content;
+      if (copy) copy.textContent = score ? tr('Skor ', 'Spielstand ') + score.textContent + ' · ' + tr('Takımlar taktik planlarını sahaya yansıtıyor.', 'Die Teams setzen ihre taktischen Pläne um.') : tr('Maçın ritmi ve son olaylar canlı aktarılıyor.', 'Spieltempo und Ereignisse werden live kommentiert.');
+      if (kind) kind.textContent = tr('SAHADAN SON GELİŞME', 'AKTUELLES VOM PLATZ');
+    }
+  }
+
+  function onMatchEvent(event) {
+    var detail = event.detail || {};
+    if (!detail.highlight) { refreshCommentary(); return; }
+    window.CP_LIVE_MATCH = detail;
+    activeHighlight = detail;
+    var stage = document.getElementById('cp-broadcast-stage');
+    if (!stage) return;
+    stage.classList.add('is-highlight');
+    var minute = document.getElementById('cp-highlight-minute');
+    var title = document.getElementById('cp-highlight-title');
+    var copy = document.getElementById('cp-highlight-copy');
+    if (minute) minute.textContent = Math.floor(detail.minute || 0) + '′ · ' + tr('ÖZEL AN', 'SCHLÜSSELSZENE');
+    if (title) title.textContent = detail.title || tr('Tehlikeli atak', 'Gefährlicher Angriff');
+    if (copy) copy.textContent = detail.message || '';
+    window.clearTimeout(highlightTimer);
+    if (!document.body.classList.contains('cp-3d-fallback')) start3D();
+    highlightTimer = window.setTimeout(function () { stage.classList.remove('is-highlight'); activeHighlight = null; }, detail.type === 'goal' ? 10000 : 7000);
+    refreshCommentary();
+  }
+
+  function onHalftime(event) {
+    var data = event.detail || {};
+    if (!active) return;
+    window.clearTimeout(highlightTimer);
+    var stage = document.getElementById('cp-broadcast-stage');
+    if (stage) stage.classList.remove('is-highlight');
+    var existing = document.querySelector('.cp-halftime-card'); if (existing) existing.remove();
+    var names = data.names || ['EV SAHİBİ', 'DEPLASMAN'];
+    var score = data.score || [0, 0];
+    var stats = data.stats || [];
+    var shots = stats.map(function (s) { return s.shots || 0; });
+    var xg = stats.map(function (s) { return Number(s.xg || 0).toFixed(2); });
+    var possessionTotal = (stats[0] && stats[0].pos || 0) + (stats[1] && stats[1].pos || 0);
+    var possession = possessionTotal ? [Math.round(100 * stats[0].pos / possessionTotal), Math.round(100 * stats[1].pos / possessionTotal)] : [50, 50];
+    var card = document.createElement('section');
+    card.className = 'cp-halftime-card';
+    card.innerHTML = '<div class="cp-half-kicker">⏸ ' + tr('DEVRE ARASI · 15 DAKİKALIK TAKTİK PENCERESİ', 'HALBZEIT · TAKTIKPAUSE') + '</div><h2>' + tr('İlk yarı sona erdi', 'Die erste Halbzeit ist vorbei') + '</h2><div class="cp-half-score"><span>' + names[0] + '</span><b>' + score[0] + ' : ' + score[1] + '</b><span>' + names[1] + '</span></div><div class="cp-half-stats"><div><small>' + tr('ŞUT', 'SCHÜSSE') + '</small><b>' + shots[0] + '–' + shots[1] + '</b></div><div><small>xG</small><b>' + xg[0] + '–' + xg[1] + '</b></div><div><small>' + tr('TOPA SAHİP OLMA', 'BALLBESITZ') + '</small><b>' + possession[0] + '%–' + possession[1] + '%</b></div></div><p>' + tr('İkinci yarı başlamadan taktiği değiştir veya oyuncu değişikliği yap.', 'Ändere vor dem Wiederanpfiff die Taktik oder wechsle Spieler aus.') + '</p><div class="cp-half-tactics"><button data-cp-half-tactic="Dengeli">Dengeli</button><button data-cp-half-tactic="Hücum">Hücum</button><button data-cp-half-tactic="Savunma">Savunma</button><button data-cp-half-tactic="Yüksek Pres">Yüksek Pres</button><button data-cp-half-tactic="Kontra">Kontra</button></div><div class="cp-half-actions"><button class="cp-half-sub" data-cp-half-subs>🔄 ' + tr('DEĞİŞİKLİK YAP', 'AUSWECHSELN') + '</button><button class="cp-half-resume" data-cp-half-continue>▶ ' + tr('İKİNCİ YARIYA BAŞLA', 'ZWEITE HALBZEIT STARTEN') + '</button></div>';
+    document.body.appendChild(card);
+    requestAnimationFrame(function () { card.classList.add('is-visible'); });
+  }
 
   function start3D() {
     if (startPending || !active || !document.getElementById('cp3d-stage')) return;
+    if (renderer) { draw3D(); return; }
     startPending = true;
     import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js').then(function (THREE) {
       startPending = false;
@@ -112,26 +216,27 @@
       startPending = false;
       document.body.classList.add('cp-3d-fallback');
       var status = document.getElementById('cp-stage-status');
-      if (status) status.textContent = tr('Yedek saha görünümü etkin', 'Ersatzansicht aktiv');
+      if (status) status.textContent = tr('3D tekrar bu cihazda açılamadı', '3D-Wiederholung auf diesem Gerät nicht verfügbar');
+      var stage = document.getElementById('cp-broadcast-stage'); if (stage) stage.classList.add('is-highlight-fallback');
     });
   }
 
   function build3D(THREE) {
     var host = document.getElementById('cp3d-stage');
     if (!host || !active) return;
-    var scene = new THREE.Scene();
+    var scene = new THREE.Scene(); scene3 = scene;
     scene.background = new THREE.Color('#07151b');
     scene.fog = new THREE.Fog('#07151b', 105, 210);
     var width = Math.max(320, host.clientWidth || innerWidth), height = Math.max(220, host.clientHeight || 360);
-    var camera = new THREE.PerspectiveCamera(42, width / height, .1, 260);
-    camera.position.set(0, 77, 91); camera.lookAt(0, 0, 0);
-    var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.35)); renderer.setSize(width, height, false);
-    renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.08;
+    camera = new THREE.PerspectiveCamera(42, width / height, .1, 260);
+    camera.position.set(0, 61, 78); camera.lookAt(0, 0, 0);
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); renderer.setSize(width, height, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
     host.appendChild(renderer.domElement);
-    scene.add(new THREE.HemisphereLight('#eaf7ff', '#203622', 2));
-    var key = new THREE.DirectionalLight('#fff1ce', 2.4); key.position.set(-18, 56, 28); scene.add(key);
-    var fill = new THREE.DirectionalLight('#a9d6ff', 1.1); fill.position.set(28, 34, -48); scene.add(fill);
+    scene.add(new THREE.HemisphereLight('#eaf7ff', '#203622', 2.6));
+    var key = new THREE.DirectionalLight('#fff1ce', 3.1); key.position.set(-18, 56, 28); scene.add(key);
+    var fill = new THREE.DirectionalLight('#a9d6ff', 1.35); fill.position.set(28, 34, -48); scene.add(fill);
     buildStadium(THREE, scene); buildPitch(THREE, scene);
     var colors = [teamColor(0), teamColor(1)];
     for (var team = 0; team < 2; team++) for (var i = 0; i < 11; i++) {
@@ -143,18 +248,40 @@
     renderer.domElement.setAttribute('aria-label', 'Canlı 3D futbol maçı');
     resizeHandler = function () { if (!active || !host.isConnected) return; var w = Math.max(320, host.clientWidth), h = Math.max(220, host.clientHeight); camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h, false); };
     window.addEventListener('resize', resizeHandler);
-    window.__cp3D = { scene: scene, camera: camera, renderer: renderer };
+    window.__cp3D = { scene: scene, camera: camera, renderer: renderer, THREE: THREE };
     window.__cp3DScene = scene; window.__cp3DCamera = camera;
     window.__cp3DRender = renderer;
     document.body.classList.add('cp-3d-ready');
+    draw3D();
+  }
+
+  function draw3D() {
+    if (!renderer || !scene3 || !active || frame || !document.getElementById('cp-broadcast-stage')?.classList.contains('is-highlight')) return;
     var previous = performance.now();
-    function draw(now) { if (!active || !host.isConnected) return; var dt = Math.min(.06, (now - previous) / 1000); previous = now; update3D(now, dt); renderer.render(scene, camera); frame = requestAnimationFrame(draw); }
+    function draw(now) {
+      var stage = document.getElementById('cp-broadcast-stage');
+      if (!active || !renderer || !stage || !stage.classList.contains('is-highlight')) { frame = 0; return; }
+      var dt = Math.min(.06, (now - previous) / 1000); previous = now;
+      update3D(now, dt); renderer.render(scene3, camera); frame = requestAnimationFrame(draw);
+    }
     frame = requestAnimationFrame(draw);
   }
 
   function teamColor(index) {
-    try { var found = window.CP_LIVE_MATCH && window.CP_LIVE_MATCH.colors; if (found && found[index]) return found[index]; } catch (e) { }
-    return index === 0 ? '#18234e' : '#eee9d9';
+    try {
+      var found = window.CP_LIVE_MATCH && window.CP_LIVE_MATCH.colors;
+      if (found && found[index]) {
+        if (index === 1 && found[0]) {
+          var a = String(found[0]).replace('#',''), b = String(found[1]).replace('#','');
+          if (a.length === 6 && b.length === 6) {
+            var d = Math.abs(parseInt(a.slice(0,2),16)-parseInt(b.slice(0,2),16)) + Math.abs(parseInt(a.slice(2,4),16)-parseInt(b.slice(2,4),16)) + Math.abs(parseInt(a.slice(4,6),16)-parseInt(b.slice(4,6),16));
+            if (d < 165) return '#f1ead7';
+          }
+        }
+        return found[index];
+      }
+    } catch (e) { }
+    return index === 0 ? '#152648' : '#f2eddf';
   }
 
   function buildStadium(THREE, scene) {
@@ -202,33 +329,43 @@
   }
 
   function makePlayer(THREE, color, team, number) {
-    var group=new THREE.Group(),shirt=new THREE.MeshStandardMaterial({color:color,roughness:.72}),skin=new THREE.MeshStandardMaterial({color:'#d4a37c',roughness:.8}),shorts=new THREE.MeshStandardMaterial({color:team===0?'#111827':'#d8d5ca',roughness:.86});
-    var body=new THREE.Mesh(new THREE.CapsuleGeometry(.75,1.1,3,7),shirt);body.position.y=2.1;group.add(body);
-    var head=new THREE.Mesh(new THREE.SphereGeometry(.42,10,8),skin);head.position.y=3.2;group.add(head);
-    var shortMesh=new THREE.Mesh(new THREE.CylinderGeometry(.68,.55,.65,8),shorts);shortMesh.position.y=1.2;group.add(shortMesh);
-    for(var leg=0;leg<2;leg++){var limb=new THREE.Mesh(new THREE.CylinderGeometry(.16,.12,1.05,6),team===2?shirt:shorts);limb.position.set(leg?.27:-.27,.53,0);limb.rotation.z=leg?-.08:.08;group.add(limb)}
-    for(var arm=0;arm<2;arm++){var sleeve=new THREE.Mesh(new THREE.CylinderGeometry(.18,.13,.86,6),shirt);sleeve.position.set(arm?.8:-.8,2.22,0);sleeve.rotation.z=arm?-.35:.35;group.add(sleeve)}
-    var shadow=new THREE.Mesh(new THREE.CircleGeometry(1.15,12),new THREE.MeshBasicMaterial({color:'#07120b',transparent:true,opacity:.32}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.02;group.add(shadow);
-    group.userData={team:team,number:number,phase:Math.random()*6.28};return group;
+    var group=new THREE.Group(),shirtColor=team===2?'#e34c43':color,shirt=new THREE.MeshStandardMaterial({color:shirtColor,roughness:.66}),skin=new THREE.MeshStandardMaterial({color:'#d9ad8a',roughness:.84}),shorts=new THREE.MeshStandardMaterial({color:team===0?'#111827':'#e6e1d4',roughness:.84});
+    if(number===0)shirt=new THREE.MeshStandardMaterial({color:team===0?'#e3bd55':'#77b98b',roughness:.68});
+    var body=new THREE.Mesh(new THREE.CapsuleGeometry(.78,1.2,4,9),shirt);body.position.y=2.18;group.add(body);
+    var neck=new THREE.Mesh(new THREE.CylinderGeometry(.18,.2,.32,8),skin);neck.position.y=3.12;group.add(neck);
+    var head=new THREE.Mesh(new THREE.SphereGeometry(.43,12,10),skin);head.position.y=3.48;group.add(head);
+    var shortsMesh=new THREE.Mesh(new THREE.CylinderGeometry(.66,.55,.67,10),shorts);shortsMesh.position.y=1.22;group.add(shortsMesh);
+    var legParts=[];
+    for(var leg=0;leg<2;leg++){var limb=new THREE.Mesh(new THREE.CylinderGeometry(.17,.13,1.08,8),shorts);limb.position.set(leg?.27:-.27,.55,0);group.add(limb);legParts.push(limb);var boot=new THREE.Mesh(new THREE.BoxGeometry(.25,.2,.5),new THREE.MeshStandardMaterial({color:'#181b1a',roughness:.8}));boot.position.set(leg?.28:-.28,.04,.12);group.add(boot)}
+    var armParts=[];
+    for(var arm=0;arm<2;arm++){var sleeve=new THREE.Mesh(new THREE.CylinderGeometry(.2,.14,.91,8),shirt);sleeve.position.set(arm?.84:-.84,2.24,0);sleeve.rotation.z=arm?-.33:.33;group.add(sleeve);armParts.push(sleeve);var hand=new THREE.Mesh(new THREE.SphereGeometry(.16,8,6),skin);hand.position.set(arm?.98:-.98,1.78,0);group.add(hand)}
+    var stripeMat=new THREE.MeshStandardMaterial({color:team===0?'#f5e4c8':'#33465a',roughness:.72});
+    var stripe=new THREE.Mesh(new THREE.BoxGeometry(.11,.83,.045),stripeMat);stripe.position.set(.42,2.22,.74);group.add(stripe);
+    var numberCanvas=document.createElement('canvas');numberCanvas.width=128;numberCanvas.height=128;var ctx=numberCanvas.getContext('2d');ctx.clearRect(0,0,128,128);ctx.font='900 82px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=team===0?'#fff4da':'#17242d';ctx.fillText(String(number||1),64,67);
+    var numberTexture=new THREE.CanvasTexture(numberCanvas);numberTexture.colorSpace=THREE.SRGBColorSpace;var numberMark=new THREE.Mesh(new THREE.PlaneGeometry(.48,.5),new THREE.MeshBasicMaterial({map:numberTexture,transparent:true,side:THREE.DoubleSide,depthWrite:false}));numberMark.position.set(0,2.23,.785);group.add(numberMark);
+    var shadow=new THREE.Mesh(new THREE.CircleGeometry(1.22,16),new THREE.MeshBasicMaterial({color:'#07120b',transparent:true,opacity:.42}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.025;group.add(shadow);
+    group.scale.setScalar(1.16);group.userData={team:team,number:number,phase:Math.random()*6.28,leftLeg:legParts[0],rightLeg:legParts[1],leftArm:armParts[0],rightArm:armParts[1]};return group;
   }
 
   function update3D(now, dt) {
     if (!ball) return;
-    var live = window.CP_LIVE_MATCH || {};
+    var live = activeHighlight || window.CP_LIVE_MATCH || {};
     var bx = (Number(live.x == null ? 50 : live.x) - 50) * .92;
     var bz = (Number(live.y == null ? 50 : live.y) - 50) * .58;
     var isShot = live.event === 'shot' || live.event === 'goal';
-    var loft = isShot ? Math.max(0, Math.sin(now / 220) * 2.8) : 0;
+    var loft = isShot ? Math.max(0, Math.sin(now / 180) * (live.event === 'goal' ? 5 : 3.5)) : 0;
     ball.position.set(bx, .78 + loft, bz); ball.rotation.set(now*.002,now*.003,now*.0012);
     var possession = Number(live.team || 0);
     players.forEach(function (player, index) {
       var team=player.userData.team,n=index%11,keeper=n===0,line=keeper?-43:n<=4?-28:n<=7?-8:16,lane=keeper?0:((n%4)-1.5)*13;
-      if(team===1)line=-line;var push=possession===team?7:-2,targetX=line+(team===0?push:-push)+bx*(keeper?.05:.17),targetZ=lane+bz*(keeper?.08:.19);
-      player.position.x+=(targetX-player.position.x)*Math.min(1,dt*3.2);player.position.z+=(targetZ-player.position.z)*Math.min(1,dt*3.2);player.position.y=Math.abs(Math.sin(now*.008+player.userData.phase))*.08;player.rotation.y=team===0?Math.PI/2:-Math.PI/2;
+      if(team===1)line=-line;var push=possession===team?8:-3,targetX=line+(team===0?push:-push)+bx*(keeper?.06:.2),targetZ=lane+bz*(keeper?.08:.23);
+      player.position.x+=(targetX-player.position.x)*Math.min(1,dt*3.6);player.position.z+=(targetZ-player.position.z)*Math.min(1,dt*3.6);player.position.y=Math.abs(Math.sin(now*.009+player.userData.phase))*.11;
+      var running=Math.sin(now*.012+player.userData.phase),pace=activeHighlight?1.15:.55;player.userData.leftLeg.rotation.z=running*.42*pace;player.userData.rightLeg.rotation.z=-running*.42*pace;player.userData.leftArm.rotation.z=-running*.22;player.userData.rightArm.rotation.z=running*.22;
+      player.rotation.y=team===0?Math.PI/2:-Math.PI/2;
     });
     var minute=Number(live.minute||0),clock=document.getElementById('cp-watch-clock');if(clock)clock.textContent=String(Math.floor(minute)).padStart(2,'0')+':00';
     var chip=document.getElementById('cp-live-chip');if(chip)chip.innerHTML='<i></i>'+(live.running?tr('CANLI · ','LIVE · ')+Math.floor(minute)+'′':minute>=90?tr('TAMAMLANDI','BEENDET'):tr('MAÇ GÜNÜ','SPIELTAG'));
-    var stage=document.getElementById('cp-stage-status'),recent=document.querySelector('#log .event');if(stage&&recent)stage.textContent=recent.innerText.replace(/\s+/g,' ').trim();
+    if (camera && camera.position) { camera.position.x += (bx-camera.position.x)*Math.min(1,dt*1.1); camera.position.z += (bz+68-camera.position.z)*Math.min(1,dt*1.1); camera.lookAt(bx, 0, bz); }
   }
 
   function stop3D() {
