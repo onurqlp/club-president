@@ -1255,14 +1255,16 @@ try {
     cpOriginalRealSetup();
     if (state && state.activeMatch) {
       state.activeMatch.running = false;
-      if (state.activeMatch.min >= 45 && state.activeMatch.min < 90) state.activeMatch.cpHalftimeHold = true;
+      if (state.activeMatch.min >= 45 && state.activeMatch.min < 46) state.activeMatch.cpHalftimeHold = true;
+      else if (state.activeMatch.min >= 46) state.activeMatch.cpHalftimeHold = false;
       save();
     }
   };
   // The startup realSetup() ran just before this hook was installed.
   if (state && state.activeMatch) {
     state.activeMatch.running = false;
-    if (state.activeMatch.min >= 45 && state.activeMatch.min < 90) state.activeMatch.cpHalftimeHold = true;
+    if (state.activeMatch.min >= 45 && state.activeMatch.min < 46) state.activeMatch.cpHalftimeHold = true;
+    else if (state.activeMatch.min >= 46) state.activeMatch.cpHalftimeHold = false;
     save();
   }
 
