@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.10 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.11 (Türkçe arayüz).
 
 ## Oyun
 
@@ -61,6 +61,14 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Bir menüye geçildiğinde açık olan önceki modal/pencere kapanır; içerik yeni ekranla birlikte temizlenir.
 - Pencere dışına dokunma ve Escape ile kapatma eklendi; modal erişilebilirlik etiketleri tamamlandı.
 - Telefonda modallar alt sayfa paneli olarak açılır; düğmeler ve kapatma alanı büyütüldü, uzun listeler kaydırılabilir.
+
+## v1.11 — Kayıt, fikstür ve maç sürekliliği
+
+- Eski kariyer kayıtları sürüm alanlarıyla taşınır; ilk güncellemede otomatik yedek oluşturulur ve v3 kayıtları açılışta reddedilmez.
+- Resmî fikstür mevcutsa alternatif takvim tarafından ezilmez; oluşturulan fikstür açıkça oyun üretimi olarak etiketlenir.
+- Maç ekranı gerçek iç saha/deplasman sırasını gösterir; maç sırasında dakika, skor, top konumu, olaylar ve taktik geçmişi kaydedilerek yenileme sonrası sürdürülebilir.
+- Taktik değişikliği kalan maçı mevcut dakika ve top konumundan devam ettirir; rakip planı ve takım planı maçın tamamına tek etiket olarak yazılmaz.
+- Transfer oyuncu kaydı yeni kulübe taşınır; satışta asgari kadro ve mevki derinliği denetlenir.
 
 ## Yayın ayarı
 
