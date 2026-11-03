@@ -1203,6 +1203,9 @@ try {
   var cpOriginalAdvance = advanceMatchTo;
   advanceMatchTo = function (target, quiet) {
     var first = mt ? mt.pos : 0;
+    // Never let the 0.18-minute simulation tick leak into stoppage time: the
+    // halftime screen and all first-half stats must represent exactly 45:00.
+    if (mt && mt.running && mt.min < 45 && target > 45) target = 45;
     cpOriginalAdvance(target, quiet);
     if (!mt) return;
     var homeClub = clubs.find(function (c) { return c[0] === state.club; });
@@ -1269,4 +1272,4 @@ try {
 })();
 
 })();
-</script><script src="./assets/matchday-upgrade.js?v=20261104d"></script></body></html>
+</script><script src="./assets/matchday-upgrade.js?v=20261104e"></script></body></html>
