@@ -181,8 +181,8 @@
     if (title) title.textContent = detail.title || tr('Tehlikeli atak', 'Gefährlicher Angriff');
     if (copy) copy.textContent = detail.message || '';
     window.clearTimeout(highlightTimer);
-    if (!document.body.classList.contains('cp-3d-fallback')) start3D();
-    highlightTimer = window.setTimeout(function () { returnFallbackPitch(); stage.classList.remove('is-highlight'); activeHighlight = null; }, detail.type === 'goal' ? 10000 : 7000);
+    if (document.body.classList.contains('cp-3d-fallback')) showFallbackPitch(); else start3D();
+    highlightTimer = window.setTimeout(function () { returnFallbackPitch(); stage.classList.remove('is-highlight', 'is-highlight-fallback'); activeHighlight = null; }, detail.type === 'goal' ? 10000 : 7000);
     refreshCommentary();
   }
 
@@ -191,7 +191,7 @@
     if (!active) return;
     window.clearTimeout(highlightTimer);
     var stage = document.getElementById('cp-broadcast-stage');
-    if (stage) stage.classList.remove('is-highlight');
+    if (stage) stage.classList.remove('is-highlight', 'is-highlight-fallback');
     returnFallbackPitch();
     var existing = document.querySelector('.cp-halftime-card'); if (existing) existing.remove();
     var names = data.names || ['EV SAHİBİ', 'DEPLASMAN'];
