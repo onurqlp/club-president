@@ -228,7 +228,7 @@ for(var k=0;k<12;k++){c.fillStyle=k%2?'#31714b':'#276144';c.fillRect(k*75,0,75,H
 c.strokeStyle='#eaf4dc';c.lineWidth=2;c.strokeRect(25,23,850,464);c.beginPath();c.moveTo(450,23);c.lineTo(450,487);c.stroke();c.beginPath();c.arc(450,255,67,0,Math.PI*2);c.stroke();c.strokeRect(25,133,136,244);c.strokeRect(739,133,136,244);c.strokeRect(25,204,46,102);c.strokeRect(829,204,46,102);
 var ev=mt&&mt.lastEvent?mt.lastEvent:null,q=mt&&mt.ballTs?Math.min(1,(Date.now()-mt.ballTs)/310):1;
 var bx=mt?mt.x:50,by=mt?mt.y:50;if(ev){bx=mt.fromX+(mt.x-mt.fromX)*q;by=mt.fromY+(mt.y-mt.fromY)*q}
-var side=ev?ev.team:0,shape=state.formation==='4-4-2'?[4,4,2]:state.formation==='4-2-3-1'?[4,5,1]:[4,3,3],positions=[[7,50]];
+var side=ev?ev.team:0;window.CP_LIVE_MATCH={minute:mt?mt.min:0,x:bx,y:by,team:side,event:ev?ev.type:'',running:!!(mt&&mt.running),home:mt?mt.home:0,away:mt?mt.away:0};var shape=state.formation==='4-4-2'?[4,4,2]:state.formation==='4-2-3-1'?[4,5,1]:[4,3,3],positions=[[7,50]];
 for(var ln=0;ln<3;ln++)for(var a=0;a<shape[ln];a++)positions.push([ln===0?24:ln===1?49:72,(a+1)/(shape[ln]+1)*100]);
 for(var team=0;team<2;team++)for(var j=0;j<11;j++){var pos=positions[j]||[50,50],px=team===0?pos[0]:100-pos[0],py=pos[1],k=team===side?.31:.19;
 px=Math.max(4,Math.min(96,px+(bx-px)*k+Math.sin((mt?mt.min:0)*.2+j*1.2)*1.7));py=Math.max(6,Math.min(94,py+(by-py)*.17+Math.cos((mt?mt.min:0)*.25+j*1.7)*1.6));
