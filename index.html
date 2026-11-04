@@ -1799,7 +1799,6 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 </script><script>
 /* GO 2 — persistent lineup, stable player identity, season result integrity, transfer pagination */
 (function(){
- if(!state)return;
  var cpAutoBestXI=bestXI,cpMarketPage=0,cpMarketPageSize=24;
  function cpId(p){if(!p)return '';if(!p.id)p.id='cp-player-'+state.ix+'-'+String(p.name||'').toLocaleLowerCase('tr-TR').replace(/[^a-z0-9]+/g,'-');return String(p.id)}
  function cpRole(p){var pos=p&&p.pos||'';return pos==='KL'?'gk':['STP','SLB','SĞB'].includes(pos)?'def':['DOS','MO'].includes(pos)?'mid':['SNT','SLK','SĞK'].includes(pos)?'att':'other'}
