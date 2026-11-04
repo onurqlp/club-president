@@ -1873,27 +1873,35 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   function ensureContract(s) {
     var c = s && s.sponsorContract;
     if (!c) return null;
-    if (!c.id) {
-      var ix = Number.isInteger(c.historyIndex) ? c.historyIndex : (s.sponsorDeals || []).length - 1;
-      c.id = 'sponsor-' + (s.ix || 0) + '-' + String(c.season || s.seasonCode || 'career') + '-' +
-        String(c.signedDay || 0) + '-' + String(Math.max(0, ix));
-    }
+    var deals = s.sponsorDeals || [], item = Number.isInteger(c.historyIndex) ? deals[c.historyIndex] : null;
+    if (!item) item = deals.slice().reverse().find(function (x) {
+      return x.day === c.signedDay && (x.status === 'active' || x.status === 'completed');
+    });
+    if (!Number.isInteger(c.historyIndex) && item) c.historyIndex = deals.indexOf(item);
+    var historyIndex = Number.isInteger(c.historyIndex) ? c.historyIndex : Math.max(0, deals.length - 1);
+    if (!c.id) c.id = 'sponsor-' + (s.ix || 0) + '-' + String(c.season || s.seasonCode || 'career') + '-' +
+      String(c.signedDay || 0) + '-' + String(historyIndex);
+    if (item && !item.id) item.id = c.id;
     c.installmentsPaid = Math.max(0, Number(c.installmentsPaid) || 0);
     c.installmentsTotal = Math.max(1, Number(c.installmentsTotal) || 8);
-    c.paidAmount = Math.max(0, Number(c.paidAmount) || 0);
-    c.nextPaymentDay = Number(c.nextPaymentDay) || ((Number(c.signedDay) || 0) + 7);
+    c.totalAmount = Math.max(0, Number(c.totalAmount) || Number(item && item.totalAmount) ||
+      Math.round((Number(c.amount) || Number(item && item.amount) || 0) * 1e6));
+    c.advancePaid = Math.max(0, Number(c.advancePaid) || Number(item && item.advancePaid) ||
+      Math.round(c.totalAmount * .2));
+    c.installmentAmount = Math.max(0, Number(c.installmentAmount) ||
+      Math.floor(Math.max(0, c.totalAmount - c.advancePaid) / c.installmentsTotal));
+    c.paidAmount = Math.max(0, Number(c.paidAmount) || Number(item && item.paidAmount) ||
+      Math.min(c.totalAmount, c.advancePaid + c.installmentAmount * c.installmentsPaid));
+    c.nextPaymentDay = Number(c.nextPaymentDay) ||
+      ((Number(c.signedDay) || 0) + 7 * (c.installmentsPaid + 1));
     if (c.paidAmount > 0) {
-      var deals = s.sponsorDeals || [];
-      var item = Number.isInteger(c.historyIndex) ? deals[c.historyIndex] : null;
-      if (item && !item.id) item.id = c.id;
       var advanceId = c.id + ':advance';
-      var advance = Number(c.advancePaid || (item && item.advancePaid)) || Math.min(c.paidAmount, Math.round((Number(c.totalAmount) || 0) * .2));
       if (!findTx(s, advanceId)) {
-        var advanceTx = book(s, advanceId, 'sponsor-advance', advance, 0, c.name || 'Sponsor advance');
+        var advanceTx = book(s, advanceId, 'sponsor-advance', c.advancePaid, 0, c.name || 'Sponsor advance');
         advanceTx.day = Number(c.signedDay) || s.day;
         if (typeof nextDate === 'function') advanceTx.date = nextDate(s.date, advanceTx.day - s.day);
       }
-      var historical = Math.max(0, c.paidAmount - advance), per = Math.max(0, Number(c.installmentAmount) || 0);
+      var historical = Math.max(0, c.paidAmount - c.advancePaid), per = c.installmentAmount;
       for (var n = 1; n <= c.installmentsPaid; n++) {
         var paymentId = c.id + ':installment:' + n;
         var amount = n === c.installmentsTotal ? historical : Math.min(per, historical);
