@@ -2058,7 +2058,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
       if (!Number.isFinite(Number(offer.expiresDay))) offer.expiresDay = (Number(offer.day) || s.day) + 19;
       if (!offer.expiresDate && typeof nextDate === 'function')
         offer.expiresDate = nextDate(offer.created || s.date, 19);
-      if (s.day >= offer.expiresDay) {
+      if (s.day > offer.expiresDay) {
         offer.status = 'expired';
         offer.resolvedDay = s.day;
         archiveOffer(m, offer, 'expired', t('Teklifin son günü geçti', 'Angebot abgelaufen'));
@@ -2145,7 +2145,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
         offer.expiresDay = (Number(offer.day) || s.day) + 19;
         offer.expiresDate = typeof nextDate === 'function' ? nextDate(offer.created || s.date, 19) : s.date;
       }
-      if (s.day >= offer.expiresDay) {
+      if (s.day > offer.expiresDay) {
         expireOffers(s); api.save(); api.render();
         api.toast(t('Teklifin süresi doldu; artık yanıtlanamaz.', 'Das Angebot ist abgelaufen und kann nicht mehr beantwortet werden.'));
         return;
