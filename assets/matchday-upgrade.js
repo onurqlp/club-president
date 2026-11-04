@@ -441,10 +441,10 @@
       player.userData.leftLeg.userData.knee.rotation.x=Math.max(0,-swing)*.8;
       player.userData.rightLeg.userData.knee.rotation.x=Math.max(0,swing)*.8;
       player.userData.leftArm.rotation.x=-swing*.58; player.userData.rightArm.rotation.x=swing*.58;
-      player.position.y=running?Math.abs(Math.sin(cadence*2))*.035:0;
+      player.position.y=running?Math.abs(Math.sin(cadence*2))*.035:0; player.rotation.z+=(0-player.rotation.z)*Math.min(1,dt*3);
       var faceX=dx,faceZ=dz;
       if(own&&nearest){faceX=ballX-player.position.x;faceZ=ballZ-player.position.z;}
-      player.rotation.y=Math.atan2(faceZ,faceX);
+      player.rotation.y=Math.atan2(faceX,faceZ);
     });
     if(isShot&&progress>.72&&players.length) {
       var keeper=players.find(function(p){return p.userData.team===1-possession&&p.userData.number===0;});
