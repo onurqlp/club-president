@@ -471,7 +471,7 @@
         scoutSummary.reports += step.reports;
         scoutSummary.stopped = scoutSummary.stopped || step.stopped;
       }
-      var sponsorPaid = settleSponsor(s, finalDay);
+      settleSponsor(s, finalDay);
       expireOffers(s);
       book(s, 'season-prize:' + String(s.ix || 0) + ':' + oldSeason, 'season-prize',
         (Number(s.cash) || 0) - cashBefore, (Number(s.budget) || 0) - budgetBefore, oldSeason);
@@ -481,7 +481,6 @@
         scoutSummary.reports + t(' oyuncu raporu üretildi.', ' Spielerberichte wurden erstellt.'));
       if (scoutSummary.stopped) api.notice(t('SCOUT BÜTÇESİ DURDURULDU', 'SCOUTBUDGET PAUSIERT'),
         t('Kasa haftalık scout giderini karşılayamadı; görevler saklandı.', 'Das Guthaben reichte nicht; die Scoutaufgaben bleiben gespeichert.'));
-      if (sponsorPaid) api.notice(t('SPONSOR ÖDEMELERİ TAMAMLANDI', 'SPONSORZAHLUNGEN VERARBEITET'), money(sponsorPaid));
       api.save(); api.render();
       return result;
     };
