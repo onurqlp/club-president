@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.17 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.18 (Türkçe arayüz).
 
 ## Oyun
 
@@ -94,6 +94,22 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Eine offene Entscheidung bleibt nach dem Neuladen gespeichert und erscheint beim Fortsetzen der Karriere erneut.
 - Im Posteingang gibt es einen direkten Link zurück zur offenen Entscheidung.
 - Diese Änderung greift nicht in die Spielsimulation, den 3D-Spielmotor oder die Spieltagsdateien ein.
+
+## v1.18 — İşleyen sponsorluk sözleşmeleri
+
+- Sponsor anlaşması imzalanınca toplam gelirin %20’si hemen, kalan tutarı 8 oyun haftasına yayılan ödemelerle kasaya girer.
+- Aktif sözleşmenin toplam tutarı, tahsil edilen kısmı, haftalık ilerlemesi ve sıradaki ödeme günü ofis ekranında görünür.
+- Sözleşme açıkken yeni sponsor teklifi aynı anlaşmayı tekrar başlatmaz; ödeme takvimi oyun günleri ilerledikçe işlenir.
+- Eski kariyer kayıtları korunur. Önceki sürümde tek seferde ödenmiş anlaşmalar geriye dönük ikinci kez ödenmez.
+- 3D maç motoru ve maç günü dosyaları bu güncellemenin kapsamı dışındadır.
+
+## v1.18 — Sponsoringverträge mit Fortschritt
+
+- Bei Vertragsunterzeichnung werden 20 % sofort und der Rest in acht Spielwochen ausgezahlt.
+- Gesamtbetrag, bereits erhaltene Einnahmen, Wochenfortschritt und nächster Zahlungstag sind im Büro sichtbar.
+- Solange ein Vertrag aktiv ist, startet das Sponsoringereignis keinen doppelten Vertrag.
+- Bestehende Karrierespeicher bleiben erhalten. Bereits in früheren Versionen vollständig ausgezahlte Verträge werden nicht erneut vergütet.
+- Der 3D-Spielmotor und die Spieltagsdateien sind nicht Teil dieser Änderung.
 
 ## Yayın ayarı
 
