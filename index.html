@@ -1257,6 +1257,18 @@ try {
     cpResumeWanted = false;
   }
 
+  // A half-time break owns the pause. Discard a still-playing critical-moment
+  // queue so its timer cannot keep advanceMatchTo() locked after the resume tap.
+  function cpClearHighlightsForHalftime() {
+    clearTimeout(cpGoalRevealTimer); cpGoalRevealTimer = 0;
+    clearTimeout(cpHighlightReleaseTimer); cpHighlightReleaseTimer = 0;
+    cpHighlightQueue.length = 0;
+    cpHighlightActive = false;
+    cpHighlightHold = false;
+    cpResumeWanted = false;
+    document.body.classList.remove('cp-goal-pending');
+  }
+
   function cpHideScoreForQueuedGoal() {
     document.body.classList.add('cp-goal-pending');
     if (!document.getElementById('cp-spoiler-guard')) {
@@ -1418,6 +1430,7 @@ try {
 
   function cpPauseAtHalf() {
     if (!mt || mt.cpHalftimeHold || mt.min < 45 || mt.min >= 90) return;
+    cpClearHighlightsForHalftime();
     mt.min = 45;
     mt.halfTip = true;
     mt.cpHalftimeHold = true;
@@ -1474,11 +1487,16 @@ try {
   var cpOriginalStart = startMatch;
   startMatch = function () {
     var match = setup();
-    if (match && match.cpHalftimeHold) { match.cpHalftimeHold = false; window.CP_HALFTIME_DATA = null; }
-    cpStartingSecondHalf = true;
+    var resumingSecondHalf = !!(match && (match.cpHalftimeHold || (match.min >= 45 && match.min < 46 && !match.running)));
+    if (resumingSecondHalf) {
+      cpClearHighlightsForHalftime();
+      match.cpHalftimeHold = false;
+      window.CP_HALFTIME_DATA = null;
+      cpStartingSecondHalf = true;
+    }
     try { return cpOriginalStart(); }
     finally {
-      cpStartingSecondHalf = false;
+      if (resumingSecondHalf) cpStartingSecondHalf = false;
       if (mt && mt.min >= 45 && mt.min < 90) { mt.cpHalftimeHold = false; window.CP_HALFTIME_DATA = null; }
     }
   };
@@ -1494,6 +1512,7 @@ try {
       cpPauseAtHalf();
       return;
     }
+    if (match.cpHalftimeHold || (match.min >= 45 && match.min < 46)) cpClearHighlightsForHalftime();
     match.cpHalftimeHold = false; window.CP_HALFTIME_DATA = null;
     return cpOriginalFast();
   };
