@@ -54,9 +54,8 @@
       var historical = Math.max(0, c.paidAmount - advance), per = Math.max(0, Number(c.installmentAmount) || 0);
       for (var n = 1; n <= c.installmentsPaid; n++) {
         var paymentId = c.id + ':installment:' + n;
-        if (findTx(s, paymentId)) continue;
         var amount = n === c.installmentsTotal ? historical : Math.min(per, historical);
-        book(s, paymentId, 'sponsor-installment', amount, 0, c.name || 'Sponsor installment');
+        if (!findTx(s, paymentId)) book(s, paymentId, 'sponsor-installment', amount, 0, c.name || 'Sponsor installment');
         historical = Math.max(0, historical - amount);
       }
     }
