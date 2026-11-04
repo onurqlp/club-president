@@ -1461,9 +1461,10 @@ try {
   // Rebuild the tactical break after a refresh so a saved 45' match cannot
   // resume behind the manager's back without showing the intervention screen.
   var cpOriginalSetup = setup;
+  var cpStartingSecondHalf = false;
   setup = function () {
     var match = cpOriginalSetup();
-    if (match && match.min >= 45 && match.min < 46 && !match.running) match.cpHalftimeHold = true;
+    if (!cpStartingSecondHalf && match && match.min >= 45 && match.min < 46 && !match.running) match.cpHalftimeHold = true;
     if (match && match.cpHalftimeHold) {
       window.CP_HALFTIME_DATA = { minute: 45, names: [state.club, rival()], score: [match.home, match.away], stats: matchStats(match.shown || [], 45) };
     }
@@ -1474,7 +1475,12 @@ try {
   startMatch = function () {
     var match = setup();
     if (match && match.cpHalftimeHold) { match.cpHalftimeHold = false; window.CP_HALFTIME_DATA = null; }
-    return cpOriginalStart();
+    cpStartingSecondHalf = true;
+    try { return cpOriginalStart(); }
+    finally {
+      cpStartingSecondHalf = false;
+      if (mt && mt.min >= 45 && mt.min < 90) { mt.cpHalftimeHold = false; window.CP_HALFTIME_DATA = null; }
+    }
   };
 
   var cpOriginalFast = fast;
