@@ -61,6 +61,14 @@
     }
     return c;
   }
+  api.wrapSave(function (previous) {
+    return function () {
+      var s = state();
+      if (s) { ledger(s); ensureContract(s); }
+      return previous.apply(this, arguments);
+    };
+  });
+
   function contractHistory(s, c) {
     var deals = s.sponsorDeals || [];
     if (Number.isInteger(c.historyIndex) && deals[c.historyIndex]) return deals[c.historyIndex];
