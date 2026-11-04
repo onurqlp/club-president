@@ -25,41 +25,21 @@ import type {
  * open play into one central corridor. Back-line height is the goals lever
  * (Phase 29/30: higher line = compressed game, space in behind for runs).
  */
+function eleven(shape: V2[]): V2[] {
+  const [gk, back, middle, left, right, striker] = shape;
+  return [
+    gk, v2(back.x, -20), v2(back.x - 4, -7), v2(back.x - 4, 7), v2(back.x, 20),
+    middle, v2(middle.x - 2, -12), v2(middle.x - 2, 12), left, right, striker,
+  ];
+}
+
 export const ATTACK_FORMATIONS: Record<AttackFormationId, V2[]> = {
-  // Double base, a linking striker, both wingers HIGH and WIDE (两翼齐飞).
-  'wide-212': [v2(-41, 0), v2(-16, -6), v2(-12, 7), v2(8, -19), v2(8, 19), v2(4, 0)],
-  // One anchor, the left winger tucks in, an inside-right pair — at the
-  // HALF-SPACES (8/11 → 12/15, Phase 31.8): with both wide slots inside
-  // y≤11, a narrow-vs-narrow derby had no relief valve at all — both
-  // attacks mirrored into one central corridor and the top-5 most chaotic
-  // matches in the league (t+i 85–123, zero goals) were ALL this fixture.
-  // Still clearly narrower than wide-212's ±19: inside-forwards, not
-  // wingers.
-  'narrow-122': [v2(-41, 0), v2(-19, 0), v2(-9, -7), v2(-6, 12), v2(6, 15), v2(7, -3)],
-  // NOVEL (Phase 67, N5 — mutation-discovered only). TWIN STRIKERS: the
-  // right winger becomes a second 9 — a high pair splitting the center
-  // backs, one true wide feeder on the left, two at the base. The twins
-  // sit a touch higher than wide-212's wingers: a spearhead, not a line.
-  'twin-st': [v2(-41, 0), v2(-16, -4), v2(-11, 5), v2(2, -17), v2(10, 6), v2(10, -6)],
-  // NOVEL. The FALSE NINE: the striker DROPS between the lines (-2, the
-  // hole) to link and drag the last defender out; both wingers push very
-  // high and very wide — the runners the false nine releases into the
-  // space he vacated.
-  'false-nine': [v2(-41, 0), v2(-17, -5), v2(-12, 5), v2(12, -18), v2(12, 18), v2(-2, 0)],
-  // NOVEL (Phase 107, N5 — mutation-discovered only). The OVERLOAD: the
-  // library's first ASYMMETRIC shape — a three-man left-flank triangle
-  // (MF half-space, WGL wide, ST shading in) with the right winger ALONE
-  // at maximum width as the isolation outlet (overload to isolate: the
-  // switch finds him 1v1). The anchor shades right-center to cover the
-  // side the triangle vacates.
-  'overload': [v2(-41, 0), v2(-17, 3), v2(-7, -9), v2(9, -17), v2(8, 17), v2(5, -7)],
-  // NOVEL. The TARGET MAN (the user's N1.5 reference point — 埃弗顿高塔):
-  // the lone tower stands HIGHEST of any shape (+9) as the long ball's
-  // destination — the Phase-63 aerial channel finally gets a shape built
-  // around it (strength/aerialSense own the descent) — with both wingers
-  // at mid-height arriving onto the knock-down, staggered double base
-  // behind (no stacked central spine, the 27.1 lesson).
-  'target-man': [v2(-41, 0), v2(-18, -4), v2(-10, 5), v2(0, -14), v2(0, 14), v2(9, 0)],
+  'wide-212': eleven([v2(-41, 0), v2(-16, -6), v2(-12, 7), v2(8, -19), v2(8, 19), v2(4, 0)]),
+  'narrow-122': eleven([v2(-41, 0), v2(-19, 0), v2(-9, -7), v2(-6, 12), v2(6, 15), v2(7, -3)]),
+  'twin-st': eleven([v2(-41, 0), v2(-16, -4), v2(-11, 5), v2(2, -17), v2(10, 6), v2(10, -6)]),
+  'false-nine': eleven([v2(-41, 0), v2(-17, -5), v2(-12, 5), v2(12, -18), v2(12, 18), v2(-2, 0)]),
+  'overload': eleven([v2(-41, 0), v2(-17, 3), v2(-7, -9), v2(9, -17), v2(8, 17), v2(5, -7)]),
+  'target-man': eleven([v2(-41, 0), v2(-18, -4), v2(-10, 5), v2(0, -14), v2(0, 14), v2(9, 0)]),
 };
 
 // Defend tables keep the STRIKER HIGH on purpose (30.4). The first cut
@@ -70,19 +50,10 @@ export const ATTACK_FORMATIONS: Record<AttackFormationId, V2[]> = {
 // reason. Identity lives in the BACK of the shape instead: low-32 drops
 // both wingers as wide backs; press-23 pushes them onto the build-up.
 export const DEFEND_FORMATIONS: Record<DefendFormationId, V2[]> = {
-  // Back THREE (wingers drop as wide backs), MF screens, ST stays HIGH.
-  'low-32': [v2(-41, 0), v2(-20, 0), v2(-9, -4), v2(-16, -11), v2(-16, 11), v2(5, 2)],
-  // Back two, wingers at halfway, ST hunting the opponent back line.
-  'press-23': [v2(-41, 0), v2(-18, -5), v2(-13, 5), v2(0, -15), v2(0, 15), v2(7, 0)],
-  // N5b (phase-79): the menu was BINARY (deep bus / front press) and world
-  // 991 fixed 16/0 on low-32 — selection had nothing structurally new to
-  // try. Two additions, mutation-only (founders still derive the classics):
-  // mid-41 = the midfield WALL, striker drops onto the pivot lane
-  // ("defend from the front" without pressing);
-  'mid-41': [v2(-41, 0), v2(-22, 0), v2(-10, 0), v2(-12, -13), v2(-12, 13), v2(-3, 0)],
-  // high-line = squeeze the pitch with the back line, no front press —
-  // lives or dies by the offside trap (phase-71's law made it honest).
-  'high-line': [v2(-41, 0), v2(-14, -3), v2(-9, 3), v2(-13, -12), v2(-13, 12), v2(6, 0)],
+  'low-32': eleven([v2(-41, 0), v2(-20, 0), v2(-9, -4), v2(-16, -11), v2(-16, 11), v2(5, 2)]),
+  'press-23': eleven([v2(-41, 0), v2(-18, -5), v2(-13, 5), v2(0, -15), v2(0, 15), v2(7, 0)]),
+  'mid-41': eleven([v2(-41, 0), v2(-22, 0), v2(-10, 0), v2(-12, -13), v2(-12, 13), v2(-3, 0)]),
+  'high-line': eleven([v2(-41, 0), v2(-14, -3), v2(-9, 3), v2(-13, -12), v2(-13, 12), v2(6, 0)]),
 };
 
 // Density相变 (2026-07-20): the fixed tables above were tuned in ABSOLUTE
