@@ -19,7 +19,7 @@ type ReplayTarget = { id: string; time: number; before: RenderState[] };
 const REPLAY_PRE_ROLL_FRAMES = 36; // Six samples per second, about 3.5 seconds before the event.
 const REPLAY_POST_TICKS = 180; // Three seconds after the event at the 60 Hz simulation step.
 
-const roleSlots = ['GK', 'DF', 'DF', 'DF', 'DF', 'MF', 'MF', 'MF', 'WG', 'WG', 'ST'] as const;
+const roleSlots = ['GK', 'DF', 'MF', 'WG', 'WG', 'ST'];
 const clamp = (n: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, n));
 const stat = (value: unknown, fallback = 68): number => clamp(((Number(value) || fallback) - 35) / 60, 0.12, 0.94);
 const seedOf = (text: string): number => {
@@ -36,29 +36,28 @@ const position = (p: ClubPlayer): string => String(p.pos || p.position || '').to
 const quality = (p: ClubPlayer): number => Number(p.rate || p.rating || 65);
 const displayFlags = { actionLabels: false, heatmap: false, formation: false, passLines: false, shotVector: false, marking: false, chasers: false, perception: false, perceptionGaze: false, perceptionLowAwareness: false };
 
-function selectEleven(players: ClubPlayer[], side: 'Oyuncu' | 'Rakip' = 'Oyuncu'): ClubPlayer[] {
+function selectSix(players: ClubPlayer[]): ClubPlayer[] {
   const pool = (players || []).slice().sort((a, b) => quality(b) - quality(a));
   const used = new Set<ClubPlayer>();
-  const selected: ClubPlayer[] = [];
-  const find = (re: RegExp, sideHint?: 'left' | 'right'): ClubPlayer | undefined => {
+  const find = (re: RegExp, side?: 'left' | 'right'): ClubPlayer | undefined => {
     const candidates = pool.filter(p => !used.has(p) && re.test(position(p)));
-    if (sideHint) candidates.sort((a, b) => Number(position(b).includes(sideHint === 'left' ? 'L' : 'R')) - Number(position(a).includes(sideHint === 'left' ? 'L' : 'R')));
+    if (side) candidates.sort((a, b) => Number(position(b).includes(side === 'left' ? 'L' : 'R')) - Number(position(a).includes(side === 'left' ? 'L' : 'R')));
     return candidates[0];
   };
-  const take = (re: RegExp, count: number, sideHint?: 'left' | 'right'): void => {
-    for (let i = 0; i < count; i++) {
-      const p = find(re, sideHint) || pool.find(x => !used.has(x));
-      if (p) { selected.push(p); used.add(p); }
-      else selected.push({ name: side + ' ' + (selected.length + 1), pos: roleSlots[selected.length], rate: 60 });
-    }
-  };
-  take(/^(GK|GK\\.|KL|KEEPER)/, 1);
-  take(/^(CB|DC|DFC|DEF|LB|RB|LWB|RWB|DF)/, 4);
-  take(/^(DM|CDM|CM|MC|MF|AM|CAM)/, 3);
-  take(/^(LW|LM|WL|W|WG|AML)/, 1, 'left');
-  take(/^(RW|RM|WR|AMR)/, 1, 'right');
-  take(/^(ST|CF|FW|SP|S)/, 1);
-  return selected.slice(0, 11);
+  const patterns = [/^(GK|GK\.|KL|GK\/)/, /^(CB|DC|DFC|DEF|LB|RB|LWB|RWB|DF)/, /^(DM|CDM|CM|MC|MF|AM|CAM)/, /^(LW|LM|WL|W|WG|AML)/, /^(RW|RM|WR|AMR)/, /^(ST|CF|FW|SP|S)/];
+  const selected: ClubPlayer[] = [];
+  selected.push(find(patterns[0]) || pool.find(p => /GK|KL|KEEPER/.test(position(p))) || pool[0]);
+  selected[0] && used.add(selected[0]);
+  selected.push(find(patterns[1]) || pool.find(p => !used.has(p)) || selected[0]);
+  selected[1] && used.add(selected[1]);
+  selected.push(find(patterns[2]) || pool.find(p => !used.has(p)) || selected[1]);
+  selected[2] && used.add(selected[2]);
+  selected.push(find(patterns[3], 'left') || pool.find(p => !used.has(p)) || selected[2]);
+  selected[3] && used.add(selected[3]);
+  selected.push(find(patterns[4], 'right') || pool.find(p => !used.has(p)) || selected[3]);
+  selected[4] && used.add(selected[4]);
+  selected.push(find(patterns[5]) || pool.find(p => !used.has(p)) || selected[4]);
+  return selected.slice(0, 6);
 }
 
 function attrs(p: ClubPlayer, role: string): PlayerAttributes {
@@ -86,7 +85,7 @@ function genomeFor(rng: Rng, style: string): TacticalGenome {
 
 function makeTeam(input: MatchInput, side: 0 | 1, seed: number): TeamInfo {
   const isUser = side === 0;
-  const players = selectEleven(isUser ? input.players : input.opponentPlayers);
+  const players = selectSix(isUser ? input.players : input.opponentPlayers);
   const rng = new Rng((seed + side * 0x9e3779b9) >>> 0);
   const style = isUser ? input.tactic : input.enemyTactic;
   const colorList = input.colors || [];
@@ -128,7 +127,7 @@ function localized(event: MatchEvent, actor: string, sideName: string): string {
 
 export function simulate(input: MatchInput): EngineResult {
   const seed = seedOf(`${input.seed}|${input.clubKey || input.club}|${input.opponent}|${input.tactic}|${input.enemyTactic}`);
-  const userPlayers = selectEleven(input.players), opponentPlayers = selectEleven(input.opponentPlayers);
+  const userPlayers = selectSix(input.players), opponentPlayers = selectSix(input.opponentPlayers);
   const match = new Match({ seed, teamA: makeTeam(input, 0, seed), teamB: makeTeam(input, 1, seed), derby: false });
   const events: LegacyEvent[] = [];
   let prevX = 50, prevY = 50, lastMinute = -1;
@@ -147,7 +146,7 @@ export function simulate(input: MatchInput): EngineResult {
     const team = event.side === 1 ? 1 : 0;
     const x = clamp((match.ball.pos.x / HALF_L + 1) * 50, 4, 96);
     const y = clamp((match.ball.pos.y / HALF_W + 1) * 50, 5, 95);
-    const players = selectEleven(team === 0 ? input.players : input.opponentPlayers);
+    const players = selectSix(team === 0 ? input.players : input.opponentPlayers);
     const named = players.find(p => event.text.toLowerCase().includes(String(p.name || '').toLowerCase()))?.name;
     const actor = String(named || actorHint || match.ball.lastTouch?.name || match.ball.owner?.name || (team ? input.opponent : input.club));
     const typeMap: Record<string, string> = { woodwork: 'shot', keypass: 'pass', info: 'info', kickoff: 'begin', halftime: 'half', fulltime: 'end' };
@@ -187,7 +186,7 @@ export function simulate(input: MatchInput): EngineResult {
     const beforeMinute = match.minute();
     match.step(DT);
     const minute = match.minute();
-    if (steps % players.length === 0) {
+    if (steps % 6 === 0) {
       const frame = buildRenderState(match, false);
       replayRing.push(frame);
       if (replayRing.length > REPLAY_PRE_ROLL_FRAMES) replayRing.shift();
@@ -204,16 +203,16 @@ export function simulate(input: MatchInput): EngineResult {
       if (passDelta || completedDelta) {
         const teamName = side ? input.opponent : input.club;
         const x = clamp((match.ball.pos.x / HALF_L + 1) * 50, 4, 96), y = clamp((match.ball.pos.y / HALF_W + 1) * 50, 5, 95);
-        const players = selectEleven(side ? input.opponentPlayers : input.players);
+        const players = selectSix(side ? input.opponentPlayers : input.players);
         const owner = match.ball.owner;
-        const actor = owner?.name || players[events.length % players.length]?.name || teamName;
+        const actor = owner?.name || players[events.length % 6]?.name || teamName;
         const passEvent: LegacyEvent = { m: minute, type: 'pass', team: side, x, y, fromX: prevX, fromY: prevY, msg: completedDelta ? `${actor} pası takım arkadaşına ulaştırdı.` : `${actor} pas denedi; rakip araya girdi.`, player: actor, playerId: String(players.find(p => p.name === actor)?.id || actor), passes: passDelta, completed: completedDelta, id: `evo-${seed}-p-${match.simTime}-${side}` };
         events.push(passEvent);
         if (side === 0 ? x >= 82 : x <= 18) captureStart(passEvent.id);
         prevX = x; prevY = y;
       }
       if (dribbleDelta > oldDribbles[side]) {
-        const players = selectEleven(side ? input.opponentPlayers : input.players), actor = match.ball.owner?.name || players[events.length % players.length]?.name || (side ? input.opponent : input.club);
+        const players = selectSix(side ? input.opponentPlayers : input.players), actor = match.ball.owner?.name || players[events.length % 6]?.name || (side ? input.opponent : input.club);
         const dribbleEvent: LegacyEvent = { m: minute, type: 'dribble', team: side, x: prevX, y: prevY, fromX: prevX, fromY: prevY, msg: `${actor} topla ilerliyor.`, player: actor, playerId: String(players.find(p => p.name === actor)?.id || actor), id: `evo-${seed}-d-${match.simTime}-${side}` };
         events.push(dribbleEvent);
         if (side === 0 ? prevX >= 82 : prevX <= 18) captureStart(dribbleEvent.id);
@@ -275,5 +274,5 @@ function stopRenderer(): void {
   replayRenderer?.dispose(); replayRenderer = null; replayHost = null;
 }
 
-(window as any).CP_EVO_ENGINE = { version: 'evofootball-arena@0.25.1', format: '11v11', simulate, playHighlight, stopRenderer };
+(window as any).CP_EVO_ENGINE = { version: 'evofootball-arena@0.25.1', format: '6v6', simulate, playHighlight, stopRenderer };
 window.dispatchEvent(new Event('cp:evo-engine-ready'));
