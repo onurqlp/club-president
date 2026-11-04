@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.18 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.19 (Türkçe arayüz).
 
 ## v1.19 — 11v11 maç verisi ve tam kadro
 
