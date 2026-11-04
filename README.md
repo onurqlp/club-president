@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.16 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.17 (Türkçe arayüz).
 
 ## Oyun
 
@@ -80,6 +80,20 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 ## v1.16 — Maç ekranı açılışı
 
 - Türkçe/Almanca çeviri yardımcısı maç ekranının kullandığı ana kapsamda tanımlandı; Maça Çık ekranı artık açılışta hata vermiyor.
+
+## v1.17 — Maç dışı kararların devamlılığı
+
+- Sponsor, altyapı ve basın kararları yanıtlanmadan gün ilerletilemez veya maç ekranına geçilemez.
+- Açık karar kayıt yenilense bile kariyerde korunur ve devam edildiğinde yeniden gösterilir.
+- Telefon gelen kutusunda açık karara dönmek için belirgin bir bağlantı bulunur.
+- Bu güncelleme maç simülasyonuna, 3D maç motoruna veya maç günü varlıklarına dokunmaz.
+
+## v1.17 — Fortsetzung von Entscheidungen außerhalb des Spiels
+
+- Sponsoring-, Akademie- und Presseentscheidungen können nicht übersprungen werden, bevor der Tag oder das Spiel fortgesetzt wird.
+- Eine offene Entscheidung bleibt nach dem Neuladen gespeichert und erscheint beim Fortsetzen der Karriere erneut.
+- Im Posteingang gibt es einen direkten Link zurück zur offenen Entscheidung.
+- Diese Änderung greift nicht in die Spielsimulation, den 3D-Spielmotor oder die Spieltagsdateien ein.
 
 ## Yayın ayarı
 
