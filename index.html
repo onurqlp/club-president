@@ -1428,7 +1428,7 @@ function cpSponsorRoom114(){
  }else if(q.phase===1){
   cpActionBox114('Sponsorun karşılığı',q.reply, '<div class="report"><div><span>YILLIK TEKLİF</span><b>€'+q.amount.toFixed(1)+'M</b></div><div><span>MARKA GÖRÜNÜRLÜĞÜ</span><b>'+q.rights+'</b></div><div><span>GÖRÜŞME GÜVENİ</span><b>'+q.trust+'/100</b></div></div><p>Karşı taraf son bir revizyona açık. İstersen bu şartları imzala ya da tek bir son karşı teklif yap.</p><div class="row-btn"><button class="btn" data-room="sponsor:sign">ŞARTLARI İMZALA</button><button class="btn dark" data-room="sponsor:counter">SON TEKLİFİMİZİ SUN</button></div>');
  }else{
-  cpActionBox114('Son şartlar',q.reply, '<div class="report"><div><span>YILLIK TEKLİF</span><b>€'+q.amount.toFixed(1)+'M</b></div><div><span>MARKA GÖRÜNÜRLÜĞÜ</span><b>'+q.rights+'</b></div><div><span>TARAFTAR ETKİSİ</span><b>'+q.fanEffect>0?'+':''+q.fanEffect+'</b></div></div><p>Bu teklif son. Kabul edersen sözleşme imzalanır; reddedersen sponsor masadan kalkar.</p><div class="row-btn"><button class="btn" data-room="sponsor:sign">SON TEKLİFİ İMZALA</button><button class="btn dark" data-room="sponsor:decline">ANLAŞMAYI REDDET</button></div>');
+  cpActionBox114('Son şartlar',q.reply, '<div class="report"><div><span>YILLIK TEKLİF</span><b>€'+q.amount.toFixed(1)+'M</b></div><div><span>MARKA GÖRÜNÜRLÜĞÜ</span><b>'+q.rights+'</b></div><div><span>TARAFTAR ETKİSİ</span><b>'+((q.fanEffect>=0?'+':'')+q.fanEffect)+'</b></div></div><p>Bu teklif son. Kabul edersen sözleşme imzalanır; reddedersen sponsor masadan kalkar.</p><div class="row-btn"><button class="btn" data-room="sponsor:sign">SON TEKLİFİ İMZALA</button><button class="btn dark" data-room="sponsor:decline">ANLAŞMAYI REDDET</button></div>');
  }
 }
 function cpBeginSponsor114(){
