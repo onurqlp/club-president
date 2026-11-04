@@ -243,6 +243,12 @@
 
   function start3D() {
     if (startPending || !active || !document.getElementById('cp3d-stage')) return;
+    var live = activeHighlight || window.CP_LIVE_MATCH || {};
+    var evoHost = document.getElementById('cp3d-stage');
+    if (window.CP_EVO_ENGINE && window.CP_EVO_ENGINE.playHighlight && live.eventId) {
+      if (renderer) { renderer.dispose(); if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); renderer = null; scene3 = null; camera = null; ball = null; players = []; }
+      try { if (window.CP_EVO_ENGINE.playHighlight(evoHost, live.eventId)) { document.body.classList.add('cp-3d-ready'); return; } } catch (e) { }
+    }
     if (renderer) { draw3D(); return; }
     startPending = true;
     import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js').then(function (THREE) {
@@ -290,7 +296,7 @@
     var fill = new THREE.DirectionalLight('#a9d6ff', 1.35); fill.position.set(28, 34, -48); scene.add(fill);
     buildStadium(THREE, scene); buildPitch(THREE, scene);
     var colors = [teamColor(0), teamColor(1)];
-    for (var team = 0; team < 2; team++) for (var i = 0; i < 11; i++) {
+    for (var team = 0; team < 2; team++) for (var i = 0; i < 6; i++) {
       var p = makePlayer(THREE, colors[team], team, i); scene.add(p); players.push(p);
     }
     var referee = makePlayer(THREE, '#e94f49', 2, 0); referee.scale.setScalar(.88); referee.position.set(-2, 0, 3); scene.add(referee);
@@ -444,7 +450,7 @@
     var possession=Number(live.team||0), actorIndex=Number.isInteger(Number(live.actorIndex))?Number(live.actorIndex):-1, receiverIndex=Number.isInteger(Number(live.receiverIndex))?Number(live.receiverIndex):Number(live.receiver);
     players.forEach(function(player,index) {
       var team=player.userData.team, n=player.userData.number, keeper=n===0;
-      var sideIndex=index%11, roster=live.rosters&&live.rosters[team]||[], profile=roster[n]||{}, role=String(profile.pos||'');
+      var sideIndex=index%6, roster=live.rosters&&live.rosters[team]||[], profile=roster[n]||{}, role=String(profile.pos||'');
       keeper=role==='KL'||n===0; var homeX=keeper?-43:(role==='STP'?-29:role==='SLB'||role==='SĞB'?-28:role==='DOS'?-13:role==='MO'?-3:role==='SLK'||role==='SĞK'?17:role==='SNT'?30:(sideIndex<=4?-29:sideIndex<=7?-8:15));
       var homeZ=keeper?0:(role==='SLB'||role==='SLK'?-21:role==='SĞB'||role==='SĞK'?21:((sideIndex%4)-1.5)*12);
       if(team===1) homeX=-homeX;
@@ -491,6 +497,7 @@
   }
 
   function stop3D() {
+    if (window.CP_EVO_ENGINE && window.CP_EVO_ENGINE.stopRenderer) { try { window.CP_EVO_ENGINE.stopRenderer(); } catch (e) { } }
     if(frame)cancelAnimationFrame(frame);frame=0;
     if(resizeHandler)window.removeEventListener('resize',resizeHandler);resizeHandler=null;
     if(renderer){renderer.dispose();if(renderer.domElement.parentNode)renderer.domElement.parentNode.removeChild(renderer.domElement)}
