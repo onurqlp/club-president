@@ -2,6 +2,13 @@
 
 Futbol kulübü başkanlık simülasyonu — v1.18 (Türkçe arayüz).
 
+## v1.19 — 11v11 maç verisi ve tam kadro
+
+- Maç olayları, skor, istatistikler ve oyuncu kimlikleri seçili 11 kişilik kadro üzerinden tek simülasyon akışında üretilir.
+- 3D maç sunumu ev sahibi ve rakip için 11’er oyuncuyu gösterir; 3D diziliş eşlemesi artık 11 kişilik sıra numarasını kullanır.
+- Kırmızı kart gören oyuncular sonraki simülasyon eylemlerinden çıkarılır ve 3D sahada görünmez. Oyun içindeki en fazla beş değişiklik korunur.
+- Var olan 6v6 biçimli, devam eden maç kayıtları otomatik olarak yeniden etiketlenmez; yeni maçlar 11v11 biçiminde açılır.
+
 ## Oyun
 
 - **Site:** https://onurqlp.github.io/club-president/
