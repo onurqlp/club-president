@@ -71,12 +71,12 @@
               item.completedDay = state.day;
               item.paidAmount = contract.totalAmount;
             }
-            api.notice('SPONSORLUK SÖZLEŞMESİ TAMAMLANDI',
-              'Toplam ' + money(contract.totalAmount) + ' sponsorluk geliri tahsil edildi.');
+            api.notice(tx('SPONSORLUK SÖZLEŞMESİ TAMAMLANDI', 'SPONSORVERTRAG ABGESCHLOSSEN'),
+              tx('Toplam ', 'Insgesamt ') + money(contract.totalAmount) + tx(' sponsorluk geliri tahsil edildi.', ' Sponsoringeinnahmen ausgezahlt.'));
           } else {
-            api.notice('SPONSOR ÖDEMESİ TAHSİL EDİLDİ',
-              money(payment) + ' haftalık ödeme kasaya girdi · ' +
-              contract.installmentsPaid + '/' + contract.installmentsTotal + ' taksit.');
+            api.notice(tx('SPONSOR ÖDEMESİ TAHSİL EDİLDİ', 'SPONSORRATE EINGEGANGEN'),
+              money(payment) + tx(' haftalık ödeme kasaya girdi · ', ' Wochenrate eingegangen · ') +
+              contract.installmentsPaid + '/' + contract.installmentsTotal + tx(' taksit.', ' Raten.'));
           }
           changed = true;
         }
