@@ -1240,7 +1240,7 @@ try {
       if (dangerous) cpLastDangerMinute = mt.min;
       var labels = { goal: 'GOL!', shot: e.onTarget ? 'TEHLİKELİ ATAK!' : 'ŞUT DENEMESİ', card: redCard ? 'KIRMIZI KART! TAKIM 10 KİŞİ' : 'SARI KART' , corner: 'DURAN TOP FIRSATI' };
       var detail = Object.assign({}, live, { highlight: true, redCard: redCard, title: labels[e.type] || (dangerous ? 'TEHLİKELİ ATAK' : 'KİLİT AN'), message: e.msg || '', player: e.player || '', xg: e.xg || 0, onTarget: !!e.onTarget });
-      cpHoldForReplay(e.type === 'goal' ? 4700 : 4300);
+      cpHoldForReplay(e.type === 'goal' ? 5500 : 4500);
       if (e.type === 'goal') {
         var warning = Object.assign({}, detail, { event: 'goal', preGoal: true, title: 'TEHLİKELİ ATAK!', message: (e.team === 0 ? state.club : rival()) + ' ceza sahasına yüklendi, gol tehlikesi büyüyor!' });
         window.dispatchEvent(new CustomEvent('cp:match-event', { detail: warning }));
@@ -1327,4 +1327,4 @@ try {
 })();
 
 })();
-</script><script src="./assets/matchday-upgrade.js?v=20261104o"></script></body></html>
+</script><script src="./assets/matchday-upgrade.js?v=20261104p"></script></body></html>
