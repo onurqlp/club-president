@@ -2422,7 +2422,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
     };
   }
 
-  var oldPanel = marketPanel;
+  var oldPanel = window.CP_V11_API && window.CP_V11_API.marketPanel;
   if (typeof oldPanel === 'function') {
     window.CP_V11_API.marketPanel = function () {
       var s = state(), changed = expireOffers(s) | ensureOfferDates(s), html = oldPanel.apply(this, arguments);
