@@ -214,7 +214,7 @@
     if (copy) copy.textContent = detail.preGoal ? tr('Hücum ceza sahasına girdi…', 'Der Angriff erreicht den Strafraum …') : (detail.message || '');
     window.clearTimeout(highlightTimer);
     if (document.body.classList.contains('cp-3d-fallback')) showFallbackPitch(); else start3D();
-    highlightTimer = window.setTimeout(function () { returnFallbackPitch(); stage.classList.remove('is-highlight', 'is-highlight-fallback'); activeHighlight = null; }, (detail.event === 'goal' || detail.type === 'goal') ? 10000 : 7000);
+    highlightTimer = window.setTimeout(function () { returnFallbackPitch(); stage.classList.remove('is-highlight', 'is-highlight-fallback'); activeHighlight = null; }, (detail.event === 'goal' || detail.type === 'goal') ? 5500 : 4500);
     refreshCommentary();
     if(detail.preGoal){var suspenseTitle=document.getElementById('cp-highlight-title');if(suspenseTitle)suspenseTitle.textContent=tr('TEHLİKELİ ATAK!','GEFÄHRLICHER ANGRIFF!');}
   }
