@@ -1894,6 +1894,12 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
       Math.min(c.totalAmount, c.advancePaid + c.installmentAmount * c.installmentsPaid));
     c.nextPaymentDay = Number(c.nextPaymentDay) ||
       ((Number(c.signedDay) || 0) + 7 * (c.installmentsPaid + 1));
+    if (c.installmentsPaid >= c.installmentsTotal || c.paidAmount >= c.totalAmount) {
+      c.paidAmount = c.totalAmount;
+      c.active = false;
+      c.completedDay = c.completedDay || s.day;
+      if (item) { item.status = 'completed'; item.completedDay = c.completedDay; item.paidAmount = c.totalAmount; }
+    }
     if (c.paidAmount > 0) {
       var advanceId = c.id + ':advance';
       if (!findTx(s, advanceId)) {
