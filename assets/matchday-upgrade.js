@@ -301,7 +301,7 @@
     var fill = new THREE.DirectionalLight('#a9d6ff', 1.35); fill.position.set(28, 34, -48); scene.add(fill);
     buildStadium(THREE, scene); buildPitch(THREE, scene);
     var colors = [teamColor(0), teamColor(1)];
-    for (var team = 0; team < 2; team++) for (var i = 0; i < 6; i++) {
+    for (var team = 0; team < 2; team++) for (var i = 0; i < 11; i++) {
       var p = makePlayer(THREE, colors[team], team, i); scene.add(p); players.push(p);
     }
     var referee = makePlayer(THREE, '#e94f49', 2, 0); referee.scale.setScalar(.88); referee.position.set(-2, 0, 3); scene.add(referee);
