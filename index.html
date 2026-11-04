@@ -2089,7 +2089,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   }
   function expireOffers(s) {
     if (!s || (!window.CP_V11_API || typeof window.CP_V11_API.marketState !== 'function')) return false;
-    var m = window.CP_V11_API.window.CP_V11_API.marketState(), changed = false;
+    var m = window.CP_V11_API.marketState(), changed = false;
     m.offerArchive = Array.isArray(m.offerArchive) ? m.offerArchive : [];
     (m.incoming || []).forEach(function (offer) {
       if (offer.status !== 'open') return;
@@ -2111,7 +2111,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   }
   function ensureOfferDates(s) {
     if (!s || (!window.CP_V11_API || typeof window.CP_V11_API.marketState !== 'function')) return false;
-    var m = window.CP_V11_API.window.CP_V11_API.marketState(), changed = false;
+    var m = window.CP_V11_API.marketState(), changed = false;
     (m.incoming || []).forEach(function (offer) {
       if (!Number.isFinite(Number(offer.expiresDay))) {
         offer.expiresDay = (Number(offer.day) || s.day) + 19;
@@ -2152,13 +2152,13 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 
   var oldRequestOffers = window.CP_V11_API && window.CP_V11_API.requestOffers;
   if (typeof oldRequestOffers === 'function') {
-    window.CP_V11_API.window.CP_V11_API.window.CP_V11_API.requestOffers = function () {
+    window.CP_V11_API.requestOffers = function () {
       var s = state();
       if (!s) return oldRequestOffers.apply(this, arguments);
       var changed = expireOffers(s);
-      var before = new Set((window.CP_V11_API.window.CP_V11_API.marketState().incoming || []).map(function (x) { return x.id; }));
+      var before = new Set((window.CP_V11_API.marketState().incoming || []).map(function (x) { return x.id; }));
       var result = oldRequestOffers.apply(this, arguments);
-      var m = window.CP_V11_API.window.CP_V11_API.marketState();
+      var m = window.CP_V11_API.marketState();
       (m.incoming || []).forEach(function (offer) {
         if (before.has(offer.id)) return;
         offer.expiresDay = Number(s.day) + 19;
@@ -2173,7 +2173,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   var oldIncomingResponse = window.CP_V11_API && window.CP_V11_API.incomingResponse;
   if (typeof oldIncomingResponse === 'function') {
     window.CP_V11_API.incomingResponse = function (id, action) {
-      var s = state(), m = s && window.CP_V11_API.window.CP_V11_API.marketState();
+      var s = state(), m = s && window.CP_V11_API.marketState();
       if (!s || !m) return oldIncomingResponse.apply(this, arguments);
       var expiredNow = expireOffers(s);
       if (expiredNow) { api.save(); api.render(); }
@@ -2214,7 +2214,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
       if (result && s && offer) {
         book(s, txId, 'player-sale', (Number(s.cash) || 0) - cashBefore,
           (Number(s.budget) || 0) - budgetBefore, offer.playerId || '');
-        archiveOffer(window.CP_V11_API.window.CP_V11_API.marketState(), offer, offer.status || 'completed');
+        archiveOffer(window.CP_V11_API.marketState(), offer, offer.status || 'completed');
         api.save();
       }
       return result;
@@ -2222,10 +2222,10 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   }
 
   var oldSettleQueue = window.CP_V11_API && window.CP_V11_API.settleQueue;
-  window.CP_V11_API.window.CP_V11_API.settleQueue = function () {
-    var s = state(), m = s && window.CP_V11_API.window.CP_V11_API.marketState(), sales = m ? m.queuedSales.slice() : [];
+  window.CP_V11_API.settleQueue = function () {
+    var s = state(), m = s && window.CP_V11_API.marketState(), sales = m ? m.queuedSales.slice() : [];
     var result = oldSettleQueue.apply(this, arguments);
-    s = state(); m = s && window.CP_V11_API.window.CP_V11_API.marketState();
+    s = state(); m = s && window.CP_V11_API.marketState();
     if (s && m) {
       sales.forEach(function (queued) {
         var offer = m.incoming.find(function (x) { return x.id === queued.offerId; });
@@ -2263,7 +2263,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 
   var oldFinalizeDeal = window.CP_V11_API && window.CP_V11_API.finalizeDeal;
   if (typeof oldFinalizeDeal === 'function') {
-    window.CP_V11_API.window.CP_V11_API.finalizeDeal = function () {
+    window.CP_V11_API.finalizeDeal = function () {
       var s = state(), d = s && s.pendingDeal;
       if (!s || !d) return oldFinalizeDeal.apply(this, arguments);
       if (!d.economyId) {
@@ -2313,7 +2313,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   }
 
   var oldDecideFinance = decide;
-  window.CP_V11_API.window.CP_V11_API.decide = function () {
+  window.CP_V11_API.decide = function () {
     var s = state(), cashBefore = s && Number(s.cash) || 0, budgetBefore = s && Number(s.budget) || 0;
     var result = oldDecideFinance.apply(this, arguments);
     s = state();
@@ -2329,7 +2329,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   };
 
   var oldCoachFinance = cpCoachAction114;
-  window.CP_V11_API.window.CP_V11_API.cpCoachAction114 = function () {
+  window.CP_V11_API.cpCoachAction114 = function () {
     var s = state(), cashBefore = s && Number(s.cash) || 0, budgetBefore = s && Number(s.budget) || 0;
     var result = oldCoachFinance.apply(this, arguments);
     s = state();
@@ -2346,7 +2346,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 
   var oldDay = window.CP_V11_API && window.CP_V11_API.day;
   if (typeof oldDay === 'function') {
-    window.CP_V11_API.window.CP_V11_API.day = function () {
+    window.CP_V11_API.day = function () {
       var s = state();
       if (!s) return oldDay.apply(this, arguments);
       var dayBefore = Number(s.day) || 0, cashBefore = Number(s.cash) || 0, wageBefore = Number(s.wage) || 0;
@@ -2377,7 +2377,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 
   var oldFinish = window.CP_V11_API && window.CP_V11_API.finish;
   if (typeof oldFinish === 'function') {
-    window.CP_V11_API.window.CP_V11_API.finish = function () {
+    window.CP_V11_API.finish = function () {
       var s = state(), season = s && (s.seasonCode || 'career'), round = s && s.round, before = s && Number(s.cash) || 0;
       var result = oldFinish.apply(this, arguments);
       s = state();
@@ -2391,7 +2391,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 
   var oldNextSeason = window.CP_V11_API && window.CP_V11_API.nextSeason;
   if (typeof oldNextSeason === 'function') {
-    window.CP_V11_API.window.CP_V11_API.nextSeason = function () {
+    window.CP_V11_API.nextSeason = function () {
       var s = state(), previousDay = s && Number(s.day) || 0, oldSeason = s && (s.seasonCode || 'career');
       var oldTable = s && seasonTable(), oldPosition = oldTable ? oldTable.findIndex(function (x) { return x.n === s.club; }) + 1 : 0;
       var seasonPrize = oldPosition ? Math.round((7 + Math.max(0, clubsOfLeague().length - oldPosition) * .8) * 1e6) : 0;
@@ -2424,10 +2424,10 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 
   var oldPanel = marketPanel;
   if (typeof oldPanel === 'function') {
-    window.CP_V11_API.window.CP_V11_API.marketPanel = function () {
+    window.CP_V11_API.marketPanel = function () {
       var s = state(), changed = expireOffers(s) | ensureOfferDates(s), html = oldPanel.apply(this, arguments);
       if (changed) api.save();
-      var m = s && window.CP_V11_API.window.CP_V11_API.marketState(), history = m && m.offerArchive || [];
+      var m = s && window.CP_V11_API.marketState(), history = m && m.offerArchive || [];
       if (!history.length) return html;
       var rows = history.slice(0, 5).map(function (x) {
         var player = (s.players || []).find(function (p) { return p.id === x.playerId; });
