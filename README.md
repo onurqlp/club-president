@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.19 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.20 (Türkçe arayüz).
 
 ## v1.19 — 11v11 maç verisi ve tam kadro
 
@@ -8,6 +8,15 @@ Futbol kulübü başkanlık simülasyonu — v1.19 (Türkçe arayüz).
 - 3D maç sunumu ev sahibi ve rakip için 11’er oyuncuyu gösterir; 3D diziliş eşlemesi artık 11 kişilik sıra numarasını kullanır.
 - Kırmızı kart gören oyuncular sonraki simülasyon eylemlerinden çıkarılır ve 3D sahada görünmez. Oyun içindeki en fazla beş değişiklik korunur.
 - Var olan 6v6 biçimli, devam eden maç kayıtları otomatik olarak yeniden etiketlenmez; yeni maçlar 11v11 biçiminde açılır.
+
+## v1.20 — Kalıcı kadro seçimi ve sezon tutarlılığı
+
+- Teknik Alan ekranından ilk 11, mevki gruplarını ve seçili dizilişin kadro sayılarını koruyarak düzenlenebilir; seçimler kariyer kaydında saklanır.
+- İlk 11, maç simülasyonu ve 3D oyuncu eşlemesi aynı kalıcı oyuncu kimliklerini kullanır. Maç içi değişikliklerden sonraki olaylar güncel kadro ve maç durumuyla üretilir.
+- Düşük kondisyon, sakatlık ve ceza durumu kadro seçiminde görünür; uygun olmayan oyuncu yedeğe alınamaz.
+- Maç sonucu ilgili fikstür satırına bir kez yazılır; kariyer puanı ve galibiyet/beraberlik/mağlubiyet kayıtlarıyla aynı maç turuna bağlı kalır.
+- Transfer pazarı sayfalara bölündü; arama ve mevki filtresi bütün sonuçlarda çalışır, kayıtlar ilk 64 oyuncuda kesilmez.
+- Mevcut kariyer kayıtlarına oyuncu kimliği/ilk 11 alanları eklenir; var olan kariyer verileri sıfırlanmaz.
 
 ## Oyun
 
