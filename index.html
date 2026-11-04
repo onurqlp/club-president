@@ -1416,7 +1416,7 @@ finalizeDeal=function(){
  cpOriginalFinalizeDeal114();
  if(state.players.length>before){
   var p=state.players[state.players.length-1];p.squadRole=role==='regular'?'Düzenli ilk 11':'Rotasyon';
-  if(role==='regular'){state.promises=state.promises||[];state.promises.push({id:p.id||p.name,at:state.day,startMinutes:0,deadline:state.day+24,resolved:false,source:'transfer-role'});
+  if(role==='regular'){state.promises=state.promises||[];state.promises.push({id:p.id||p.name,at:state.day,startMinutes:0,deadline:state.day+24,resolved:false,source:'transfer-role'});}
   notice('TRANSFER ROLÜ KAYDEDİLDİ',p.name+' için '+p.squadRole.toLowerCase()+' rolü kayda geçti; süre beklentisi sonraki haftalarda takip edilecek.');
   save();render();
  }
