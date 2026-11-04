@@ -441,23 +441,21 @@
     ball.position.set(ballX,.11+loft,ballZ);
     ball.rotation.x+=dt*5; ball.rotation.z+=dt*3.7;
 
-    var possession=Number(live.team||0), actorIndex=-1;
-    if(live.playerId||live.player) {
-      actorIndex=players.findIndex(function(p){return p.userData.team===possession&&String(p.userData.number)===String(live.receiver||live.playerId);});
-      if(actorIndex<0) actorIndex=possession*11+(Number(live.receiver||0)%10)+1;
-    }
+    var possession=Number(live.team||0), actorIndex=Number.isInteger(Number(live.actorIndex))?Number(live.actorIndex):-1, receiverIndex=Number.isInteger(Number(live.receiverIndex))?Number(live.receiverIndex):Number(live.receiver);
     players.forEach(function(player,index) {
       var team=player.userData.team, n=player.userData.number, keeper=n===0;
-      var sideIndex=index%11, homeX=keeper?-43:(sideIndex<=4?-29:sideIndex<=7?-8:15);
-      var homeZ=keeper?0:((sideIndex%4)-1.5)*12;
+      var sideIndex=index%11, roster=live.rosters&&live.rosters[team]||[], profile=roster[n]||{}, role=String(profile.pos||'');
+      keeper=role==='KL'||n===0; var homeX=keeper?-43:(role==='STP'?-29:role==='SLB'||role==='SĞB'?-28:role==='DOS'?-13:role==='MO'?-3:role==='SLK'||role==='SĞK'?17:role==='SNT'?30:(sideIndex<=4?-29:sideIndex<=7?-8:15));
+      var homeZ=keeper?0:(role==='SLB'||role==='SLK'?-21:role==='SĞB'||role==='SĞK'?21:((sideIndex%4)-1.5)*12);
       if(team===1) homeX=-homeX;
       var own=team===possession, chase=own?8:-3;
       var influence=keeper?.06:.19;
       var tx=homeX+(team===0?chase:-chase)+(ballX*influence);
       var tz=homeZ+ballZ*(keeper?.07:.22);
-      var nearest=sideIndex===Math.floor((Number(live.receiver||0)%10))%10;
-      if(own&&nearest&&!keeper){tx=ballX+(type==='pass'?5:2);tz=ballZ+(sideIndex%2?3:-3);}
-      if(!own&&!keeper&&Math.abs(sideIndex-(Number(live.receiver||0)%10))<2){tx=ballX-3;tz=ballZ+(sideIndex%2?2:-2);}
+      var isActor=own&&sideIndex===actorIndex, nearest=sideIndex===receiverIndex;
+      if(isActor&&!keeper){if(type==='pass'){tx=fromX;tz=fromZ;}else{tx=ballX+(type==='dribble'?0:1.5);tz=ballZ+(sideIndex%2?1:-1);}}
+      if(own&&nearest&&!keeper&&type==='pass'){tx=toX;tz=toZ;}
+      if(!own&&!keeper&&Math.abs(sideIndex-(receiverIndex<0?actorIndex:receiverIndex))<2){tx=ballX-3;tz=ballZ+(sideIndex%2?2:-2);}
       tx=clamp(tx,-46,46);tz=clamp(tz,-31,31);
       var dx=tx-player.position.x,dz=tz-player.position.z,dist=Math.hypot(dx,dz);
       var targetSpeed=activeHighlight?clamp(dist*1.25,1.8,7.2):.7;

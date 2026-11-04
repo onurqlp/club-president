@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.11 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.15 (Türkçe arayüz).
 
 ## Oyun
 
@@ -70,6 +70,12 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 - Taktik değişikliği kalan maçı mevcut dakika ve top konumundan devam ettirir; rakip planı ve takım planı maçın tamamına tek etiket olarak yazılmaz.
 - Kaleciler saha oyuncusu eylem havuzundan çıkarıldı; rakip kalecinin kalitesi şutun xG’sini, isabetini ve olay kaydını etkiler.
 - Transfer oyuncu kaydı yeni kulübe taşınır; satışta asgari kadro ve mevki derinliği denetlenir.
+
+## v1.15 — Kadro bağlantılı 3D maç aksiyonları
+
+- Maç olayları pası atan ve pası alan gerçek ilk 11 slotlarını taşır; 3D sahne aksiyonları bu oyuncularla eşleştirir.
+- 3D oyuncular kaleci, savunma, orta saha ve hücum mevkilerine göre yerleşir; pasör, alıcı, baskı yapan savunmacı ve kaleci pozisyona göre hareket eder.
+- Pas isabeti, alıcı oyuncunun karar kalitesinden de etkilenir. Simülasyon, istatistikler ve maç olayları aynı olay akışını kullanır.
 
 ## Yayın ayarı
 
