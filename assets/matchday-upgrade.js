@@ -244,11 +244,8 @@
   function start3D() {
     if (startPending || !active || !document.getElementById('cp3d-stage')) return;
     var live = activeHighlight || window.CP_LIVE_MATCH || {};
-    var evoHost = document.getElementById('cp3d-stage');
-    if (window.CP_EVO_ENGINE && window.CP_EVO_ENGINE.playHighlight && live.eventId) {
-      if (renderer) { renderer.dispose(); if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement); renderer = null; scene3 = null; camera = null; ball = null; players = []; }
-      try { if (window.CP_EVO_ENGINE.playHighlight(evoHost, live.eventId)) { document.body.classList.add('cp-3d-ready'); return; } } catch (e) { }
-    }
+    // Keep the highlight renderer aligned with the career's full 11v11 squads.
+    // The legacy Evo arena replay is a six-player presentation and omits the other players.
     if (renderer) { draw3D(); return; }
     startPending = true;
     import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js').then(function (THREE) {
