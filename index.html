@@ -1924,12 +1924,14 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
       var last = c.installmentsPaid === c.installmentsTotal - 1;
       var payment = last ? remaining : Math.min(remaining, Math.max(1, Number(c.installmentAmount) || 0));
       if (!payment) { c.active = false; break; }
-      var number = c.installmentsPaid + 1, id = c.id + ':installment:' + number;
+      var number = c.installmentsPaid + 1, scheduledDay = c.nextPaymentDay, id = c.id + ':installment:' + number;
       var prior = findTx(s, id);
       if (prior) payment = Math.max(0, Number(prior.cashDelta) || payment);
       else {
         s.cash = (Number(s.cash) || 0) + payment;
-        book(s, id, 'sponsor-installment', payment, 0, c.name || 'Sponsor installment');
+        var sponsorTx = book(s, id, 'sponsor-installment', payment, 0, c.name || 'Sponsor installment');
+        sponsorTx.day = scheduledDay;
+        if (typeof nextDate === 'function') sponsorTx.date = nextDate(s.date, scheduledDay - targetDay);
       }
       c.paidAmount = Math.min(c.totalAmount, c.paidAmount + payment);
       c.installmentsPaid = number;
@@ -1991,7 +1993,9 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
         if ((Number(s.cash) || 0) >= q.weekly) {
           s.cash -= q.weekly;
           q.spent = (Number(q.spent) || 0) + q.weekly;
-          book(s, spendId, 'scout-weekly-budget', -q.weekly, 0, t('Haftalık gözlem bütçesi', 'Wöchentliches Scoutbudget'));
+          var scoutTx = book(s, spendId, 'scout-weekly-budget', -q.weekly, 0, t('Haftalık gözlem bütçesi', 'Wöchentliches Scoutbudget'));
+          scoutTx.day = day;
+          if (typeof nextDate === 'function') scoutTx.date = nextDate(s.date, day - finalDay);
           cost += q.weekly;
         } else {
           q.weekly = 0;
