@@ -1278,7 +1278,7 @@ try {
       if (e.type === 'goal') {
         var warning = Object.assign({}, detail, { event: 'goal', preGoal: true, title: 'TEHLİKELİ ATAK!', message: (e.team === 0 ? state.club : rival()) + ' ceza sahasına yüklendi, gol tehlikesi büyüyor!' });
         window.dispatchEvent(new CustomEvent('cp:match-event', { detail: warning }));
-        window.setTimeout(function () { window.dispatchEvent(new CustomEvent('cp:match-event', { detail: Object.assign({}, detail, { highlight: false, goalReveal: true, scoreText: detail.home + '–' + detail.away }) })); }, 3200);
+        window.setTimeout(function () { window.dispatchEvent(new CustomEvent('cp:match-event', { detail: Object.assign({}, detail, { highlight: false, goalReveal: true, scoreText: detail.home + '–' + detail.away }) })); }, 3800);
       } else window.dispatchEvent(new CustomEvent('cp:match-event', { detail: detail }));
     });
   };
@@ -1599,4 +1599,4 @@ window.addEventListener('cp:evo-engine-ready',function(){
 });
 
 })();
-</script><script src="./assets/evofootball-engine.js?v=20261104d"></script><script src="./assets/matchday-upgrade.js?v=20261104v"></script><script src="./assets/decision-flow.js?v=20261104a"></script><script src="./assets/sponsorship-contract.js?v=20261104b"></script></body></html>
+</script><script src="./assets/evofootball-engine.js?v=20261104e"></script><script src="./assets/matchday-upgrade.js?v=20261104w"></script><script src="./assets/decision-flow.js?v=20261104a"></script><script src="./assets/sponsorship-contract.js?v=20261104b"></script></body></html>
