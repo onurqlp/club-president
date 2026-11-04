@@ -1791,7 +1791,7 @@ function cp11Simulate(input){
  return{events:events,statsHistory:history,score:score,duration:90,userIds:squads[0].map(cp11Id),userPlayers:squads[0],opponentPlayers:squads[1],replays:{},format:'11v11',version:CP11_VERSION,matchKey:key,dismissedIds:Object.keys(dismissed)};
 }
 window.CP_ELEVEN_SIMULATOR={version:CP11_VERSION,format:'11v11',simulate:cp11Simulate};
-window.addEventListener('cp:evo-engine-ready',function(){if(!window.CP_EVO_ENGINE)return;window.CP_EVO_ENGINE.version=CP11_VERSION;window.CP_EVO_ENGINE.format='11v11';});
+
 var cpStatsBefore11=matchStats;
 simEvents=function(tactic,enemy,start){
  start=start||{};var base=Number(start.minute)||0,shown=(mt&&mt.shown)||[],dismissed=shown.filter(function(e){return e.type==='card'&&(e.red===true||e.cardColor==='red')}).map(function(e){return e.playerId}).filter(Boolean);
@@ -2506,5 +2506,5 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 })();
 })();
 })();
-</script><script src="./assets/evofootball-engine.js?v=20261104go7"></script><script src="./assets/matchday-upgrade.js?v=20261104go7"></script><script src="./assets/decision-flow.js?v=20261104a"></script><script src="./assets/sponsorship-contract.js?v=20261104b">
+</script><script src="./assets/evofootball-engine.js?v=20261104go8"></script><script src="./assets/matchday-upgrade.js?v=20261104go8"></script><script src="./assets/decision-flow.js?v=20261104a"></script><script src="./assets/sponsorship-contract.js?v=20261104b">
 </script></body></html>
