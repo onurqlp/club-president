@@ -1,0 +1,8 @@
+.cp-sponsor-contract{margin-top:10px;padding:9px 10px;border:1px solid #a9d8758c;background:linear-gradient(115deg,#142e2aee,#0b1c24ee);text-align:left;min-width:min(290px,75vw);box-shadow:0 6px 18px #0005}
+.cp-sponsor-head{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#e8f5df}
+.cp-sponsor-head b{font:900 13px 'Barlow Condensed';letter-spacing:.06em;color:#c9f184}
+.cp-sponsor-head strong{font:900 17px 'Barlow Condensed'}
+.cp-sponsor-contract small{display:block;margin-top:4px;color:#bbcec0;font-size:9px}
+.cp-sponsor-track{height:5px;margin-top:7px;overflow:hidden;background:#071219;border-radius:5px}
+.cp-sponsor-track i{display:block;height:100%;background:#baf361;transition:width .25s ease}
+@media(max-width:650px){.cp-sponsor-contract{min-width:0;padding:7px 8px;margin-top:7px}.cp-sponsor-head b{font-size:11px}.cp-sponsor-head strong{font-size:14px}.cp-sponsor-contract small{font-size:8px}}
