@@ -171,6 +171,7 @@
     var detail = event.detail || {};
     if (!detail.highlight) { refreshCommentary(); return; }
     window.CP_LIVE_MATCH = detail;
+    detail.event = detail.event || detail.type || 'pass';
     activeHighlight = detail;
     highlightStartedAt = performance.now();
     var stage = document.getElementById('cp-broadcast-stage');
@@ -184,7 +185,7 @@
     if (copy) copy.textContent = detail.message || '';
     window.clearTimeout(highlightTimer);
     if (document.body.classList.contains('cp-3d-fallback')) showFallbackPitch(); else start3D();
-    highlightTimer = window.setTimeout(function () { returnFallbackPitch(); stage.classList.remove('is-highlight', 'is-highlight-fallback'); activeHighlight = null; }, detail.type === 'goal' ? 10000 : 7000);
+    highlightTimer = window.setTimeout(function () { returnFallbackPitch(); stage.classList.remove('is-highlight', 'is-highlight-fallback'); activeHighlight = null; }, (detail.event === 'goal' || detail.type === 'goal') ? 10000 : 7000);
     refreshCommentary();
   }
 
@@ -349,48 +350,116 @@
   }
 
   function makePlayer(THREE, color, team, number) {
-    var group=new THREE.Group(),shirtColor=team===2?'#e34c43':color,shirt=new THREE.MeshStandardMaterial({color:shirtColor,roughness:.66}),skin=new THREE.MeshStandardMaterial({color:'#d9ad8a',roughness:.84}),shorts=new THREE.MeshStandardMaterial({color:team===0?'#111827':'#e6e1d4',roughness:.84});
-    if(number===0)shirt=new THREE.MeshStandardMaterial({color:team===0?'#e3bd55':'#77b98b',roughness:.68});
-    var body=new THREE.Mesh(new THREE.CapsuleGeometry(.78,1.2,4,9),shirt);body.position.y=2.18;group.add(body);
-    var neck=new THREE.Mesh(new THREE.CylinderGeometry(.18,.2,.32,8),skin);neck.position.y=3.12;group.add(neck);
-    var head=new THREE.Mesh(new THREE.SphereGeometry(.43,12,10),skin);head.position.y=3.48;group.add(head);
-    var shortsMesh=new THREE.Mesh(new THREE.CylinderGeometry(.66,.55,.67,10),shorts);shortsMesh.position.y=1.22;group.add(shortsMesh);
-    var legParts=[];
-    for(var leg=0;leg<2;leg++){var limb=new THREE.Mesh(new THREE.CylinderGeometry(.17,.13,1.08,8),shorts);limb.position.set(leg?.27:-.27,.55,0);group.add(limb);legParts.push(limb);var boot=new THREE.Mesh(new THREE.BoxGeometry(.25,.2,.5),new THREE.MeshStandardMaterial({color:'#181b1a',roughness:.8}));boot.position.set(leg?.28:-.28,.04,.12);group.add(boot)}
-    var armParts=[];
-    for(var arm=0;arm<2;arm++){var sleeve=new THREE.Mesh(new THREE.CylinderGeometry(.2,.14,.91,8),shirt);sleeve.position.set(arm?.84:-.84,2.24,0);sleeve.rotation.z=arm?-.33:.33;group.add(sleeve);armParts.push(sleeve);var hand=new THREE.Mesh(new THREE.SphereGeometry(.16,8,6),skin);hand.position.set(arm?.98:-.98,1.78,0);group.add(hand)}
-    var stripeMat=new THREE.MeshStandardMaterial({color:team===0?'#f5e4c8':'#33465a',roughness:.72});
-    var stripe=new THREE.Mesh(new THREE.BoxGeometry(.11,.83,.045),stripeMat);stripe.position.set(.42,2.22,.74);group.add(stripe);
-    var numberCanvas=document.createElement('canvas');numberCanvas.width=128;numberCanvas.height=128;var ctx=numberCanvas.getContext('2d');ctx.clearRect(0,0,128,128);ctx.font='900 82px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=team===0?'#fff4da':'#17242d';ctx.fillText(String(number||1),64,67);
-    var numberTexture=new THREE.CanvasTexture(numberCanvas);numberTexture.colorSpace=THREE.SRGBColorSpace;var numberMark=new THREE.Mesh(new THREE.PlaneGeometry(.48,.5),new THREE.MeshBasicMaterial({map:numberTexture,transparent:true,side:THREE.DoubleSide,depthWrite:false}));numberMark.position.set(0,2.23,.785);group.add(numberMark);
-    var shadow=new THREE.Mesh(new THREE.CircleGeometry(1.22,16),new THREE.MeshBasicMaterial({color:'#07120b',transparent:true,opacity:.42}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.025;group.add(shadow);
-    group.scale.setScalar(.48);group.userData={team:team,number:number,phase:Math.random()*6.28,leftLeg:legParts[0],rightLeg:legParts[1],leftArm:armParts[0],rightArm:armParts[1]};return group;
+    var group = new THREE.Group();
+    var shirtMat = new THREE.MeshStandardMaterial({color: team===2?'#e34c43':color, roughness:.8});
+    var shortsMat = new THREE.MeshStandardMaterial({color: team===0?'#14202b':'#e9e5d9', roughness:.88});
+    var skinMat = new THREE.MeshStandardMaterial({color:'#bd8f70', roughness:.92});
+    var bootMat = new THREE.MeshStandardMaterial({color:'#171b1c', roughness:.72});
+    var trimMat = new THREE.MeshStandardMaterial({color:team===0?'#f1dfbd':'#263644', roughness:.75});
+    function mesh(geo, mat, parent, x,y,z) { var m=new THREE.Mesh(geo,mat); m.position.set(x,y,z); parent.add(m); return m; }
+    var torso=mesh(new THREE.CapsuleGeometry(.31,.48,5,10),shirtMat,group,0,1.34,0);
+    var collar=mesh(new THREE.TorusGeometry(.13,.035,6,12),trimMat,group,0,1.64,0); collar.rotation.x=Math.PI/2;
+    var head=mesh(new THREE.SphereGeometry(.19,12,10),skinMat,group,0,1.78,0);
+    var hair=mesh(new THREE.SphereGeometry(.194,10,8,0,Math.PI*2,0,Math.PI*.47),bootMat,group,0,1.82,-.01);
+    var shorts=mesh(new THREE.BoxGeometry(.47,.28,.28),shortsMat,group,0,.91,0);
+    var armPivots=[], legPivots=[];
+    [-1,1].forEach(function(side) {
+      var arm=new THREE.Group(); arm.position.set(side*.37,1.54,0); group.add(arm);
+      mesh(new THREE.CylinderGeometry(.075,.06,.39,8),shirtMat,arm,0,-.2,0);
+      mesh(new THREE.SphereGeometry(.07,8,6),skinMat,arm,0,-.43,0);
+      armPivots.push(arm);
+      var leg=new THREE.Group(); leg.position.set(side*.14,.82,0); group.add(leg);
+      mesh(new THREE.CylinderGeometry(.105,.075,.38,8),shortsMat,leg,0,-.19,0);
+      var knee=new THREE.Group(); knee.position.set(0,-.38,0); leg.add(knee);
+      mesh(new THREE.CylinderGeometry(.065,.052,.4,8),skinMat,knee,0,-.2,0);
+      mesh(new THREE.BoxGeometry(.13,.09,.27),bootMat,knee,0,-.42,.075);
+      leg.userData.knee=knee; legPivots.push(leg);
+    });
+    var stripe=mesh(new THREE.BoxGeometry(.055,.43,.018),trimMat,group,.19,1.35,.294);
+    var shadow=mesh(new THREE.CircleGeometry(.36,16),new THREE.MeshBasicMaterial({color:'#07120b',transparent:true,opacity:.34}),group,0,.018,0);
+    shadow.rotation.x=-Math.PI/2;
+    var numberCanvas=document.createElement('canvas'); numberCanvas.width=128; numberCanvas.height=128;
+    var ctx=numberCanvas.getContext('2d'); ctx.clearRect(0,0,128,128); ctx.font='900 82px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle=team===0?'#fff4da':'#17242d'; ctx.fillText(String(number||1),64,67);
+    var texture=new THREE.CanvasTexture(numberCanvas); texture.colorSpace=THREE.SRGBColorSpace;
+    var mark=mesh(new THREE.PlaneGeometry(.2,.22),new THREE.MeshBasicMaterial({map:texture,transparent:true,side:THREE.DoubleSide,depthWrite:false}),group,0,1.35,.305);
+    group.scale.setScalar(1.02);
+    group.userData={team:team,number:number,phase:Math.random()*6.28,leftLeg:legPivots[0],rightLeg:legPivots[1],leftArm:armPivots[0],rightArm:armPivots[1],speed:0,homeX:0,homeZ:0};
+    return group;
   }
 
   function update3D(now, dt) {
     if (!ball) return;
-    var live = activeHighlight || window.CP_LIVE_MATCH || {};
-    var bx = (Number(live.x == null ? 50 : live.x) - 50) * .92;
-    var bz = (Number(live.y == null ? 50 : live.y) - 50) * .58;
-    var isShot = live.event === 'shot' || live.event === 'goal';
-    var loft = isShot ? Math.sin(Math.PI * shotProgress) * (live.event === 'goal' ? 1.1 : .72) : 0;
-    var shotTargetX = (Number(live.team || 0) === 0 ? 49.5 : -49.5);
-    var shotTargetZ = Math.max(-3.25, Math.min(3.25, bz * .18));
-    var shotProgress = isShot ? Math.max(0, Math.min(1, (now - highlightStartedAt) / 2400)) : 0;
-    var ballX = isShot ? bx + (shotTargetX - bx) * shotProgress : bx;
-    var ballZ = isShot ? bz + (shotTargetZ - bz) * shotProgress : bz;
-    ball.position.set(ballX, .11 + loft, ballZ); ball.rotation.set(now*.002,now*.003,now*.0012);
-    var possession = Number(live.team || 0);
-    players.forEach(function (player, index) {
-      var team=player.userData.team,n=index%11,keeper=n===0,line=keeper?-43:n<=4?-28:n<=7?-8:16,lane=keeper?0:((n%4)-1.5)*13;
-      if(team===1)line=-line;var push=possession===team?8:-3,targetX=line+(team===0?push:-push)+bx*(keeper?.06:.2),targetZ=lane+bz*(keeper?.08:.23);
-      player.position.x+=(targetX-player.position.x)*Math.min(1,dt*3.6);player.position.z+=(targetZ-player.position.z)*Math.min(1,dt*3.6);player.position.y=Math.abs(Math.sin(now*.009+player.userData.phase))*.11;
-      var running=Math.sin(now*.012+player.userData.phase),pace=activeHighlight?1.15:.55;player.userData.leftLeg.rotation.z=running*.42*pace;player.userData.rightLeg.rotation.z=-running*.42*pace;player.userData.leftArm.rotation.z=-running*.22;player.userData.rightArm.rotation.z=running*.22;
-      player.rotation.y=team===0?Math.PI/2:-Math.PI/2;
+    var live=activeHighlight||window.CP_LIVE_MATCH||{};
+    var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+    var toX=(Number(live.x==null?50:live.x)-50)*.92;
+    var toZ=(Number(live.y==null?50:live.y)-50)*.58;
+    var fromX=(Number(live.fromX==null?50:live.fromX)-50)*.92;
+    var fromZ=(Number(live.fromY==null?50:live.fromY)-50)*.58;
+    var type=String(live.event||'pass');
+    var isShot=type==='shot'||type==='goal';
+    var elapsed=Math.max(0,now-highlightStartedAt);
+    var duration=isShot?3000:2100;
+    var progress=activeHighlight?clamp(elapsed/duration,0,1):1;
+    var smooth=progress*progress*(3-2*progress);
+    var shotTargetX=Number(live.team||0)===0?48:-48;
+    var shotTargetZ=clamp(toZ*.13,-3.3,3.3);
+    var ballStartX=activeHighlight?fromX:toX, ballStartZ=activeHighlight?fromZ:toZ;
+    var ballEndX=isShot?shotTargetX:toX, ballEndZ=isShot?shotTargetZ:toZ;
+    var ballX=ballStartX+(ballEndX-ballStartX)*smooth;
+    var ballZ=ballStartZ+(ballEndZ-ballStartZ)*smooth;
+    var loft=isShot?Math.sin(Math.PI*progress)*(live.onTarget?.85:.5):type==='pass'?Math.sin(Math.PI*progress)*.24:0;
+    ball.position.set(ballX,.11+loft,ballZ);
+    ball.rotation.x+=dt*5; ball.rotation.z+=dt*3.7;
+
+    var possession=Number(live.team||0), actorIndex=-1;
+    if(live.playerId||live.player) {
+      actorIndex=players.findIndex(function(p){return p.userData.team===possession&&String(p.userData.number)===String(live.receiver||live.playerId);});
+      if(actorIndex<0) actorIndex=possession*11+(Number(live.receiver||0)%10)+1;
+    }
+    players.forEach(function(player,index) {
+      var team=player.userData.team, n=player.userData.number, keeper=n===0;
+      var sideIndex=index%11, homeX=keeper?-43:(sideIndex<=4?-29:sideIndex<=7?-8:15);
+      var homeZ=keeper?0:((sideIndex%4)-1.5)*12;
+      if(team===1) homeX=-homeX;
+      var own=team===possession, chase=own?8:-3;
+      var influence=keeper?.06:.19;
+      var tx=homeX+(team===0?chase:-chase)+(ballX*influence);
+      var tz=homeZ+ballZ*(keeper?.07:.22);
+      var nearest=sideIndex===Math.floor((Number(live.receiver||0)%10))%10;
+      if(own&&nearest&&!keeper){tx=ballX+(type==='pass'?5:2);tz=ballZ+(sideIndex%2?3:-3);}
+      if(!own&&!keeper&&Math.abs(sideIndex-(Number(live.receiver||0)%10))<2){tx=ballX-3;tz=ballZ+(sideIndex%2?2:-2);}
+      tx=clamp(tx,-46,46);tz=clamp(tz,-31,31);
+      var dx=tx-player.position.x,dz=tz-player.position.z,dist=Math.hypot(dx,dz);
+      var targetSpeed=activeHighlight?clamp(dist*1.25,1.8,7.2):.7;
+      player.userData.speed+=(targetSpeed-player.userData.speed)*Math.min(1,dt*2.4);
+      var blend=1-Math.exp(-Math.max(.01,player.userData.speed)*dt/Math.max(1,dist));
+      player.position.x+=dx*blend; player.position.z+=dz*blend;
+      var running=dist>.65&&activeHighlight, cadence=now*.0095+player.userData.phase;
+      var stride=running?Math.min(1,player.userData.speed/5):.1;
+      var swing=Math.sin(cadence)*.62*stride;
+      player.userData.leftLeg.rotation.x=swing; player.userData.rightLeg.rotation.x=-swing;
+      player.userData.leftLeg.userData.knee.rotation.x=Math.max(0,-swing)*.8;
+      player.userData.rightLeg.userData.knee.rotation.x=Math.max(0,swing)*.8;
+      player.userData.leftArm.rotation.x=-swing*.58; player.userData.rightArm.rotation.x=swing*.58;
+      player.position.y=running?Math.abs(Math.sin(cadence*2))*.035:0;
+      var faceX=dx,faceZ=dz;
+      if(own&&nearest){faceX=ballX-player.position.x;faceZ=ballZ-player.position.z;}
+      player.rotation.y=Math.atan2(faceZ,faceX);
     });
-    var minute=Number(live.minute||0),clock=document.getElementById('cp-watch-clock');if(clock)clock.textContent=String(Math.floor(minute)).padStart(2,'0')+':00';
-    var chip=document.getElementById('cp-live-chip');if(chip)chip.innerHTML='<i></i>'+(live.running?tr('CANLI · ','LIVE · ')+Math.floor(minute)+'′':minute>=90?tr('TAMAMLANDI','BEENDET'):tr('MAÇ GÜNÜ','SPIELTAG'));
-    if (camera && camera.position) { var camX = bx * .34, camZ = bz + 48; camera.position.x += (camX-camera.position.x)*Math.min(1,dt*1.1); camera.position.z += (camZ-camera.position.z)*Math.min(1,dt*1.1); camera.lookAt(bx, .3, bz); }
+    if(isShot&&progress>.72&&players.length) {
+      var keeper=players.find(function(p){return p.userData.team===1-possession&&p.userData.number===0;});
+      if(keeper){keeper.position.x+=(shotTargetX+(possession===0?-2:2)-keeper.position.x)*Math.min(1,dt*2);keeper.position.z+=(shotTargetZ-keeper.position.z)*Math.min(1,dt*2);keeper.rotation.z=Math.sin(progress*Math.PI)*.7;}
+    }
+    var minute=Number(live.minute||0),clock=document.getElementById('cp-watch-clock');
+    if(clock)clock.textContent=String(Math.floor(minute)).padStart(2,'0')+':00';
+    var chip=document.getElementById('cp-live-chip');
+    if(chip)chip.innerHTML='<i></i>'+(live.running?tr('CANLI · ','LIVE · ')+Math.floor(minute)+'′':minute>=90?tr('TAMAMLANDI','BEENDET'):tr('MAÇ GÜNÜ','SPIELTAG'));
+    if(camera&&camera.position){
+      var camX=ballX*.34,camZ=ballZ+46;
+      camera.position.x+=(camX-camera.position.x)*Math.min(1,dt*1.05);
+      camera.position.z+=(camZ-camera.position.z)*Math.min(1,dt*1.05);
+      camera.lookAt(ballX,.3,ballZ);
+    }
   }
 
   function stop3D() {
