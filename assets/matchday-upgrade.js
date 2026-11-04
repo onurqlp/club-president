@@ -81,7 +81,7 @@
     if (document.querySelector('#content .room.match')) return;
     if (!active) return;
     active = false;
-    document.body.classList.remove('cp-match-active');
+    document.body.classList.remove('cp-match-active', 'cp-goal-pending');
     window.clearInterval(commentaryTimer); commentaryTimer = 0;
     window.removeEventListener('cp:match-event', onMatchEvent);
     window.removeEventListener('cp:halftime', onHalftime);
@@ -158,6 +158,7 @@
     var title = document.getElementById('cp-commentary-title');
     var copy = document.getElementById('cp-commentary-copy');
     var kind = document.getElementById('cp-event-type');
+    if (document.body.classList.contains('cp-goal-pending')) return;
     if (feed && title) {
       var content = (feed.innerText || '').replace(/\s+/g, ' ').trim();
       var split = content.match(/^([0-9]+(?:\.[0-9]+)?′?)\s*(.*)$/);
@@ -169,9 +170,31 @@
 
   function onMatchEvent(event) {
     var detail = event.detail || {};
+    if (detail.goalReveal) {
+      document.body.classList.remove('cp-goal-pending');
+      var revealTitle=document.getElementById('cp-commentary-title');
+      var revealCopy=document.getElementById('cp-commentary-copy');
+      var revealKind=document.getElementById('cp-event-type');
+      if(revealKind) revealKind.textContent=tr('GOL','TOR');
+      if(revealTitle) revealTitle.textContent=tr('GOL! '+(detail.player||''),'TOR! '+(detail.player||''));
+      if(revealCopy) revealCopy.textContent=(detail.message||'')+(detail.scoreText?' · '+tr('Skor ','Spielstand ')+detail.scoreText:'');
+      var highlightTitle=document.getElementById('cp-highlight-title');
+      var highlightCopy=document.getElementById('cp-highlight-copy');
+      if(highlightTitle) highlightTitle.textContent=tr('GOL!','TOR!');
+      if(highlightCopy) highlightCopy.textContent=detail.message||'';
+      return;
+    }
     if (!detail.highlight) { refreshCommentary(); return; }
     window.CP_LIVE_MATCH = detail;
     detail.event = detail.event || detail.type || 'pass';
+    if(detail.preGoal){
+      document.body.classList.add('cp-goal-pending');
+      if(!document.getElementById('cp-spoiler-guard')){
+        var guard=document.createElement('style');guard.id='cp-spoiler-guard';
+        guard.textContent='.cp-goal-pending .cp-score-card .scorebar,.cp-goal-pending #cp-commentary-stats,.cp-goal-pending #cp-commentary-feed{visibility:hidden!important}.cp-goal-pending .cp-commentary-main{min-height:82px}';
+        document.head.appendChild(guard);
+      }
+    }
     activeHighlight = detail;
     highlightStartedAt = performance.now();
     var stage = document.getElementById('cp-broadcast-stage');
@@ -181,12 +204,13 @@
     var title = document.getElementById('cp-highlight-title');
     var copy = document.getElementById('cp-highlight-copy');
     if (minute) minute.textContent = Math.floor(detail.minute || 0) + '′ · ' + tr('ÖZEL AN', 'SCHLÜSSELSZENE');
-    if (title) title.textContent = detail.title || tr('Tehlikeli atak', 'Gefährlicher Angriff');
-    if (copy) copy.textContent = detail.message || '';
+    if (title) title.textContent = detail.preGoal ? tr('TEHLİKELİ ATAK!', 'GEFÄHRLICHER ANGRIFF!') : (detail.title || tr('Tehlikeli atak', 'Gefährlicher Angriff'));
+    if (copy) copy.textContent = detail.preGoal ? tr('Hücum ceza sahasına girdi…', 'Der Angriff erreicht den Strafraum …') : (detail.message || '');
     window.clearTimeout(highlightTimer);
     if (document.body.classList.contains('cp-3d-fallback')) showFallbackPitch(); else start3D();
     highlightTimer = window.setTimeout(function () { returnFallbackPitch(); stage.classList.remove('is-highlight', 'is-highlight-fallback'); activeHighlight = null; }, (detail.event === 'goal' || detail.type === 'goal') ? 10000 : 7000);
     refreshCommentary();
+    if(detail.preGoal){var suspenseTitle=document.getElementById('cp-highlight-title');if(suspenseTitle)suspenseTitle.textContent=tr('TEHLİKELİ ATAK!','GEFÄHRLICHER ANGRIFF!');}
   }
 
   function onHalftime(event) {
