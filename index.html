@@ -1256,9 +1256,9 @@ try {
     latest.forEach(function (e, eventOffset) {
       if (cpHighlightHold) return;
       var matchKey = cpMatchEventScope();
-      var eventMinute = Number(e.m);
+      var eventMinute = e.m == null || e.m === '' ? NaN : Number(e.m);
       if (!Number.isFinite(eventMinute)) eventMinute = Number(mt.min) || 0;
-      var eventId = e.id == null ? null : String(e.id);
+      var eventId = e.id == null || e.id === '' ? null : String(e.id);
       var eventKey = eventId || [eventMinute.toFixed(3), e.type || '', e.team, e.playerId || e.player || '', e.x, e.y, first + eventOffset].join('|');
       var live = { minute: eventMinute, simulationMinute: Number(mt.min) || eventMinute, matchKey: matchKey, eventKey: eventKey, x: e.x == null ? mt.x : e.x, y: e.y == null ? mt.y : e.y, team: e.team || 0, event: e.type, running: !!mt.running, home: mt.home, away: mt.away, colors: [homeClub && homeClub[3] || '#18234e', awayClub && awayClub[4] || '#f1ead7'], fromX: e.fromX, fromY: e.fromY, eventId: eventId, actorIndex:e.actorIndex, receiverIndex:e.receiverIndex, player:e.player, playerId:e.playerId, rosters:[mt.userLineup||[],mt.opponentLineup||[]], formation:state.formation };
       window.CP_LIVE_MATCH = live;
