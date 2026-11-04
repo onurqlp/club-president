@@ -1,6 +1,40 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.18 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.21 (Türkçe arayüz).
+
+## GO 4 — Arayüz ve mobil/masaüstü son ayarı
+
+- Maç izleme, devre arası, taktik ve oyuncu değişikliği kontrolleri daha rahat dokunma için en az 44 px hedef yüksekliğe getirildi.
+- Dar telefon ekranlarında devre arası kararları tek sütuna alınır; kısa yatay ekranlarda maç alanı ve alt gezinme çubuğu kullanılabilir yükseklikte kalır, güvenli alan boşlukları korunur.
+- Yedek 3D sunum yolu, düşük donanımlı telefonlarda kenar yumuşatma ve piksel yoğunluğunu düşürür; masaüstü görsel kalitesi korunur. Bu ayar simülasyon kurallarını değiştirmez ve EvoFootball Arena çekirdeğini düzenlemez.
+- Maç/kadro/ekonomi modülleri arasındaki fonksiyon erişimi netleştirildi; kariyer başlangıcı ve maç akışında görülen kapsam hataları düzeltildi.
+- Kayıt sürümü ve ekrandaki v1.21 sürüm etiketi eşitlendi. Mevcut kariyer kaydı silinmez.
+- Kontrol: geçici, izole önizlemede kariyer açılışı, kadro ekranı, maç başlatma/sonuç ve transfer ekranı incelendi. Mobil kırılımlar ve dokunma hedefleri CSS üzerinden kontrol edildi; gerçek cihaz/viewport otomasyonu bu ortamda bulunmadığından fiziksel telefon doğrulaması yapılmadı.
+
+## v1.19 — 11v11 maç verisi ve tam kadro
+
+- Maç olayları, skor, istatistikler ve oyuncu kimlikleri seçili 11 kişilik kadro üzerinden tek simülasyon akışında üretilir.
+- 3D maç sunumu ev sahibi ve rakip için 11’er oyuncuyu gösterir; 3D diziliş eşlemesi artık 11 kişilik sıra numarasını kullanır.
+- Kırmızı kart gören oyuncular sonraki simülasyon eylemlerinden çıkarılır ve 3D sahada görünmez. Oyun içindeki en fazla beş değişiklik korunur.
+- Var olan 6v6 biçimli, devam eden maç kayıtları otomatik olarak yeniden etiketlenmez; yeni maçlar 11v11 biçiminde açılır.
+
+## v1.21 — Kulüp ekonomisi ve işlem sürekliliği
+
+- Sponsor avansı ve taksitleri kariyer kaydında benzersiz işlem kimlikleriyle izlenir; sezon geçişi 40 oyun günü atlasa bile vadesi gelen taksitler ve scout bütçeleri işlenir.
+- Scout giderleri haftalık işlem kaydıyla tutulur; sezon arası atlanan günlerde görev ilerlemesi ve rapor tarihleri korunur. Bütçe yetmezse harcama durur, verilen scout görevleri kayıtlı kalır.
+- Transfer teklifleri son günle gösterilir ve süre dolunca kapanır. Pencere kapalıyken kabul düğmesi ön anlaşma olarak açıklanır; kadro derinliği nedeniyle tamamlanmayan satış kaydı kaybolmaz.
+- Transfer alım/satımı, maç günü geliri, haftalık kulüp gideri, transfer taksidi ve sezon ödülü ayrı işlem kimlikleriyle mali işlem listesine yazılır.
+- Ofis ekranında son mali hareketler, kulüp bildirimleri, bekleyen karar durumu ve sponsor sözleşmesinin kalan/sonraki taksit tutarı görünür.
+- Mevcut kariyer verisi korunur; eski kayıtlarda işlem defteri ilk kaydetme sırasında eklenir.
+
+## v1.20 — Kalıcı kadro seçimi ve sezon tutarlılığı
+
+- Teknik Alan ekranından ilk 11, mevki gruplarını ve seçili dizilişin kadro sayılarını koruyarak düzenlenebilir; seçimler kariyer kaydında saklanır.
+- İlk 11, maç simülasyonu ve 3D oyuncu eşlemesi aynı kalıcı oyuncu kimliklerini kullanır. Maç içi değişikliklerden sonraki olaylar güncel kadro ve maç durumuyla üretilir.
+- Düşük kondisyon, sakatlık ve ceza durumu kadro seçiminde görünür; uygun olmayan oyuncu yedeğe alınamaz.
+- Maç sonucu ilgili fikstür satırına bir kez yazılır; kariyer puanı ve galibiyet/beraberlik/mağlubiyet kayıtlarıyla aynı maç turuna bağlı kalır.
+- Transfer pazarı sayfalara bölündü; arama ve mevki filtresi bütün sonuçlarda çalışır, kayıtlar ilk 64 oyuncuda kesilmez.
+- Mevcut kariyer kayıtlarına oyuncu kimliği/ilk 11 alanları eklenir; var olan kariyer verileri sıfırlanmaz.
 
 ## Oyun
 

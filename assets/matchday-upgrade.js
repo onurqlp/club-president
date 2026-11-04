@@ -287,8 +287,13 @@
     var width = Math.max(320, host.clientWidth || innerWidth), height = Math.max(220, host.clientHeight || 360);
     camera = new THREE.PerspectiveCamera(42, width / height, .1, 260);
     camera.position.set(0, 43, 58); camera.lookAt(0, 0, 0);
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); renderer.setSize(width, height, false);
+    var compactViewport = window.matchMedia('(max-width: 800px), (pointer: coarse)').matches;
+    var cores = Number(navigator.hardwareConcurrency) || 0;
+    var memory = Number(navigator.deviceMemory) || 0;
+    var lowPowerDevice = compactViewport && ((cores > 0 && cores <= 4) || (memory > 0 && memory <= 4));
+    renderer = new THREE.WebGLRenderer({ antialias: !lowPowerDevice, alpha: false, powerPreference: lowPowerDevice ? 'low-power' : 'high-performance' });
+    var pixelRatioLimit = lowPowerDevice ? 1 : (compactViewport ? 1.25 : 2);
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, pixelRatioLimit)); renderer.setSize(width, height, false);
     renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
     host.appendChild(renderer.domElement);
     scene.add(new THREE.HemisphereLight('#eaf7ff', '#203622', 2.6));
@@ -450,7 +455,9 @@
     var possession=Number(live.team||0), actorIndex=Number.isInteger(Number(live.actorIndex))?Number(live.actorIndex):-1, receiverIndex=Number.isInteger(Number(live.receiverIndex))?Number(live.receiverIndex):Number(live.receiver);
     players.forEach(function(player,index) {
       var team=player.userData.team, n=player.userData.number, keeper=n===0;
-      var sideIndex=index%6, roster=live.rosters&&live.rosters[team]||[], profile=roster[n]||{}, role=String(profile.pos||'');
+      var sideIndex=n, roster=live.rosters&&live.rosters[team]||[], profile=roster[n]||{}, role=String(profile.pos||'');
+      var dismissed=live.dismissedIds||[]; player.visible=!dismissed.includes(String(profile.id||profile.name||''));
+      if(!player.visible){player.userData.speed=0;return;}
       keeper=role==='KL'||n===0; var homeX=keeper?-43:(role==='STP'?-29:role==='SLB'||role==='SĞB'?-28:role==='DOS'?-13:role==='MO'?-3:role==='SLK'||role==='SĞK'?17:role==='SNT'?30:(sideIndex<=4?-29:sideIndex<=7?-8:15));
       var homeZ=keeper?0:(role==='SLB'||role==='SLK'?-21:role==='SĞB'||role==='SĞK'?21:((sideIndex%4)-1.5)*12);
       if(team===1) homeX=-homeX;
