@@ -298,8 +298,19 @@
     var fill = new THREE.DirectionalLight('#a9d6ff', 1.35); fill.position.set(28, 34, -48); scene.add(fill);
     buildStadium(THREE, scene); buildPitch(THREE, scene);
     var colors = [teamColor(0), teamColor(1)];
+    var kickoffRosters = window.CP_LIVE_MATCH && window.CP_LIVE_MATCH.rosters || [];
     for (var team = 0; team < 2; team++) for (var i = 0; i < 11; i++) {
-      var p = makePlayer(THREE, colors[team], team, i); scene.add(p); players.push(p);
+      var p = makePlayer(THREE, colors[team], team, i);
+      var role = String((kickoffRosters[team] && kickoffRosters[team][i] && kickoffRosters[team][i].pos) || '');
+      var keeper = role === 'KL' || i === 0;
+      var homeX = keeper ? -43 : role === 'STP' ? -29 : role === 'SLB' || role === 'SĞB' ? -28 : role === 'DOS' ? -13 : role === 'MO' ? -3 : role === 'SLK' || role === 'SĞK' ? 17 : role === 'SNT' ? 30 : (i <= 4 ? -29 : i <= 7 ? -8 : 15);
+      var homeZ = keeper ? 0 : role === 'SLB' || role === 'SLK' ? -21 : role === 'SĞB' || role === 'SĞK' ? 21 : ((i % 4) - 1.5) * 12;
+      if (team === 1) homeX = -homeX;
+      // The first frame can arrive after the critical-event timer; never leave
+      // all 22 models stacked at the origin while the replay is idle.
+      p.position.set(homeX, 0, homeZ);
+      p.userData.homeX = homeX; p.userData.homeZ = homeZ;
+      scene.add(p); players.push(p);
     }
     var referee = makePlayer(THREE, '#e94f49', 2, 0); referee.scale.setScalar(.88); referee.position.set(-2, 0, 3); scene.add(referee);
     ball = new THREE.Mesh(new THREE.SphereGeometry(.11, 20, 16), new THREE.MeshStandardMaterial({ color: '#f5f1df', roughness: .42, metalness: .02 })); ball.position.y = .11; scene.add(ball);
