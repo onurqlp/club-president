@@ -247,7 +247,7 @@
     scene.fog = new THREE.Fog('#07151b', 105, 210);
     var width = Math.max(320, host.clientWidth || innerWidth), height = Math.max(220, host.clientHeight || 360);
     camera = new THREE.PerspectiveCamera(42, width / height, .1, 260);
-    camera.position.set(0, 61, 78); camera.lookAt(0, 0, 0);
+    camera.position.set(0, 43, 58); camera.lookAt(0, 0, 0);
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5)); renderer.setSize(width, height, false);
     renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
@@ -261,8 +261,8 @@
       var p = makePlayer(THREE, colors[team], team, i); scene.add(p); players.push(p);
     }
     var referee = makePlayer(THREE, '#e94f49', 2, 0); referee.scale.setScalar(.88); referee.position.set(-2, 0, 3); scene.add(referee);
-    ball = new THREE.Mesh(new THREE.SphereGeometry(.72, 18, 14), new THREE.MeshStandardMaterial({ color: '#f5f1df', roughness: .52 })); ball.position.y = .78; scene.add(ball);
-    var ballPatch = new THREE.Mesh(new THREE.SphereGeometry(.73, 10, 8, 0, Math.PI, .15, .7), new THREE.MeshStandardMaterial({ color: '#20282b', roughness: .7 })); ball.add(ballPatch);
+    ball = new THREE.Mesh(new THREE.SphereGeometry(.11, 20, 16), new THREE.MeshStandardMaterial({ color: '#f5f1df', roughness: .42, metalness: .02 })); ball.position.y = .11; scene.add(ball);
+    var ballPatch = new THREE.Mesh(new THREE.SphereGeometry(.112, 10, 8, 0, Math.PI, .15, .7), new THREE.MeshStandardMaterial({ color: '#20282b', roughness: .7 })); ball.add(ballPatch);
     renderer.domElement.setAttribute('aria-label', 'Canlı 3D futbol maçı');
     resizeHandler = function () { if (!active || !host.isConnected) return; var w = Math.max(320, host.clientWidth), h = Math.max(220, host.clientHeight); camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h, false); };
     window.addEventListener('resize', resizeHandler);
@@ -340,9 +340,9 @@
     [-1,1].forEach(function (side) {
       var x=side*51;line([[x,-20],[x-side*16,-20],[x-side*16,20],[x,20]]);line([[x,-10],[x-side*5,-10],[x-side*5,10],[x,10]]);
       var goal=new THREE.Group();goal.position.set(x,0,0);scene.add(goal);var white=new THREE.MeshStandardMaterial({color:'#f4f5e9',roughness:.55});
-      [[0,0],[0,-7.3],[0,7.3]].forEach(function(v){var post=new THREE.Mesh(new THREE.CylinderGeometry(.24,.24,4.8,8),white);post.position.set(side*1.1,2.4,v[1]);goal.add(post)});
-      var bar=new THREE.Mesh(new THREE.BoxGeometry(.45,.38,14.6),white);bar.position.set(side*1.1,4.8,0);goal.add(bar);
-      var netMat=new THREE.LineBasicMaterial({color:'#d6ddd0',transparent:true,opacity:.35});for(var z=-7;z<=7;z+=3.5){goal.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(side*1.4,.2,z),new THREE.Vector3(side*7,.2,z),new THREE.Vector3(side*7,4.5,z),new THREE.Vector3(side*1.4,4.8,z)]),netMat))}
+      [[0,0],[0,-3.66],[0,3.66]].forEach(function(v){var post=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,2.44,10),white);post.position.set(side*1.1,1.22,v[1]);goal.add(post)});
+      var bar=new THREE.Mesh(new THREE.BoxGeometry(.11,.11,7.32),white);bar.position.set(side*1.1,2.44,0);goal.add(bar);
+      var netMat=new THREE.LineBasicMaterial({color:'#d6ddd0',transparent:true,opacity:.35});for(var z=-3.66;z<=3.67;z+=1.83){goal.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(side*1.2,.08,z),new THREE.Vector3(side*5.6,.08,z),new THREE.Vector3(side*5.6,2.36,z),new THREE.Vector3(side*1.2,2.44,z)]),netMat))}
     });
   }
 
@@ -362,7 +362,7 @@
     var numberCanvas=document.createElement('canvas');numberCanvas.width=128;numberCanvas.height=128;var ctx=numberCanvas.getContext('2d');ctx.clearRect(0,0,128,128);ctx.font='900 82px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=team===0?'#fff4da':'#17242d';ctx.fillText(String(number||1),64,67);
     var numberTexture=new THREE.CanvasTexture(numberCanvas);numberTexture.colorSpace=THREE.SRGBColorSpace;var numberMark=new THREE.Mesh(new THREE.PlaneGeometry(.48,.5),new THREE.MeshBasicMaterial({map:numberTexture,transparent:true,side:THREE.DoubleSide,depthWrite:false}));numberMark.position.set(0,2.23,.785);group.add(numberMark);
     var shadow=new THREE.Mesh(new THREE.CircleGeometry(1.22,16),new THREE.MeshBasicMaterial({color:'#07120b',transparent:true,opacity:.42}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.025;group.add(shadow);
-    group.scale.setScalar(1.16);group.userData={team:team,number:number,phase:Math.random()*6.28,leftLeg:legParts[0],rightLeg:legParts[1],leftArm:armParts[0],rightArm:armParts[1]};return group;
+    group.scale.setScalar(.48);group.userData={team:team,number:number,phase:Math.random()*6.28,leftLeg:legParts[0],rightLeg:legParts[1],leftArm:armParts[0],rightArm:armParts[1]};return group;
   }
 
   function update3D(now, dt) {
@@ -371,8 +371,13 @@
     var bx = (Number(live.x == null ? 50 : live.x) - 50) * .92;
     var bz = (Number(live.y == null ? 50 : live.y) - 50) * .58;
     var isShot = live.event === 'shot' || live.event === 'goal';
-    var loft = isShot ? Math.max(0, Math.sin(now / 180) * (live.event === 'goal' ? 5 : 3.5)) : 0;
-    ball.position.set(bx, .78 + loft, bz); ball.rotation.set(now*.002,now*.003,now*.0012);
+    var loft = isShot ? Math.max(0, Math.sin(now / 180) * (live.event === 'goal' ? 1.1 : .72)) : 0;
+    var shotTargetX = (Number(live.team || 0) === 0 ? 49.5 : -49.5);
+    var shotTargetZ = Math.max(-3.25, Math.min(3.25, bz * .18));
+    var shotProgress = isShot ? (0.5 + 0.5 * Math.sin(now / 390)) : 0;
+    var ballX = isShot ? bx + (shotTargetX - bx) * shotProgress : bx;
+    var ballZ = isShot ? bz + (shotTargetZ - bz) * shotProgress : bz;
+    ball.position.set(ballX, .11 + loft, ballZ); ball.rotation.set(now*.002,now*.003,now*.0012);
     var possession = Number(live.team || 0);
     players.forEach(function (player, index) {
       var team=player.userData.team,n=index%11,keeper=n===0,line=keeper?-43:n<=4?-28:n<=7?-8:16,lane=keeper?0:((n%4)-1.5)*13;
@@ -383,7 +388,7 @@
     });
     var minute=Number(live.minute||0),clock=document.getElementById('cp-watch-clock');if(clock)clock.textContent=String(Math.floor(minute)).padStart(2,'0')+':00';
     var chip=document.getElementById('cp-live-chip');if(chip)chip.innerHTML='<i></i>'+(live.running?tr('CANLI · ','LIVE · ')+Math.floor(minute)+'′':minute>=90?tr('TAMAMLANDI','BEENDET'):tr('MAÇ GÜNÜ','SPIELTAG'));
-    if (camera && camera.position) { camera.position.x += (bx-camera.position.x)*Math.min(1,dt*1.1); camera.position.z += (bz+68-camera.position.z)*Math.min(1,dt*1.1); camera.lookAt(bx, 0, bz); }
+    if (camera && camera.position) { var camX = bx * .34, camZ = bz + 48; camera.position.x += (camX-camera.position.x)*Math.min(1,dt*1.1); camera.position.z += (camZ-camera.position.z)*Math.min(1,dt*1.1); camera.lookAt(bx, .3, bz); }
   }
 
   function stop3D() {
