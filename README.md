@@ -1,6 +1,6 @@
 # CLUB PRESIDENT — GitHub Pages
 
-Futbol kulübü başkanlık simülasyonu — v1.20 (Türkçe arayüz).
+Futbol kulübü başkanlık simülasyonu — v1.21 (Türkçe arayüz).
 
 ## v1.19 — 11v11 maç verisi ve tam kadro
 
@@ -8,6 +8,15 @@ Futbol kulübü başkanlık simülasyonu — v1.20 (Türkçe arayüz).
 - 3D maç sunumu ev sahibi ve rakip için 11’er oyuncuyu gösterir; 3D diziliş eşlemesi artık 11 kişilik sıra numarasını kullanır.
 - Kırmızı kart gören oyuncular sonraki simülasyon eylemlerinden çıkarılır ve 3D sahada görünmez. Oyun içindeki en fazla beş değişiklik korunur.
 - Var olan 6v6 biçimli, devam eden maç kayıtları otomatik olarak yeniden etiketlenmez; yeni maçlar 11v11 biçiminde açılır.
+
+## v1.21 — Kulüp ekonomisi ve işlem sürekliliği
+
+- Sponsor avansı ve taksitleri kariyer kaydında benzersiz işlem kimlikleriyle izlenir; sezon geçişi 40 oyun günü atlasa bile vadesi gelen taksitler ve scout bütçeleri işlenir.
+- Scout giderleri haftalık işlem kaydıyla tutulur; sezon arası atlanan günlerde görev ilerlemesi ve rapor tarihleri korunur. Bütçe yetmezse harcama durur, verilen scout görevleri kayıtlı kalır.
+- Transfer teklifleri son günle gösterilir ve süre dolunca kapanır. Pencere kapalıyken kabul düğmesi ön anlaşma olarak açıklanır; kadro derinliği nedeniyle tamamlanmayan satış kaydı kaybolmaz.
+- Transfer alım/satımı, maç günü geliri, haftalık kulüp gideri, transfer taksidi ve sezon ödülü ayrı işlem kimlikleriyle mali işlem listesine yazılır.
+- Ofis ekranında son mali hareketler, kulüp bildirimleri, bekleyen karar durumu ve sponsor sözleşmesinin kalan/sonraki taksit tutarı görünür.
+- Mevcut kariyer verisi korunur; işlem defteri eski kayıtlar için açılışta oluşturulur.
 
 ## v1.20 — Kalıcı kadro seçimi ve sezon tutarlılığı
 
