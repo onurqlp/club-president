@@ -1796,6 +1796,7 @@ setup=function(){var m=cpSetupBefore11();if(!m)return m;var result=window.CP_ELE
 function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m.xiIds)?m.xiIds:[],mine=ids.map(function(id){return state.players.find(function(p){return String(p.id||p.name)===String(id)})}).filter(Boolean);if(mine.length!==11)mine=(m.userLineup||lineup()).slice(0,11);var enemy=(m.opponentLineup||[]).slice(0,11);return[mine,enemy]}
 })();
 </script><script src="./assets/matchday-upgrade.js?v=20261104x"></script><script src="./assets/decision-flow.js?v=20261104a"></script><script src="./assets/sponsorship-contract.js?v=20261104b">
+</script><script>
 /* GO 2 — persistent lineup, stable player identity, season result integrity, transfer pagination */
 (function(){
  if(!state)return;
