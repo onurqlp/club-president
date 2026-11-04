@@ -519,6 +519,13 @@
         var nextAmount = Math.min(remaining, Number(contract.installmentAmount) || 0);
         sponsorCard.insertAdjacentHTML('beforeend', '<small class="cp-economy-contract-details">' + t('Kalan: ', 'Offen: ') + money(remaining) + ' · ' + t('Sonraki taksit: ', 'Nächste Rate: ') + money(nextAmount) + '</small>');
       }
+      if (contract && contract.active && !sponsorCard) setTimeout(function () {
+        var card = document.querySelector('#content .cp-sponsor-contract');
+        if (!card || card.querySelector('.cp-economy-contract-details')) return;
+        var remaining = Math.max(0, (Number(contract.totalAmount) || 0) - (Number(contract.paidAmount) || 0));
+        var nextAmount = Math.min(remaining, Number(contract.installmentAmount) || 0);
+        card.insertAdjacentHTML('beforeend', '<small class="cp-economy-contract-details">' + t('Kalan: ', 'Offen: ') + money(remaining) + ' · ' + t('Sonraki taksit: ', 'Nächste Rate: ') + money(nextAmount) + '</small>');
+      }, 0);
       if (api.getScreen() !== 'office') return result;
       var panel = document.querySelector('#content .day');
       if (!panel || panel.querySelector('.cp-economy-summary')) return result;
