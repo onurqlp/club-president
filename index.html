@@ -1449,15 +1449,15 @@ function cpSponsorAction114(key){
   var uplift=q.trust>=60?.2:.1;q.amount=Math.round((q.amount+uplift)*10)/10;q.fanEffect=Math.min(5,q.fanEffect+1);q.phase=2;q.reply='“Son bir iyileştirme yapıyoruz: yıllık ücret €'+q.amount.toFixed(1)+'M. Marka görünürlüğü konusunda sınırınızı kabul ediyoruz; daha ileri gidemeyiz.”';save();cpSponsorRoom114();return;
  }
  if(key==='sign'){
-  if(state.sponsorContract&&state.sponsorContract.active){state.pendingSponsorDeal=null;if(window.CP_OFFPITCH_API)window.CP_OFFPITCH_API.setDialogByKey(null);save();close();render();toast('Aktif sponsor sözleşmesi tamamlanmadan yenisi imzalanamaz.');return}
+  if(state.sponsorContract&&state.sponsorContract.active){state.pendingSponsorDeal=null;if(window.CP_OFFPITCH_API)window.CP_OFFPITCH_API.setDialogByKey(null);save();close();render();toast(localStorage.getItem('cp-ui-language-2026')==='de'?'Ein neuer Vertrag ist erst nach Abschluss des aktiven Sponsoringvertrags möglich.':'Aktif sponsor sözleşmesi tamamlanmadan yenisi imzalanamaz.');return}
   var total=Math.round(q.amount*1e6),advance=Math.round(total*.2),season=state.seasonCode||state.season||'2026/27';
   state.cash+=advance;fx({cash:0,fans:q.fanEffect,trust:q.trust>=60?2:-1});
   state.sponsorDeals=state.sponsorDeals||[];
   var historyIndex=state.sponsorDeals.length;
   state.sponsorDeals.push({name:'Sezonluk ticari ortak',amount:q.amount,totalAmount:total,advancePaid:advance,rights:q.rights,day:state.day,season:season,status:'active',installmentsPaid:0,installmentsTotal:8});
   state.sponsorContract={name:'Sezonluk ticari ortak',amount:q.amount,totalAmount:total,paidAmount:advance,rights:q.rights,fanEffect:q.fanEffect,signedDay:state.day,season:season,installmentsPaid:0,installmentsTotal:8,installmentAmount:Math.floor((total-advance)/8),nextPaymentDay:state.day+7,active:true,historyIndex:historyIndex};
-  state.decisions++;notice('SPONSORLUK SÖZLEŞMESİ İMZALANDI','Toplam €'+q.amount.toFixed(1)+'M · imza avansı €'+(advance/1e6).toFixed(2)+'M · kalan tutar 8 haftalık ödemelerle yatırılacak. '+q.rights+'. Taraftar desteği '+(q.fanEffect>=0?'+':'')+q.fanEffect+'.');
-  state.pendingSponsorDeal=null;if(window.CP_OFFPITCH_API)window.CP_OFFPITCH_API.setDialogByKey(null);save();close();render();toast('Sözleşme imzalandı · '+cash(advance)+' avans');return;
+  var sponsorGerman=localStorage.getItem('cp-ui-language-2026')==='de';state.decisions++;notice(sponsorGerman?'SPONSORVERTRAG UNTERZEICHNET':'SPONSORLUK SÖZLEŞMESİ İMZALANDI',sponsorGerman?'Gesamt '+q.amount.toFixed(1)+' Mio. € · Sofortzahlung '+(advance/1e6).toFixed(2)+' Mio. € · Restzahlung in acht wöchentlichen Raten. '+q.rights+'. Fanreaktion '+(q.fanEffect>=0?'+':'')+q.fanEffect+'.':'Toplam €'+q.amount.toFixed(1)+'M · imza avansı €'+(advance/1e6).toFixed(2)+'M · kalan tutar 8 haftalık ödemelerle yatırılacak. '+q.rights+'. Taraftar desteği '+(q.fanEffect>=0?'+':'')+q.fanEffect+'.');
+  state.pendingSponsorDeal=null;if(window.CP_OFFPITCH_API)window.CP_OFFPITCH_API.setDialogByKey(null);save();close();render();toast(sponsorGerman?'Vertrag unterschrieben · '+cash(advance)+' Sofortzahlung':'Sözleşme imzalandı · '+cash(advance)+' avans');return;
  }
 }
 decide=function(i){
