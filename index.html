@@ -1369,7 +1369,8 @@ try {
         receiverIndex: e.receiverIndex,
         player: e.player,
         playerId: e.playerId,
-        rosters: [mt.userLineup || [], mt.opponentLineup || []],
+        rosters: cpCurrentRosters(mt),
+        dismissedIds: (mt.shown || []).filter(function(q){return q.type === 'card' && (q.red === true || q.cardColor === 'red')}).map(function(q){return String(q.playerId || '')}).filter(Boolean),
         formation: state.formation
       };
       window.CP_LIVE_MATCH = live;
@@ -1794,4 +1795,4 @@ var cpSetupBefore11=setup;
 setup=function(){var m=cpSetupBefore11();if(!m)return m;var result=window.CP_ELEVEN_LAST_RESULT;window.CP_ELEVEN_LAST_RESULT=null;if(result&&m.round===state.round&&m.elevenMatchVersion!==1){m.elevenMatchVersion=1;m.engineVersion=5;m.evoEngineVersion=CP11_VERSION;m.evoEngineFormat='11v11';m.evoStatsHistory=result.statsHistory;m.cpStartXI13=result.userIds.slice();m.cpOpponent13=result.opponentPlayers.slice();m.xiIds=result.userIds.slice();m.userLineup=result.userPlayers.slice();m.opponentLineup=result.opponentPlayers.slice();m.subs=m.subs||0;state.engineVersion=5;state.activeMatch=m;save()}return m};
 function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m.xiIds)?m.xiIds:[],mine=ids.map(function(id){return state.players.find(function(p){return String(p.id||p.name)===String(id)})}).filter(Boolean);if(mine.length!==11)mine=(m.userLineup||lineup()).slice(0,11);var enemy=(m.opponentLineup||[]).slice(0,11);return[mine,enemy]}
 })();
-</script></body></html>
+</script><script src="./assets/matchday-upgrade.js?v=20261104x"></script><script src="./assets/decision-flow.js?v=20261104a"></script><script src="./assets/sponsorship-contract.js?v=20261104b"></script></body></html>
