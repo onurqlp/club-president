@@ -305,14 +305,15 @@
         return;
       }
       var result = oldIncomingResponse.apply(this, arguments);
-      if (offer.status !== 'open') archiveOffer(m, offer, offer.status,
-        offer.status === 'accepted' ? t('Ön anlaşma veya tamamlanan satış', 'Vorvertrag oder abgeschlossener Transfer') : '');
       if (action === 'accept' && window.isWindow(s.date) && offer.status === 'accepted' &&
           s.players.some(function (p) { return p.id === offer.playerId; })) {
         offer.status = 'blocked';
         offer.reason = t('Minimum kadro derinliği korunamadı', 'Mindestkadergröße wurde unterschritten');
         archiveOffer(m, offer, 'blocked', offer.reason);
         api.save(); api.render();
+      } else if (offer.status !== 'open') {
+        archiveOffer(m, offer, offer.status,
+          offer.status === 'accepted' ? t('Ön anlaşma veya tamamlanan satış', 'Vorvertrag oder abgeschlossener Transfer') : '');
       }
       return result;
     };
