@@ -2330,7 +2330,8 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   if (typeof oldNextSeason === 'function') {
     nextSeason = function () {
       var s = state(), previousDay = s && Number(s.day) || 0, oldSeason = s && (s.seasonCode || 'career');
-      var cashBefore = s && Number(s.cash) || 0, budgetBefore = s && Number(s.budget) || 0;
+      var oldTable = s && seasonTable(), oldPosition = oldTable ? oldTable.findIndex(function (x) { return x.n === s.club; }) + 1 : 0;
+      var seasonPrize = oldPosition ? Math.round((7 + Math.max(0, clubsOfLeague().length - oldPosition) * .8) * 1e6) : 0;
       var result = oldNextSeason.apply(this, arguments);
       s = state();
       if (!s || s.day <= previousDay) return result;
@@ -2346,7 +2347,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
       settleSponsor(s, finalDay);
       expireOffers(s);
       book(s, 'season-prize:' + String(s.ix || 0) + ':' + oldSeason, 'season-prize',
-        (Number(s.cash) || 0) - cashBefore, (Number(s.budget) || 0) - budgetBefore, oldSeason);
+        seasonPrize, Math.round(seasonPrize * .55), oldSeason);
       if (scoutSummary.cost) api.notice(t('SEZON ARASI SCOUT GİDERİ', 'SCOUTKOSTEN IN DER SAISONPAUSE'),
         money(scoutSummary.cost) + t(' kesildi; rapor ve görev ilerlemesi korundu.', ' abgebucht; Berichte und Aufgaben wurden fortgeführt.'));
       if (scoutSummary.reports) api.notice(t('SEZON ARASI SCOUT RAPORLARI', 'SCOUTBERICHTE IN DER SAISONPAUSE'),
