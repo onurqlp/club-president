@@ -1200,8 +1200,24 @@ try {
 // Runs inside the existing match-engine closure so highlights use its real event log.
 (function () {
   var cpLastDangerMinute = -20;
+  var cpHighlightHold = false, cpResumeWanted = false, cpHighlightReleaseTimer = 0;
+  function cpHoldForReplay(ms) {
+    if (!mt) return;
+    if (!cpHighlightHold) {
+      cpResumeWanted = !!mt.running;
+      cpHighlightHold = true;
+      if (mt.running) { mt.running = false; clearInterval(interval); interval = null; state.activeMatch = mt; save(); }
+    }
+    clearTimeout(cpHighlightReleaseTimer);
+    cpHighlightReleaseTimer = setTimeout(function () {
+      cpHighlightHold = false;
+      if (cpResumeWanted && mt && mt.min < 90) { mt.running = true; interval = setInterval(step, Math.round(135 / mt.speed)); state.activeMatch = mt; save(); updateMatch(); }
+      cpResumeWanted = false;
+    }, ms);
+  }
   var cpOriginalAdvance = advanceMatchTo;
   advanceMatchTo = function (target, quiet) {
+    if (cpHighlightHold) return;
     var first = mt ? mt.pos : 0;
     // Never let the 0.18-minute simulation tick leak into stoppage time: the
     // halftime screen and all first-half stats must represent exactly 45:00.
@@ -1212,6 +1228,7 @@ try {
     var awayClub = clubs.find(function (c) { return c[0] === rival(); });
     var latest = mt.all.slice(Math.max(0, first), mt.pos);
     latest.forEach(function (e) {
+      if (cpHighlightHold) return;
       var live = { minute: mt.min, x: e.x == null ? mt.x : e.x, y: e.y == null ? mt.y : e.y, team: e.team || 0, event: e.type, running: !!mt.running, home: mt.home, away: mt.away, colors: [homeClub && homeClub[3] || '#18234e', awayClub && awayClub[4] || '#f1ead7'], fromX: e.fromX, fromY: e.fromY, eventId: e.id };
       window.CP_LIVE_MATCH = live;
       if (quiet) return;
@@ -1223,6 +1240,7 @@ try {
       if (dangerous) cpLastDangerMinute = mt.min;
       var labels = { goal: 'GOL!', shot: e.onTarget ? 'TEHLİKELİ ATAK!' : 'ŞUT DENEMESİ', card: redCard ? 'KIRMIZI KART! TAKIM 10 KİŞİ' : 'SARI KART' , corner: 'DURAN TOP FIRSATI' };
       var detail = Object.assign({}, live, { highlight: true, redCard: redCard, title: labels[e.type] || (dangerous ? 'TEHLİKELİ ATAK' : 'KİLİT AN'), message: e.msg || '', player: e.player || '', xg: e.xg || 0, onTarget: !!e.onTarget });
+      cpHoldForReplay(e.type === 'goal' ? 4700 : 4300);
       if (e.type === 'goal') {
         var warning = Object.assign({}, detail, { event: 'goal', preGoal: true, title: 'TEHLİKELİ ATAK!', message: (e.team === 0 ? state.club : rival()) + ' ceza sahasına yüklendi, gol tehlikesi büyüyor!' });
         window.dispatchEvent(new CustomEvent('cp:match-event', { detail: warning }));
@@ -1309,4 +1327,4 @@ try {
 })();
 
 })();
-</script><script src="./assets/matchday-upgrade.js?v=20261104n"></script></body></html>
+</script><script src="./assets/matchday-upgrade.js?v=20261104o"></script></body></html>
