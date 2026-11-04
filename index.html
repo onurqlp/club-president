@@ -1214,6 +1214,8 @@ try {
 (function () {
   var cpLastDangerMinute = -20;
   var cpHighlightHold = false, cpResumeWanted = false, cpHighlightReleaseTimer = 0;
+  var cpGoalRevealTimer = 0, cpHighlightActive = false, cpHighlightSequence = 0;
+  var cpHighlightQueue = [];
   var cpHighlightMatchKey = '', cpHandledHighlightEvents = Object.create(null);
 
   function cpMatchEventScope() {
@@ -1227,40 +1229,149 @@ try {
     return key;
   }
 
-  function cpHoldForReplay(ms) {
-    if (!mt) return;
-    if (!cpHighlightHold) {
-      cpResumeWanted = !!mt.running;
-      cpHighlightHold = true;
-      if (mt.running) { mt.running = false; clearInterval(interval); interval = null; state.activeMatch = mt; save(); }
+  function cpPauseForHighlights() {
+    if (!mt || cpHighlightHold) return;
+    cpResumeWanted = !!mt.running;
+    cpHighlightHold = true;
+    if (mt.running) {
+      mt.running = false;
+      clearInterval(interval);
+      interval = null;
+      state.activeMatch = mt;
+      save();
+    }
+  }
+
+  function cpResumeAfterHighlights() {
+    cpHighlightHold = false;
+    if (cpResumeWanted && mt && mt.min < 90) {
+      mt.running = true;
+      interval = setInterval(step, Math.round(135 / mt.speed));
+      state.activeMatch = mt;
+      save();
+      updateMatch();
+    }
+    cpResumeWanted = false;
+  }
+
+  function cpHideScoreForQueuedGoal() {
+    document.body.classList.add('cp-goal-pending');
+    if (!document.getElementById('cp-spoiler-guard')) {
+      var guard = document.createElement('style');
+      guard.id = 'cp-spoiler-guard';
+      guard.textContent = '.cp-goal-pending .cp-score-card .scorebar,.cp-goal-pending #cp-commentary-stats,.cp-goal-pending #cp-commentary-feed{visibility:hidden!important}.cp-goal-pending .cp-commentary-main{min-height:82px}';
+      document.head.appendChild(guard);
+    }
+  }
+
+  function cpHighlightPriority(detail) {
+    if (detail.event === 'goal') return 0;
+    if (detail.redCard) return 1;
+    if (detail.dangerous) return 2;
+    return 3;
+  }
+
+  function cpHighlightOrder(a, b) {
+    var delta = Number(a.minute || 0) - Number(b.minute || 0);
+    if (Math.abs(delta) > 0.001) return delta;
+    return cpHighlightPriority(a) - cpHighlightPriority(b) || a.queueOrder - b.queueOrder;
+  }
+
+  function cpPlayNextHighlight() {
+    if (cpHighlightActive) return;
+    if (!cpHighlightQueue.length) {
+      if (cpHighlightHold) cpResumeAfterHighlights();
+      return;
+    }
+    var detail = cpHighlightQueue.shift();
+    cpHighlightActive = true;
+    if (detail.event === 'goal') {
+      var warning = Object.assign({}, detail, {
+        event: 'goal',
+        preGoal: true,
+        title: 'TEHLİKELİ ATAK!',
+        message: (detail.team === 0 ? state.club : rival()) + ' ceza sahasına yüklendi, gol tehlikesi büyüyor!'
+      });
+      window.dispatchEvent(new CustomEvent('cp:match-event', { detail: warning }));
+      clearTimeout(cpGoalRevealTimer);
+      cpGoalRevealTimer = window.setTimeout(function () {
+        var scoreAfter = detail.scoreAfter || { home: detail.home, away: detail.away };
+        var keepScoreHidden = cpHighlightQueue.some(function (item) { return item.event === 'goal'; });
+        window.dispatchEvent(new CustomEvent('cp:match-event', {
+          detail: Object.assign({}, detail, {
+            highlight: false,
+            goalReveal: true,
+            keepScoreHidden: keepScoreHidden,
+            scoreText: scoreAfter.home + '–' + scoreAfter.away
+          })
+        }));
+        cpGoalRevealTimer = 0;
+      }, Number(detail.goalRevealDelayMs) || 3800);
+    } else {
+      window.dispatchEvent(new CustomEvent('cp:match-event', { detail: detail }));
     }
     clearTimeout(cpHighlightReleaseTimer);
-    cpHighlightReleaseTimer = setTimeout(function () {
-      cpHighlightHold = false;
-      if (cpResumeWanted && mt && mt.min < 90) { mt.running = true; interval = setInterval(step, Math.round(135 / mt.speed)); state.activeMatch = mt; save(); updateMatch(); }
-      cpResumeWanted = false;
-    }, ms);
+    cpHighlightReleaseTimer = window.setTimeout(function () {
+      cpHighlightReleaseTimer = 0;
+      cpHighlightActive = false;
+      cpPlayNextHighlight();
+    }, Number(detail.durationMs) || 7500);
   }
+
   var cpOriginalAdvance = advanceMatchTo;
   advanceMatchTo = function (target, quiet) {
     if (cpHighlightHold) return;
     var first = mt ? mt.pos : 0;
-    // Never let the 0.18-minute simulation tick leak into stoppage time: the
-    // halftime screen and all first-half stats must represent exactly 45:00.
     if (mt && mt.running && mt.min < 45 && target > 45) target = 45;
     cpOriginalAdvance(target, quiet);
     if (!mt) return;
     var homeClub = clubs.find(function (c) { return c[0] === state.club; });
     var awayClub = clubs.find(function (c) { return c[0] === rival(); });
     var latest = mt.all.slice(Math.max(0, first), mt.pos);
+    var score = { home: Math.max(0, Number(mt.home) || 0), away: Math.max(0, Number(mt.away) || 0) };
+    for (var back = latest.length - 1; back >= 0; back--) {
+      if (latest[back].type === 'goal') {
+        if (latest[back].team === 0) score.home = Math.max(0, score.home - 1);
+        else if (latest[back].team === 1) score.away = Math.max(0, score.away - 1);
+      }
+    }
+    var pendingHighlights = [];
     latest.forEach(function (e, eventOffset) {
-      if (cpHighlightHold) return;
       var matchKey = cpMatchEventScope();
       var eventMinute = e.m == null || e.m === '' ? NaN : Number(e.m);
       if (!Number.isFinite(eventMinute)) eventMinute = Number(mt.min) || 0;
       var eventId = e.id == null || e.id === '' ? null : String(e.id);
       var eventKey = eventId || [eventMinute.toFixed(3), e.type || '', e.team, e.playerId || e.player || '', e.x, e.y, first + eventOffset].join('|');
-      var live = { minute: eventMinute, simulationMinute: Number(mt.min) || eventMinute, matchKey: matchKey, eventKey: eventKey, x: e.x == null ? mt.x : e.x, y: e.y == null ? mt.y : e.y, team: e.team || 0, event: e.type, running: !!mt.running, home: mt.home, away: mt.away, colors: [homeClub && homeClub[3] || '#18234e', awayClub && awayClub[4] || '#f1ead7'], fromX: e.fromX, fromY: e.fromY, eventId: eventId, actorIndex:e.actorIndex, receiverIndex:e.receiverIndex, player:e.player, playerId:e.playerId, rosters:[mt.userLineup||[],mt.opponentLineup||[]], formation:state.formation };
+      var scoreBefore = { home: score.home, away: score.away };
+      if (e.type === 'goal') {
+        if (e.team === 0) score.home++;
+        else if (e.team === 1) score.away++;
+      }
+      var scoreAfter = { home: score.home, away: score.away };
+      var live = {
+        minute: eventMinute,
+        simulationMinute: Number(mt.min) || eventMinute,
+        matchKey: matchKey,
+        eventKey: eventKey,
+        x: e.x == null ? mt.x : e.x,
+        y: e.y == null ? mt.y : e.y,
+        team: e.team || 0,
+        event: e.type,
+        running: !!mt.running,
+        home: scoreBefore.home,
+        away: scoreBefore.away,
+        scoreAfter: scoreAfter,
+        colors: [homeClub && homeClub[3] || '#18234e', awayClub && awayClub[4] || '#f1ead7'],
+        fromX: e.fromX,
+        fromY: e.fromY,
+        eventId: eventId,
+        actorIndex: e.actorIndex,
+        receiverIndex: e.receiverIndex,
+        player: e.player,
+        playerId: e.playerId,
+        rosters: [mt.userLineup || [], mt.opponentLineup || []],
+        formation: state.formation
+      };
       window.CP_LIVE_MATCH = live;
       if (quiet) return;
       var dangerX = e.team === 0 ? Number(e.x) >= 82 : Number(e.x) <= 18;
@@ -1272,15 +1383,33 @@ try {
       if (cpHandledHighlightEvents[handledKey]) return;
       cpHandledHighlightEvents[handledKey] = true;
       if (dangerous) cpLastDangerMinute = eventMinute;
-      var labels = { goal: 'GOL!', shot: e.onTarget ? 'TEHLİKELİ ATAK!' : 'ŞUT DENEMESİ', card: redCard ? 'KIRMIZI KART! TAKIM 10 KİŞİ' : 'SARI KART' , corner: 'DURAN TOP FIRSATI' };
-      var detail = Object.assign({}, live, { highlight: true, redCard: redCard, title: labels[e.type] || (dangerous ? 'TEHLİKELİ ATAK' : 'KİLİT AN'), message: e.msg || '', player: e.player || '', xg: e.xg || 0, onTarget: !!e.onTarget });
-      cpHoldForReplay(7500);
-      if (e.type === 'goal') {
-        var warning = Object.assign({}, detail, { event: 'goal', preGoal: true, title: 'TEHLİKELİ ATAK!', message: (e.team === 0 ? state.club : rival()) + ' ceza sahasına yüklendi, gol tehlikesi büyüyor!' });
-        window.dispatchEvent(new CustomEvent('cp:match-event', { detail: warning }));
-        window.setTimeout(function () { window.dispatchEvent(new CustomEvent('cp:match-event', { detail: Object.assign({}, detail, { highlight: false, goalReveal: true, scoreText: detail.home + '–' + detail.away }) })); }, 3800);
-      } else window.dispatchEvent(new CustomEvent('cp:match-event', { detail: detail }));
+      var labels = {
+        goal: 'GOL!',
+        shot: e.onTarget ? 'TEHLİKELİ ATAK!' : 'ŞUT DENEMESİ',
+        card: redCard ? 'KIRMIZI KART! TAKIM 10 KİŞİ' : 'SARI KART',
+        corner: 'DURAN TOP FIRSATI'
+      };
+      pendingHighlights.push(Object.assign({}, live, {
+        highlight: true,
+        redCard: redCard,
+        dangerous: dangerous,
+        title: labels[e.type] || (dangerous ? 'TEHLİKELİ ATAK' : 'KİLİT AN'),
+        message: e.msg || '',
+        player: e.player || '',
+        xg: e.xg || 0,
+        onTarget: !!e.onTarget,
+        durationMs: 7500,
+        goalRevealDelayMs: 3800,
+        queueOrder: cpHighlightSequence++
+      }));
     });
+    if (!pendingHighlights.length) return;
+    pendingHighlights.sort(cpHighlightOrder);
+    Array.prototype.push.apply(cpHighlightQueue, pendingHighlights);
+    cpHighlightQueue.sort(cpHighlightOrder);
+    if (cpHighlightQueue.some(function (item) { return item.event === 'goal'; })) cpHideScoreForQueuedGoal();
+    cpPauseForHighlights();
+    cpPlayNextHighlight();
   };
 
   function cpPauseAtHalf() {
