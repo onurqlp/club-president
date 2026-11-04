@@ -45,12 +45,19 @@
     c.paidAmount = Math.max(0, Number(c.paidAmount) || 0);
     c.nextPaymentDay = Number(c.nextPaymentDay) || ((Number(c.signedDay) || 0) + 7);
     if (c.paidAmount > 0) {
+      var deals = s.sponsorDeals || [];
+      var item = Number.isInteger(c.historyIndex) ? deals[c.historyIndex] : null;
+      if (item && !item.id) item.id = c.id;
       var advanceId = c.id + ':advance';
-      if (!findTx(s, advanceId)) {
-        var deals = s.sponsorDeals || [];
-        var item = Number.isInteger(c.historyIndex) ? deals[c.historyIndex] : null;
-        var advance = Number(c.advancePaid || (item && item.advancePaid)) || Math.min(c.paidAmount, Math.round((Number(c.totalAmount) || 0) * .2));
-        book(s, advanceId, 'sponsor-advance', advance, 0, c.name || 'Sponsor advance');
+      var advance = Number(c.advancePaid || (item && item.advancePaid)) || Math.min(c.paidAmount, Math.round((Number(c.totalAmount) || 0) * .2));
+      if (!findTx(s, advanceId)) book(s, advanceId, 'sponsor-advance', advance, 0, c.name || 'Sponsor advance');
+      var historical = Math.max(0, c.paidAmount - advance), per = Math.max(0, Number(c.installmentAmount) || 0);
+      for (var n = 1; n <= c.installmentsPaid; n++) {
+        var paymentId = c.id + ':installment:' + n;
+        if (findTx(s, paymentId)) continue;
+        var amount = n === c.installmentsTotal ? historical : Math.min(per, historical);
+        book(s, paymentId, 'sponsor-installment', amount, 0, c.name || 'Sponsor installment');
+        historical = Math.max(0, historical - amount);
       }
     }
     return c;
@@ -108,6 +115,20 @@
   function money(value) {
     return typeof window.cash === 'function' ? window.cash(value) :
       new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(Number(value) || 0) + ' €';
+  }
+  function transactionLabel(kind) {
+    var map = {
+      'sponsor-advance': t('Sponsor imza avansı', 'Sponsoring-Anzahlung'),
+      'sponsor-installment': t('Sponsor taksidi', 'Sponsoringrate'),
+      'scout-weekly-budget': t('Scout haftalık bütçesi', 'Wöchentliches Scoutbudget'),
+      'club-weekly-operations': t('Personel ve tesis gideri', 'Personal- und Anlagenkosten'),
+      'liability-payment': t('Transfer taksidi', 'Transfer-Rate'),
+      'player-sale': t('Oyuncu satışı', 'Spielerverkauf'),
+      'player-purchase': t('Oyuncu transferi', 'Spielerverpflichtung'),
+      'match-income': t('Maç günü geliri', 'Spieltageinnahmen'),
+      'season-prize': t('Sezon ödülü ve bütçe', 'Saisonprämie und Budget')
+    };
+    return map[kind] || kind;
   }
   function ensureScout(s) {
     return typeof window.cpScoutInit19 === 'function' ? window.cpScoutInit19() : (s.scout19 || null);
@@ -271,7 +292,8 @@
     window.incomingResponse = function (id, action) {
       var s = state(), m = s && window.marketState();
       if (!s || !m) return oldIncomingResponse.apply(this, arguments);
-      expireOffers(s);
+      var expiredNow = expireOffers(s);
+      if (expiredNow) { api.save(); api.render(); }
       var offer = m.incoming.find(function (x) { return x.id === id && x.status === 'open'; });
       if (!offer) return;
       if (!Number.isFinite(Number(offer.expiresDay))) {
@@ -366,7 +388,7 @@
     var delta = Math.max(0, (Number(c.paidAmount) || 0) - (before && before.id === c.id ? Number(before.paidAmount) || 0 : 0));
     var per = Number(c.installmentAmount) || 0;
     for (var n = oldPaid + 1; n <= nowPaid; n++) {
-      var amount = n === c.installmentsTotal ? Math.max(0, delta - per * (nowPaid - oldPaid - 1)) : Math.min(per, delta);
+      var amount = n === c.installmentsTotal ? Math.max(0, delta) : Math.min(per, delta);
       book(after, c.id + ':installment:' + n, 'sponsor-installment', amount, 0, c.name || 'Sponsor installment');
       delta -= amount;
     }
@@ -451,7 +473,6 @@
         scoutSummary.reports + t(' oyuncu raporu üretildi.', ' Spielerberichte wurden erstellt.'));
       if (scoutSummary.stopped) api.notice(t('SCOUT BÜTÇESİ DURDURULDU', 'SCOUTBUDGET PAUSIERT'),
         t('Kasa haftalık scout giderini karşılayamadı; görevler saklandı.', 'Das Guthaben reichte nicht; die Scoutaufgaben bleiben gespeichert.'));
-      logSponsorDelta(null, s.sponsorContract);
       if (sponsorPaid) api.notice(t('SPONSOR ÖDEMELERİ TAMAMLANDI', 'SPONSORZAHLUNGEN VERARBEITET'), money(sponsorPaid));
       api.save(); api.render();
       return result;
@@ -484,12 +505,19 @@
   api.wrapRender(function (previous) {
     return function () {
       var result = previous.apply(this, arguments), s = state();
-      if (!s || api.getScreen() !== 'office') return result;
+      if (!s) return result;
+      var contract = ensureContract(s), sponsorCard = document.querySelector('#content .cp-sponsor-contract');
+      if (contract && contract.active && sponsorCard && !sponsorCard.querySelector('.cp-economy-contract-details')) {
+        var remaining = Math.max(0, (Number(contract.totalAmount) || 0) - (Number(contract.paidAmount) || 0));
+        var nextAmount = Math.min(remaining, Number(contract.installmentAmount) || 0);
+        sponsorCard.insertAdjacentHTML('beforeend', '<small class="cp-economy-contract-details">' + t('Kalan: ', 'Offen: ') + money(remaining) + ' · ' + t('Sonraki taksit: ', 'Nächste Rate: ') + money(nextAmount) + '</small>');
+      }
+      if (api.getScreen() !== 'office') return result;
       var panel = document.querySelector('#content .day');
       if (!panel || panel.querySelector('.cp-economy-summary')) return result;
       var entries = ledger(s).slice(0, 4).map(function (x) {
         var delta = Number(x.cashDelta) || 0;
-        return '<div class="cp-economy-row"><span><b>' + esc(x.type) + '</b><small>' +
+        return '<div class="cp-economy-row"><span><b>' + esc(transactionLabel(x.type)) + '</b><small>' +
           esc(x.date || '') + ' · ' + esc(x.details || '') + '</small></span><strong class="' +
           (delta >= 0 ? 'plus' : 'minus') + '">' + (delta >= 0 ? '+' : '−') + money(Math.abs(delta)) + '</strong></div>';
       }).join('');
