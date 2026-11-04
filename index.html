@@ -1888,12 +1888,20 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
       if (item && !item.id) item.id = c.id;
       var advanceId = c.id + ':advance';
       var advance = Number(c.advancePaid || (item && item.advancePaid)) || Math.min(c.paidAmount, Math.round((Number(c.totalAmount) || 0) * .2));
-      if (!findTx(s, advanceId)) book(s, advanceId, 'sponsor-advance', advance, 0, c.name || 'Sponsor advance');
+      if (!findTx(s, advanceId)) {
+        var advanceTx = book(s, advanceId, 'sponsor-advance', advance, 0, c.name || 'Sponsor advance');
+        advanceTx.day = Number(c.signedDay) || s.day;
+        if (typeof nextDate === 'function') advanceTx.date = nextDate(s.date, advanceTx.day - s.day);
+      }
       var historical = Math.max(0, c.paidAmount - advance), per = Math.max(0, Number(c.installmentAmount) || 0);
       for (var n = 1; n <= c.installmentsPaid; n++) {
         var paymentId = c.id + ':installment:' + n;
         var amount = n === c.installmentsTotal ? historical : Math.min(per, historical);
-        if (!findTx(s, paymentId)) book(s, paymentId, 'sponsor-installment', amount, 0, c.name || 'Sponsor installment');
+        if (!findTx(s, paymentId)) {
+          var historicalTx = book(s, paymentId, 'sponsor-installment', amount, 0, c.name || 'Sponsor installment');
+          historicalTx.day = (Number(c.signedDay) || 0) + 7 * n;
+          if (typeof nextDate === 'function') historicalTx.date = nextDate(s.date, historicalTx.day - s.day);
+        }
         historical = Math.max(0, historical - amount);
       }
     }
