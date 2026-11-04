@@ -16,7 +16,7 @@ Futbol kulübü başkanlık simülasyonu — v1.21 (Türkçe arayüz).
 - Transfer teklifleri son günle gösterilir ve süre dolunca kapanır. Pencere kapalıyken kabul düğmesi ön anlaşma olarak açıklanır; kadro derinliği nedeniyle tamamlanmayan satış kaydı kaybolmaz.
 - Transfer alım/satımı, maç günü geliri, haftalık kulüp gideri, transfer taksidi ve sezon ödülü ayrı işlem kimlikleriyle mali işlem listesine yazılır.
 - Ofis ekranında son mali hareketler, kulüp bildirimleri, bekleyen karar durumu ve sponsor sözleşmesinin kalan/sonraki taksit tutarı görünür.
-- Mevcut kariyer verisi korunur; işlem defteri eski kayıtlar için açılışta oluşturulur.
+- Mevcut kariyer verisi korunur; eski kayıtlarda işlem defteri ilk kaydetme sırasında eklenir.
 
 ## v1.20 — Kalıcı kadro seçimi ve sezon tutarlılığı
 
