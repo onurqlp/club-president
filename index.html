@@ -835,7 +835,7 @@ playerProfile=function(id){oldPlayerProfile11(id);if(!state)return;var p=state.p
 var oldSimulateWorldWeek11=simulateWorldWeek;
 simulateWorldWeek=function(round){if(state&&state.worldPlayers&&state.worldClubs){clubsOfLeague().forEach(function(name){var ix=clubs.findIndex(function(c){return c[0]===name});if(ix<0)return;var roster=squad(ix),club=state.worldClubs[name];if(club&&roster.length){var avg=roster.slice().sort(function(a,b){return grade(b)-grade(a)}).slice(0,11).reduce(function(sum,p){return sum+grade(p)},0)/Math.min(roster.length,11);club.quality=Math.max(40,Math.min(96,Math.round((club.quality||70)*.4+avg*.6)))}})}return oldSimulateWorldWeek11(round)};
 var oldAdvancedTransfer11=advancedTransfer;
-function marketPanel(){var m=marketState(),win=transferNotice(),offers=m.incoming.filter(function(o){return o.status==='open'});return '<div class="cp-market-status"><b>'+esc(win)+'</b><span>'+T('Gerçekçi kulüp pazarlıkları • Gelen teklifler • Rakip transferleri','Vereinsverhandlungen • Eingehende Angebote • KI-Transfers')+'</span></div><div class="career-panel"><h3>📨 '+T('GELEN TRANSFER TEKLİFLERİ','EINGEHENDE ANGEBOTE')+' ('+offers.length+')</h3><div class="cp-offers">'+(offers.length?offers.map(function(o){var p=state.players.find(function(z){return z.id===o.playerId});return p?'<div class="cp-offer"><div><b>'+esc(clubs[o.clubIx][0])+'</b> → '+esc(p.name)+'<small>'+money(o.fee)+' · '+o.created+' · '+T('SON GÜN: ','FRIST: ')+(o.expiresDate||nextDate(o.created,19))+'</small></div><div class="cp-offer-actions"><button class="btn" data-cp-offer="accept" data-id="'+o.id+'">'+(isWindow(state.date)?T('KABUL','ANNEHMEN'):T('ÖN ANLAŞMA','VORVERTRAG'))+'</button><button class="btn dark" data-cp-offer="counter" data-id="'+o.id+'">'+T('PAZARLIK','VERHANDELN')+'</button><button class="btn dark" data-cp-offer="reject" data-id="'+o.id+'">'+T('REDDET','ABLEHNEN')+'</button></div></div>':''}).join(''):'<p class="small">'+T('Henüz teklif yok. Oyun günlerini ilerlettikçe rakip kulüpler kadronu takip edecek.','Noch keine Angebote. Andere Vereine beobachten deinen Kader, wenn Spieltage fortschreiten.')+'</p>')+'</div></div><div class="career-panel"><h3>⏳ '+T('BEKLEYEN ANLAŞMALAR','AUSSTEHENDE VERTRÄGE')+'</h3><div class="cp-offers">'+(m.queuedBuys.length+m.queuedSales.length?m.queuedBuys.map(function(q){return '<div class="cp-offer"><b>'+esc(q.name)+' · '+q.date+'</b><button class="btn dark" data-cp-cancelbuy="'+esc(q.id)+'">'+T('İPTAL','STORNIEREN')+'</button></div>'}).join('')+m.queuedSales.map(function(q){var p=state.players.find(function(x){return x.id===q.playerId});return '<div class="cp-offer"><b>'+esc(p?.name||q.playerId)+' → '+esc(clubs[q.clubIx][0])+' · '+q.date+'</b></div>'}).join(''):'<p class="small">'+T('Bekleyen anlaşma bulunmuyor.','Keine ausstehenden Verträge.')+'</p>')+'</div></div><div class="career-panel"><h3>🌍 '+T('DÜNYA TRANSFER HABERLERİ','TRANSFERNACHRICHTEN AUS ALLER WELT')+'</h3><div class="cp-offers">'+(m.log.length?m.log.slice(0,12).map(function(x){return '<div class="cp-offer"><span><b>'+esc(x.name)+'</b><small>'+esc(x.from)+' → '+esc(x.to)+' · '+x.date+'</small></span><strong>'+money(x.fee)+'</strong></div>'}).join(''):'<p class="small">'+T('Transfer dönemi başladığında kulüpler arasındaki anlaşmalar burada görünecek.','Sobald das Transferfenster öffnet, erscheinen hier Transfers zwischen Vereinen.')+'</p>')+'</div></div>'}
+function marketPanel(){var m=marketState(),win=transferNotice(),offers=m.incoming.filter(function(o){return o.status==='open'});return '<div class="cp-market-status"><b>'+esc(win)+'</b><span>'+T('Gerçekçi kulüp pazarlıkları • Gelen teklifler • Rakip transferleri','Vereinsverhandlungen • Eingehende Angebote • KI-Transfers')+'</span></div><div class="career-panel"><h3>📨 '+T('GELEN TRANSFER TEKLİFLERİ','EINGEHENDE ANGEBOTE')+' ('+offers.length+')</h3><div class="cp-offers">'+(offers.length?offers.map(function(o){var p=state.players.find(function(z){return z.id===o.playerId});return p?'<div class="cp-offer"><div><b>'+esc(clubs[o.clubIx][0])+'</b> → '+esc(p.name)+'<small>'+money(o.fee)+' · '+o.created+' · '+T('SON GÜN: ','FRIST: ')+(o.expiresDate||nextDate(o.created,19))+'</small></div><div class="cp-offer-actions"><button class="btn" data-cp-offer="accept" data-id="'+o.id+'">'+(isWindow(state.date)?T('KABUL','ANNEHMEN'):T('ÖN ANLAŞMA','VORVERTRAG'))+'</button><button class="btn dark" data-cp-offer="counter" data-id="'+o.id+'">'+T('PAZARLIK','VERHANDELN')+'</button><button class="btn dark" data-cp-offer="reject" data-id="'+o.id+'">'+T('REDDET','ABLEHNEN')+'</button></div></div>':''}).join(''):'<p class="small">'+T('Henüz teklif yok. Oyun günlerini ilerlettikçe rakip kulüpler kadronu takip edecek.','Noch keine Angebote. Andere Vereine beobachten deinen Kader, wenn Spieltage fortschreiten.')+'</p>')+'</div></div><div class="career-panel"><h3>⏳ '+T('BEKLEYEN ANLAŞMALAR','AUSSTEHENDE VERTRÄGE')+'</h3><div class="cp-offers">'+(m.queuedBuys.length+m.queuedSales.length?m.queuedBuys.map(function(q){return '<div class="cp-offer"><b>'+esc(q.name)+' · '+q.date+(q.reason?' · '+esc(q.reason):'')+'</b><button class="btn dark" data-cp-cancelbuy="'+esc(q.id)+'">'+T('İPTAL','STORNIEREN')+'</button></div>'}).join('')+m.queuedSales.map(function(q){var p=state.players.find(function(x){return x.id===q.playerId});return '<div class="cp-offer"><b>'+esc(p?.name||q.playerId)+' → '+esc(clubs[q.clubIx][0])+' · '+q.date+'</b></div>'}).join(''):'<p class="small">'+T('Bekleyen anlaşma bulunmuyor.','Keine ausstehenden Verträge.')+'</p>')+'</div></div><div class="career-panel"><h3>🌍 '+T('DÜNYA TRANSFER HABERLERİ','TRANSFERNACHRICHTEN AUS ALLER WELT')+'</h3><div class="cp-offers">'+(m.log.length?m.log.slice(0,12).map(function(x){return '<div class="cp-offer"><span><b>'+esc(x.name)+'</b><small>'+esc(x.from)+' → '+esc(x.to)+' · '+x.date+'</small></span><strong>'+money(x.fee)+'</strong></div>'}).join(''):'<p class="small">'+T('Transfer dönemi başladığında kulüpler arasındaki anlaşmalar burada görünecek.','Sobald das Transferfenster öffnet, erscheinen hier Transfers zwischen Vereinen.')+'</p>')+'</div></div>'}
 advancedTransfer=function(){var html=oldAdvancedTransfer11();return html.replace('<div class="transfer-info">',marketPanel()+'<div class="transfer-info">')};
 var oldMatchForUI=matchScene;
 matchScene=function(){if(state&&state.date>=state.next&&!mt)setup();var html=oldMatchForUI();return html.replace('<div class="match-layout">',subPanel()+'<div class="match-layout">')};
@@ -2072,7 +2072,14 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   function archiveOffer(m, offer, status, reason) {
     if (!m || !offer) return;
     m.offerArchive = Array.isArray(m.offerArchive) ? m.offerArchive : [];
-    if (m.offerArchive.some(function (x) { return x.id === offer.id; })) return;
+    var existing = m.offerArchive.find(function (x) { return x.id === offer.id; });
+    if (existing) {
+      existing.status = status || offer.status || existing.status;
+      existing.resolvedDay = state().day;
+      existing.reason = reason || offer.reason || existing.reason || '';
+      existing.fee = offer.fee || existing.fee;
+      return;
+    }
     var copy = Object.assign({}, offer, { status: status || offer.status, resolvedDay: state().day, reason: reason || '' });
     m.offerArchive.unshift(copy);
     m.offerArchive = m.offerArchive.slice(0, 40);
@@ -2204,11 +2211,38 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
       if (result && s && offer) {
         book(s, txId, 'player-sale', (Number(s.cash) || 0) - cashBefore,
           (Number(s.budget) || 0) - budgetBefore, offer.playerId || '');
+        archiveOffer(marketState(), offer, offer.status || 'completed');
         api.save();
       }
       return result;
     };
   }
+
+  var oldSettleQueue = settleQueue;
+  settleQueue = function () {
+    var s = state(), m = s && marketState(), sales = m ? m.queuedSales.slice() : [];
+    var result = oldSettleQueue.apply(this, arguments);
+    s = state(); m = s && marketState();
+    if (s && m) {
+      sales.forEach(function (queued) {
+        var offer = m.incoming.find(function (x) { return x.id === queued.offerId; });
+        if (offer && offer.status === 'accepted' && s.players.some(function (p) { return p.id === offer.playerId; })) {
+          offer.status = 'blocked';
+          offer.reason = t('Transfer döneminde bütçe veya kadro koşulu sağlanmadı', 'Budget- oder Kaderbedingung im Transferfenster nicht erfüllt');
+          archiveOffer(m, offer, 'blocked', offer.reason);
+        }
+      });
+      (m.queuedBuys || []).forEach(function (queued) {
+        if (queued.date <= s.date) {
+          queued.status = 'awaiting-resources';
+          queued.reason = t('Bütçe veya kadro koşulu bekleniyor; anlaşma iptal edilmedi', 'Wartet auf Budget oder Kaderplatz; der Vorvertrag bleibt bestehen');
+          queued.lastAttemptDay = s.day;
+        }
+      });
+      api.save();
+    }
+    return result;
+  };
 
   var oldBeginDeal = beginDeal;
   if (typeof oldBeginDeal === 'function') {
