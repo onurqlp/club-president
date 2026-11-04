@@ -2,6 +2,15 @@
 
 Futbol kulübü başkanlık simülasyonu — v1.21 (Türkçe arayüz).
 
+## GO 4 — Arayüz ve mobil/masaüstü son ayarı
+
+- Maç izleme, devre arası, taktik ve oyuncu değişikliği kontrolleri daha rahat dokunma için en az 44 px hedef yüksekliğe getirildi.
+- Dar telefon ekranlarında devre arası kararları tek sütuna alınır; kısa yatay ekranlarda maç alanı ve alt gezinme çubuğu kullanılabilir yükseklikte kalır, güvenli alan boşlukları korunur.
+- Yedek 3D sunum yolu, düşük donanımlı telefonlarda kenar yumuşatma ve piksel yoğunluğunu düşürür; masaüstü görsel kalitesi korunur. Bu ayar simülasyon kurallarını değiştirmez ve EvoFootball Arena çekirdeğini düzenlemez.
+- Maç/kadro/ekonomi modülleri arasındaki fonksiyon erişimi netleştirildi; kariyer başlangıcı ve maç akışında görülen kapsam hataları düzeltildi.
+- Kayıt sürümü ve ekrandaki v1.21 sürüm etiketi eşitlendi. Mevcut kariyer kaydı silinmez.
+- Kontrol: geçici, izole önizlemede kariyer açılışı, kadro ekranı, maç başlatma/sonuç ve transfer ekranı incelendi. Mobil kırılımlar ve dokunma hedefleri CSS üzerinden kontrol edildi; gerçek cihaz/viewport otomasyonu bu ortamda bulunmadığından fiziksel telefon doğrulaması yapılmadı.
+
 ## v1.19 — 11v11 maç verisi ve tam kadro
 
 - Maç olayları, skor, istatistikler ve oyuncu kimlikleri seçili 11 kişilik kadro üzerinden tek simülasyon akışında üretilir.
