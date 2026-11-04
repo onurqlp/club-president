@@ -60,7 +60,8 @@
     var players = state.players || [];
     if (!players.length) return 80;
     var sum = players.slice(0, 11).reduce(function (total, player) {
-      return total + (Number(player.condition) || 80);
+      var condition = Number(player.condition);
+      return total + (Number.isFinite(condition) ? condition : 80);
     }, 0);
     return Math.round(sum / Math.min(11, players.length));
   }
@@ -82,7 +83,7 @@
   }
   function lastOutgoing(state) {
     var log = state.marketV11 && state.marketV11.log || [];
-    return log.find(function (row) { return row.type === 'out' || row.type === 'ai-ai'; });
+    return log.find(function (row) { return row.type === 'out' && row.from === state.club; });
   }
   function ready(state, id, cooldown) {
     var e = engine(state);
@@ -101,7 +102,7 @@
       body = tx('Mali işler ekibi, gelecek haftaki maaş ve tesis giderleri için harcamaları gözden geçirmeni istiyor. Kasada '+Math.round(state.cash / 1000000)+' milyon € var. Transfer ve maaş taahhütlerini de düşünerek yön belirle.',
         'Die Finanzabteilung bittet um einen Ausgabenplan für Gehälter und Anlagen. Die Kasse enthält '+Math.round(state.cash / 1000000)+' Mio. €. Berücksichtige laufende Transfer- und Gehaltsverpflichtungen.');
       choices = [
-        option('Bir hafta yeni harcamaları dondur','Neue Ausgaben eine Woche einfrieren',{trust:2,morale:-1}),
+        option('Bir hafta yeni harcamaları dondur','Neue Ausgaben eine Woche einfrieren',{trust:2,morale:-1},{freezeDays:7}),
         option('Tesis yatırımını ertele, kadroyu koru','Anlageninvestition verschieben, Kader schützen',{trust:1,coach:1}),
         option('Taraftara açık mali plan sun','Finanzplan transparent erklären',{fans:2,trust:2})
       ];
@@ -151,7 +152,7 @@
       body = tx('Bir haftalık çalışma tamamlandı. Ekip, oyuncu gelişimini takip edecek düzenli bir plana geçilmesini öneriyor. Proje bütçesini nasıl kapatalım?',
         'Die erste Arbeitswoche ist abgeschlossen. Das Team empfiehlt einen regelmäßigen Entwicklungsplan. Wie soll das Projekt weitergeführt werden?');
       choices = [
-        option('Projeyi bir ay daha sürdür','Das Projekt einen Monat fortsetzen',{cash:-300000,facility:2,trust:2},{thread:'academy',clear:true}),
+        option('Projeyi bir ay daha sürdür','Das Projekt einen Monat fortsetzen',{cash:-300000,facility:2,trust:2},{thread:'academy',extendDays:30}),
         option('Bu sonucu yeterli gör, projeyi kapat','Ergebnis sichern und Projekt beenden',{facility:1,trust:1},{thread:'academy',clear:true}),
         option('Raporu A takım antrenmanına aktar','Erkenntnisse ins Training der Profis übernehmen',{coach:1,morale:1},{thread:'academy',clear:true})
       ];
@@ -284,7 +285,6 @@
     data.nextDay = day + 4 + Math.floor(seed((state.club||'')+'|'+day+'|'+data.total)()*4);
     if (scenario.staticKey === 'sponsor') data.cooldowns.sponsor_offer = day + 60;
     if (scenario.id === 'press_review') data.pressPromise = null;
-    if (scenario.id === 'academy_report') delete data.threads.academy;
     return data;
   }
   function showScenario(scenario, state) {
@@ -343,9 +343,12 @@
     var state=api.getState(),data=state&&engine(state),index=Number(button.dataset.answer);
     if(!state||!data||!data.pending||data.pending.id!==meta.id)return;
     var selected=dialogue.choices[index],choiceMeta=selected&&selected[5]||{},day=Number(state.day)||0;
+    if (!selected || !api.canAffordChoice(index)) return;
     data.pending=null;
-    if(choiceMeta.thread==='academy'&&choiceMeta.set)data.threads.academy={started:day,dueDay:day+8};
+    if(choiceMeta.thread==='academy'&&choiceMeta.set)data.threads.academy={started:day,dueDay:day+7};
+    if(choiceMeta.thread==='academy'&&choiceMeta.extendDays)data.threads.academy={started:data.threads.academy&&data.threads.academy.started||day,dueDay:day+Number(choiceMeta.extendDays)};
     if(choiceMeta.thread==='academy'&&choiceMeta.clear)delete data.threads.academy;
+    if(choiceMeta.freezeDays)state.spendingFreezeUntilDay=day+Number(choiceMeta.freezeDays);
     if(choiceMeta.promise==='win'||choiceMeta.promise==='performance'||choiceMeta.promise==='calm'){
       data.pressPromise={round:Number(state.round)||0,type:choiceMeta.promise,day:day};
     }
