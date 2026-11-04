@@ -42,3 +42,25 @@ body.cp-match-active #content{margin:0!important;padding:0!important;max-width:n
 .cp-intervention-row span{font-size:10px;color:#a9c1b5;font-weight:800;margin-left:5px}
 .cp-intervention-row .touch-btn{padding:6px 9px;font-size:10px}
 @media(max-width:600px){.cp-intervention-row{gap:4px;padding:7px 6px}.cp-intervention-row b{width:100%;font-size:12px}.cp-intervention-row span{font-size:9px;margin-left:2px}.cp-intervention-row .touch-btn{padding:6px 7px;font-size:9px;min-height:32px}}
+
+/* GO 4: touch sizing, narrow screens and short landscape viewports */
+.cp-return{min-height:44px}
+.cp-result-close{width:44px;height:44px}
+.cp-watch-controls .btn{min-height:44px}
+.cp-tactic-card .touch-btn{min-height:44px}
+.cp-half-tactics button,.cp-half-sub,.cp-half-resume{min-height:44px}
+@media(max-width:650px){
+  .cp-watch-top{gap:6px;padding-inline:8px}
+  .cp-return{padding-inline:9px}
+  .cp-halftime-card{max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px)}
+  .cp-half-actions{grid-template-columns:1fr}
+  .cp-watch-controls .btn{white-space:normal;line-height:1.15}
+}
+@media(max-height:520px) and (max-width:900px){
+  #game{min-height:0}
+  #hud{height:48px}
+  #nav{height:56px}
+  .cp-watch-page{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+  .cp-broadcast-stage{min-height:0}
+  .cp-halftime-card{max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px)}
+}
