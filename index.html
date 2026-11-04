@@ -1338,5 +1338,196 @@ try {
   };
 })();
 
+/* v1.14 — interactive off-pitch negotiation rooms */
+var cpOriginalShowDeal114=showDeal,cpOriginalBidDeal114=bidDeal,cpOriginalContractDeal114=contractDeal,cpOriginalFinalizeDeal114=finalizeDeal;
+var cpOriginalHireCoach114=cpHireCoach16,cpOriginalAnswerPlayer114=answerPlayer,cpOriginalDecide114=decide;
+function cpSafeNumber114(v,d){v=Number(v);return Number.isFinite(v)?v:d}
+function cpActionBox114(title,subtitle,body){
+ modal('<div class="eyebrow">BAŞKANLIK GÖRÜŞMESİ · ETKİLEŞİMLİ MASA</div><h2>'+title+'</h2><p>'+subtitle+'</p>'+body);
+}
+function cpDealStatus114(d,who){
+ var round=who==='KULÜP'?d.clubRounds||0:d.agentRounds||0;
+ var mood=who==='KULÜP'?(d.clubRapport||50):(d.agentRapport||50);
+ var label=mood>67?'Görüşmeye açık':mood>40?'Temkinli':'Sabırsız';
+ return '<div class="report"><div><span>TUR</span><b>'+Math.max(1,round+1)+'/4</b></div><div><span>KARŞI TARAF</span><b>'+label+'</b></div><div><span>GÖRÜŞME HAVASI</span><b>'+mood+'/100</b></div></div>';
+}
+showDeal=function(){
+ var d=state&&state.pendingDeal;if(!d)return;
+ var p=byPlayer(d.id);if(!p){state.pendingDeal=null;return}
+ d.clubRounds=d.clubRounds||d.attempt||0;d.agentRounds=d.agentRounds||0;d.clubRapport=d.clubRapport||50;d.agentRapport=d.agentRapport||50;
+ if(d.stage==='club'){
+  var cpLine=d.lastTalk||'Kulüp, oyuncunun piyasa değerini ve kadrodaki önemini masaya koyuyor.';
+  modal('<div class="eyebrow">TRANSFER MASASI · KULÜP YÖNETİMİ</div><h2>'+esc(p.name.toUpperCase())+'</h2><div class="deal-flow">① KULÜP PAZARLIĞI → ② OYUNCU TEMSİLCİSİ → ③ BAŞKANIN İMZASI</div><p><b>'+esc(clubs[p.clubIx][0])+' temsilcisi:</b> “'+esc(cpLine)+'”</p>'+cpDealStatus114(d,'KULÜP')+'<p>Bonservis tahmini <b>'+moneyEUR(estimateValue(p))+'</b>. Teklifinin gücü; peşinat, taksit, sonraki satış payı ve masadaki yaklaşımına göre değişir.</p><div class="deal-form"><label>TOPLAM BONSERVİS (M€)<input id="dealFee" type="number" step="0.5" min="0.5" max="500" value="'+d.fee+'"></label><label>TAKSİTLİ ÖDEME<select id="dealInst"><option value="0">Peşin %100</option><option value="25" '+(d.installment===25?'selected':'')+'>%25 sonraki 12 ay</option><option value="50" '+(d.installment===50?'selected':'')+'>%50 sonraki 12 ay</option></select></label><label>SONRAKİ SATIŞTAN PAY<select id="dealSell"><option value="0">Yok</option><option value="10" '+(d.sellOn===10?'selected':'')+'>%10</option><option value="20" '+(d.sellOn===20?'selected':'')+'>%20</option></select></label><label>MASADAKİ YAKLAŞIM<select id="dealApproach"><option value="balanced">Dengeli ve açık</option><option value="respect">İlişkiyi koru</option><option value="firm">Kararlı pazarlık</option><option value="structured">Ödeme yapısını kullan</option></select></label></div><p class="small">Dengeli yaklaşım iki tarafı da gözetir. İlişki kurmak kabul ihtimalini artırır; sert pazarlık daha iyi fiyat sağlayabilir ama sabrı azaltır. Taksit ve satış payı kulübün nakit baskısını hafifletebilir.</p><div class="row-btn"><button class="btn" data-dealbid="1">BU TEKLİFİ MASAYA KOY</button><button class="btn dark" data-canceldeal="1">MASADAN KALK</button></div>');
+ }else if(d.stage==='contract'){
+  modal('<div class="eyebrow">TRANSFER MASASI · OYUNCU VE MENAJER</div><h2>'+esc(p.name.toUpperCase())+'</h2><div class="deal-flow">✓ KULÜP ANLAŞTI → ② ÜCRET / ROL / SÜRE → ③ BAŞKANIN İMZASI</div><p>Bonserviste <b>€'+d.fee.toFixed(1)+'M</b> üzerinde uzlaşıldı. Menajer garanti ücret, sözleşme süresi ve oyuncunun takım içindeki yeri hakkında konuşmak istiyor.</p>'+cpDealStatus114(d,'MENAJER')+'<p><b>Menajer:</b> “Uzun vadeli bir proje sunun; yalnızca rakam değil, oyuncunun kulüpteki rolü de önemli.”</p><div class="deal-form"><label>AYLIK MAAŞ (€ BİN)<input id="dealWage" type="number" step="5" min="10" max="1500" value="'+d.expected+'"></label><label>SÖZLEŞME SÜRESİ<select id="dealYears"><option value="2">2 yıl</option><option value="3">3 yıl</option><option value="4" '+((d.years||4)==4?'selected':'')+'>4 yıl</option><option value="5">5 yıl</option></select></label><label>İMZA PARASI (€ M)<input id="dealBonus" type="number" step="0.5" min="0" max="40" value="'+(d.bonus||0)+'"></label><label>PAZARLIK PLANI<select id="dealApproach"><option value="balanced">Dengeli paket</option><option value="loyalty">Uzun vadeli güven</option><option value="performance">Performans primi ağırlıklı</option></select></label></div><p class="small">Performans primi garanti maaş baskısını azaltır ama oyuncunun kabulü için toplam pakete katılır. Uzun sözleşme maaş beklentisini yumuşatabilir; gelecekteki maaş yükümlülüğünü uzatır.</p><div class="row-btn"><button class="btn" data-dealcontract="1">PAKETİ MENAJERE SUN</button><button class="btn dark" data-canceldeal="1">GÖRÜŞMEYİ BİTİR</button></div>');
+ }else{
+  var upfront=d.fee*1e6*(1-d.installment/100),today=upfront+(d.bonus||0)*1e6,role=d.role||'rotation';
+  modal('<div class="eyebrow">TRANSFER MASASI · SON KARAR</div><h2>İMZA ÖNCESİ KONTROL</h2><div class="deal-flow">✓ KULÜP → ✓ MENAJER → ③ BAŞKAN ONAYI</div><p>'+esc(p.name)+' ve kulübüyle anlaşma sağlandı. Şimdi ücret ve takım içi rolü onayla.</p><div class="report"><div><span>TOPLAM BONSERVİS</span><b>€'+d.fee.toFixed(1)+'M</b></div><div><span>BUGÜN KASADAN ÇIKAN</span><b>'+cash(today)+'</b></div><div><span>TAKSİTLİ BORÇ</span><b>'+cash(d.fee*1e6-upfront)+'</b></div><div><span>AYLIK MAAŞ</span><b>€'+Math.round(d.wage)+'K</b></div><div><span>SÖZLEŞME</span><b>'+d.years+' yıl</b></div></div><div class="deal-form"><label>OYUNCUYA SUNULAN ROL<select id="dealRole"><option value="rotation" '+(role==='rotation'?'selected':'')+'>Rotasyon / rekabete açık</option><option value="regular" '+(role==='regular'?'selected':'')+'>Düzenli ilk 11 şansı</option></select></label></div><p class="small">Düzenli ilk 11 vaadi oyuncu beklentisini artırır. Süre sözü tutulmazsa güven ve soyunma odası etkilenebilir.</p><div class="row-btn"><button class="btn" data-dealfinal="1">BAŞKAN OLARAK İMZALA</button><button class="btn dark" data-canceldeal="1">ANLAŞMAYI REDDET</button></div>');
+ }
+};
+bidDeal=function(){
+ var d=state&&state.pendingDeal;if(!d)return;var p=byPlayer(d.id);
+ var v=Number($('dealFee').value),inst=Number($('dealInst').value),sell=Number($('dealSell').value),approach=$('dealApproach').value;
+ if(!Number.isFinite(v)||v<=0||v>500)return toast('Geçerli bir bonservis gir');
+ if(v*1e6>state.budget)return toast('Transfer bütçesi toplam bedeli karşılamıyor');
+ if(v*1e6*(1-inst/100)>state.cash)return toast('Peşinat için yeterli kasa yok');
+ var min=estimateValue(p)/1e6*(.93+(clubs[p.clubIx][5]/200))-(inst===0?.4:inst===25?0:1.3)-sell*.028;
+ d.fee=v;d.installment=inst;d.sellOn=sell;d.clubRounds=(d.clubRounds||0)+1;d.attempt=d.clubRounds;
+ var structure=(inst>=25?.11:0)+(sell>=10?.06:0),style=approach==='respect'?.1:approach==='firm'?-.08:approach==='structured'?.14:0;
+ var priceFit=v/min,rapport=(d.clubRapport||50)/100;
+ var acceptance=Math.max(.08,Math.min(.94,.22+(priceFit-0.82)*1.35+structure+style+rapport*.12-(d.clubRounds-1)*.055));
+ var roll=random('club-neg|'+state.club+'|'+p.name+'|'+d.clubRounds)();
+ if(roll<acceptance){
+  d.stage='contract';d.lastTalk='“Bu ödeme planı ve şartlar yönetim kurulumuza uyuyor. Oyuncuyla görüşebilirsiniz.”';d.agentRounds=0;d.agentRapport=52;
+  d.negotiationLog=d.negotiationLog||[];d.negotiationLog.push({side:'club',round:d.clubRounds,offer:v,result:'accepted',approach:approach});
+  save();showDeal();toast('Kulüp anlaşmayı kabul etti. Şimdi menajer masası.');
+ }else{
+  d.clubRapport=Math.max(12,(d.clubRapport||50)+(approach==='firm'?-13:approach==='respect'?5:-3));
+  d.lastCounter='Talep €'+Math.max(.5,min*1.06).toFixed(1)+'M. Kulüp peşinatı veya gelecekteki satış payını da değerlendirecek.';
+  d.fee=Math.min(500,Math.max(v+.5,Math.round(min*(1.05+(d.clubRounds-1)*.015)*10)/10));
+  d.negotiationLog=d.negotiationLog||[];d.negotiationLog.push({side:'club',round:d.clubRounds,offer:v,result:'counter',approach:approach});
+  if(d.clubRounds>=4){state.pendingDeal=null;notice('TRANSFER GÖRÜŞMESİ SONA ERDİ',p.name+' için kulüp dört tur sonunda anlaşmaya varmadı.');save();close();toast('Kulüp masadan kalktı; bu transfer görüşmesi kapandı.');return}
+  d.lastTalk=approach==='firm'?'Başkanım, bu teklif oyuncumuzun değerini karşılamıyor. Bir sonraki teklifinizde yaklaşımınızı yumuşatmanızı bekliyoruz.':approach==='structured'?'Ödeme planı ilgi çekici; toplam bedeli biraz yükseltirseniz yönetimi ikna edebilirim.':'Teklifinizi değerlendirdik. Bonservis beklentimiz €'+d.fee.toFixed(1)+'M civarında.';
+  save();showDeal();toast('Karşı teklif geldi. Şartlarını değiştirip yeniden dene.');
+ }
+};
+contractDeal=function(){
+ var d=state&&state.pendingDeal;if(!d)return;var wage=Number($('dealWage').value),years=Number($('dealYears').value),bonus=Number($('dealBonus').value),approach=$('dealApproach').value;
+ if(!Number.isFinite(wage)||wage<10||wage>1500||!Number.isFinite(bonus)||bonus<0||bonus>40)return toast('Geçerli sözleşme şartları gir');
+ var expected=d.expected*(clubs[state.ix][5]<35?1.1:1),value=wage+bonus*11+(years>=4?expected*.05:0),ratio=value/expected;
+ d.agentRounds=(d.agentRounds||0)+1;d.years=years;d.bonus=bonus;
+ var style=approach==='loyalty'?.12:approach==='performance'?.16:0;
+ var chance=Math.max(.06,Math.min(.94,.18+(ratio-.78)*1.42+style+(d.agentRapport||52)/100*.1-(d.agentRounds-1)*.07));
+ if(random('agent-neg|'+state.club+'|'+d.id+'|'+d.agentRounds)()<chance){
+  d.wage=wage;d.stage='final';d.lastTalk='Menajer paket ve rol şartlarında uzlaşmayı kabul etti.';
+  d.negotiationLog=d.negotiationLog||[];d.negotiationLog.push({side:'agent',round:d.agentRounds,wage:wage,bonus:bonus,result:'accepted',approach:approach});
+  save();showDeal();toast('Menajer şartları kabul etti. Son imza sende.');
+ }else{
+  d.agentRapport=Math.max(10,(d.agentRapport||52)+(approach==='performance'?-7:approach==='loyalty'?7:-3));
+  d.expected=Math.ceil(expected*(1.045+(d.agentRounds-1)*.025));
+  d.negotiationLog=d.negotiationLog||[];d.negotiationLog.push({side:'agent',round:d.agentRounds,wage:wage,bonus:bonus,result:'counter',approach:approach});
+  if(d.agentRounds>=4){state.pendingDeal=null;notice('MENAJER GÖRÜŞMEDEN ÇEKİLDİ',byPlayer(d.id).name+' için sözleşme şartları dört turda uzlaşmadı.');save();close();toast('Menajer masadan kalktı; transfer tamamlanmadı.');return}
+  save();showDeal();toast('Menajer karşı teklif verdi: €'+d.expected+'K/ay. Prim ve sözleşme süresini yeniden değerlendir.');
+ }
+};
+finalizeDeal=function(){
+ var d=state&&state.pendingDeal;if(!d)return;var role=$('dealRole')?$('dealRole').value:(d.role||'rotation'),id=d.id;
+ d.role=role;var before=state.players.length;
+ cpOriginalFinalizeDeal114();
+ if(state.players.length>before){
+  var p=state.players[state.players.length-1];p.squadRole=role==='regular'?'Düzenli ilk 11':'Rotasyon';
+  if(role==='regular')state.promises.push({id:p.id||p.name,at:state.day,startMinutes:0,deadline:state.day+24,resolved:false,source:'transfer-role'});
+  notice('TRANSFER ROLÜ KAYDEDİLDİ',p.name+' için '+p.squadRole.toLowerCase()+' rolü kayda geçti; süre beklentisi sonraki haftalarda takip edilecek.');
+  save();render();
+ }
+};
+function cpSponsorRoom114(){
+ var q=state.pendingSponsorDeal;if(!q)return;
+ if(q.phase===0){
+  cpActionBox114('Sponsorla masaya otur','Ticari direktörün €2M teklifi artık otomatik kabul edilmiyor. Hakları ve kulübün itibarını birlikte pazarlık et.', '<div class="career-list"><button class="option" data-room="sponsor:premium"><b>DAHA YÜKSEK ÜCRET İSTE</b><small>€2.5M hedefle, stadyum görünürlüğü ver. Daha fazla gelir, daha belirgin taraftar tepkisi.</small></button><button class="option" data-room="sponsor:limited"><b>HAKLARI SINIRLA</b><small>€1.8M için forma ve saha kenarı görünürlüğü; kulüp kimliğini koru.</small></button><button class="option" data-room="sponsor:fan"><b>TARAFTAR GARANTİSİ İSTE</b><small>€1.6M ve geleneksel renk/arma şartı; gelir daha düşük, kabul ihtimali yüksek.</small></button></div><button class="btn dark" data-room="sponsor:walk">GÖRÜŞMEDEN ÇEKİL</button>');
+ }else if(q.phase===1){
+  cpActionBox114('Sponsorun karşılığı',q.reply, '<div class="report"><div><span>YILLIK TEKLİF</span><b>€'+q.amount.toFixed(1)+'M</b></div><div><span>MARKA GÖRÜNÜRLÜĞÜ</span><b>'+q.rights+'</b></div><div><span>GÖRÜŞME GÜVENİ</span><b>'+q.trust+'/100</b></div></div><p>Karşı taraf son bir revizyona açık. İstersen bu şartları imzala ya da tek bir son karşı teklif yap.</p><div class="row-btn"><button class="btn" data-room="sponsor:sign">ŞARTLARI İMZALA</button><button class="btn dark" data-room="sponsor:counter">SON TEKLİFİMİZİ SUN</button></div>');
+ }else{
+  cpActionBox114('Son şartlar',q.reply, '<div class="report"><div><span>YILLIK TEKLİF</span><b>€'+q.amount.toFixed(1)+'M</b></div><div><span>MARKA GÖRÜNÜRLÜĞÜ</span><b>'+q.rights+'</b></div><div><span>TARAFTAR ETKİSİ</span><b>'+q.fanEffect>0?'+':''+q.fanEffect+'</b></div></div><p>Bu teklif son. Kabul edersen sözleşme imzalanır; reddedersen sponsor masadan kalkar.</p><div class="row-btn"><button class="btn" data-room="sponsor:sign">SON TEKLİFİ İMZALA</button><button class="btn dark" data-room="sponsor:decline">ANLAŞMAYI REDDET</button></div>');
+ }
+}
+function cpBeginSponsor114(){
+ state.pendingSponsorDeal={phase:0,amount:2,rights:'Saha kenarı ve forma',fanEffect:-3,trust:55};save();cpSponsorRoom114();
+}
+function cpSponsorAction114(key){
+ var q=state.pendingSponsorDeal;if(!q)return;
+ if(key==='walk'||key==='decline'){state.pendingSponsorDeal=null;notice('SPONSOR GÖRÜŞMESİ KAPANDI','Başkan masadan kalktı; sponsorluk anlaşması yapılmadı.');save();close();render();toast('Anlaşma imzalanmadı.');return}
+ if(q.phase===0){
+  var fans=state.fans||50;
+  if(key==='premium'){q.amount=2.5;q.rights='Stadyum ve forma';q.fanEffect=-6;q.trust=50;q.reply='“€2.5M verebiliriz; bunun karşılığında stadyum ve forma görünürlüğü istiyoruz. Taraftar tepkisini siz yönetin.”';}
+  if(key==='limited'){q.amount=1.8;q.rights='Forma ve saha kenarı';q.fanEffect=-1;q.trust=63;q.reply='“Daha sınırlı görünürlük kabul edilebilir. Forma ve saha kenarı için €1.8M teklif ediyoruz.”';}
+  if(key==='fan'){q.amount=1.6;q.rights='Saha kenarı; renk ve arma korunur';q.fanEffect=3;q.trust=68;q.reply='“Taraftar güvenceniz olumlu. €1.6M karşılığında sezonluk saha kenarı görünürlüğünde uzlaşalım.”';}
+  q.phase=1;save();cpSponsorRoom114();return;
+ }
+ if(q.phase===1&&key==='counter'){
+  var uplift=q.trust>=60?.2:.1;q.amount=Math.round((q.amount+uplift)*10)/10;q.fanEffect=Math.min(5,q.fanEffect+1);q.phase=2;q.reply='“Son bir iyileştirme yapıyoruz: yıllık ücret €'+q.amount.toFixed(1)+'M. Marka görünürlüğü konusunda sınırınızı kabul ediyoruz; daha ileri gidemeyiz.”';save();cpSponsorRoom114();return;
+ }
+ if(key==='sign'){
+  var payment=q.amount*1e6;state.cash+=payment;fx({cash:0,fans:q.fanEffect,trust:q.trust>=60?2:-1});state.sponsorDeals=state.sponsorDeals||[];state.sponsorDeals.push({name:'Sezonluk ticari ortak',amount:q.amount,rights:q.rights,day:state.day,season:state.seasonCode||state.season||'2026/27'});
+  state.decisions++;notice('SPONSORLUK SÖZLEŞMESİ İMZALANDI','€'+q.amount.toFixed(1)+'M sezonluk gelir · '+q.rights+'. Taraftar desteği '+(q.fanEffect>=0?'+':'')+q.fanEffect+'.');
+  state.pendingSponsorDeal=null;save();close();render();toast('Sözleşme imzalandı: €'+q.amount.toFixed(1)+'M');return;
+ }
+}
+decide=function(i){
+ if(dialog===dialogues.sponsor){if(!state.pendingSponsorDeal)cpBeginSponsor114();else cpSponsorRoom114();return}
+ cpOriginalDecide114(i);
+};
+function cpOpenCoach114(index){
+ cpCoachInit16();var c=CP_COACHES16[index];if(!c)return;
+ state.pendingCoachDeal={index:index,phase:0,salary:c.salary,years:c.years,fee:c.fee,rapport:58,attempt:0,style:''};save();cpCoachRoom114();
+}
+function cpCoachRoom114(){
+ var q=state.pendingCoachDeal;if(!q)return;var c=CP_COACHES16[q.index];if(!c){state.pendingCoachDeal=null;return}
+ if(q.phase===0){
+  cpActionBox114('Hoca şartlarını konuşalım',c.name+' masaya yıllık görev süresi, maaş, karar yetkisi ve proje beklentisi koydu. İlk yaklaşımın görüşmenin tonunu belirleyecek.', '<div class="report"><div><span>TAHMİNİ GÖREV BEDELİ</span><b>'+cash(q.fee)+'</b></div><div><span>AYLIK MAAŞ</span><b>'+cash(q.salary)+'</b></div><div><span>İLK TEKLİF</span><b>'+q.years+' sezon</b></div></div><div class="career-list"><button class="option" data-room="coach:balanced"><b>DENGELİ PAKET</b><small>Maaşı koru, görev süresi aynı; anlaşma ihtimali yüksek, sınırlı yetki ver.</small></button><button class="option" data-room="coach:budget"><b>ÜCRETİ DÜŞÜR, PROJEYİ GÜÇLENDİR</b><small>Daha düşük maaş ve kulüp hedeflerine bağlı prim; hoca karşı şart isteyebilir.</small></button><button class="option" data-room="coach:autonomy"><b>SPORTİF YETKİ VER</b><small>Maaşı koru, hoca kararlarına daha fazla alan tanı; uzun vadeli güven kur.</small></button></div><button class="btn dark" data-room="coach:walk">ADAYLA GÖRÜŞMEYİ BİTİR</button>');
+ }else if(q.phase===1){
+  cpActionBox114('Hocanın karşı teklifi',q.reply,'<div class="report"><div><span>AYLIK MAAŞ</span><b>'+cash(q.salary)+'</b></div><div><span>SÖZLEŞME</span><b>'+q.years+' sezon</b></div><div><span>GÖRÜŞME GÜVENİ</span><b>'+q.rapport+'/100</b></div></div><p>Bir tur daha pazarlık yapabilir ya da mevcut şartları kabul edebilirsin.</p><div class="row-btn"><button class="btn" data-room="coach:accept">ŞARTLARI KABUL ET</button><button class="btn dark" data-room="coach:counter">SON KARŞI TEKLİF</button></div>');
+ }else{
+  cpActionBox114('Hocanın son cevabı',q.reply,'<div class="report"><div><span>AYLIK MAAŞ</span><b>'+cash(q.salary)+'</b></div><div><span>SÖZLEŞME</span><b>'+q.years+' sezon</b></div><div><span>GÖREV BEDELİ</span><b>'+cash(q.fee)+'</b></div></div><p>Bu şartlar son. Kabul edersen hoca göreve başlar; reddedersen aday başka teklifleri değerlendirebilir.</p><div class="row-btn"><button class="btn" data-room="coach:accept">SÖZLEŞMEYİ İMZALA</button><button class="btn dark" data-room="coach:walk">GÖRÜŞMEDEN ÇEKİL</button></div>');
+ }
+}
+function cpCoachAction114(key){
+ var q=state.pendingCoachDeal;if(!q)return;var c=CP_COACHES16[q.index];if(!c)return;
+ if(key==='walk'){state.pendingCoachDeal=null;save();close();toast('Hoca görüşmesi sona erdi.');return}
+ if(q.phase===0){
+  q.style=key;q.attempt=1;
+  if(key==='budget'){q.salary=Math.round(c.salary*.9);q.fee=Math.round(c.fee*.92);q.rapport-=3;q.reply='“Maaş indirimini yalnızca daha net sportif hedefler ve başarı primiyle değerlendirebilirim. Bu pakette küçük bir artış yapmamız gerekir.”';}
+  else if(key==='autonomy'){q.salary=Math.round(c.salary*1.04);q.years=Math.min(5,c.years+1);q.rapport+=9;q.reply='“Sportif kararlarda alan tanımanız önemli. Bu yetkiyle maaşımı bir miktar artırıp daha uzun proje imzalayabilirim.”';}
+  else{q.salary=c.salary;q.years=c.years;q.rapport+=3;q.reply='“Dengeli teklif. Sözleşmeyi kabul edebilirim; ancak görev bedelinde küçük bir iyileştirme bekliyorum.”';q.fee=Math.round(c.fee*.96)}
+  q.phase=1;save();cpCoachRoom114();return;
+ }
+ if(key==='counter'&&q.phase===1){
+  q.attempt++;q.phase=2;
+  if(q.style==='budget'){q.salary=Math.round(c.salary*.96);q.fee=Math.round(c.fee*.98);q.reply='“Son teklifim maaşın %4 altında ve görev bedelinde sınırlı indirim. Bu seviyede anlaşabiliriz.”';}
+  else if(q.style==='autonomy'){q.salary=Math.round(c.salary*1.02);q.years=Math.max(c.years,Math.min(5,c.years));q.fee=c.fee;q.reply='“Sportif yetki ve uzun proje kabul. Son maaş teklifim ilk talebimin biraz altında.”';}
+  else{q.salary=Math.round(c.salary*1.01);q.fee=Math.round(c.fee*.98);q.reply='“Son teklifim maaşta küçük bir artış ve görev bedelinde indirim. Daha fazla esneyemem.”';}
+  q.rapport=Math.max(25,q.rapport-2);save();cpCoachRoom114();return;
+ }
+ if(key==='accept'){
+  var old={salary:c.salary,fee:c.fee,years:c.years};
+  c.salary=q.salary;c.fee=q.fee;c.years=q.years;
+  state.pendingCoachDeal=null;
+  cpOriginalHireCoach114(q.index);
+  c.salary=old.salary;c.fee=old.fee;c.years=old.years;
+  state.coachNegotiations=state.coachNegotiations||[];state.coachNegotiations.push({name:c.name,salary:q.salary,years:q.years,approach:q.style,day:state.day});
+  notice('TEKNİK DİREKTÖR ANLAŞMASI',c.name+' ile '+q.years+' sezonluk sözleşme imzalandı. Görüşmede seçilen yaklaşım: '+(q.style==='autonomy'?'sportif yetki':q.style==='budget'?'bütçe disiplini':'dengeli paket')+'.');save();return;
+ }
+}
+var cpOriginalAnswerPlayer114=cpOriginalAnswerPlayer114;
+answerPlayer=function(choice){
+ var id=talkTarget,p=state&&state.players.find(function(x){return (x.id||x.name)===id});if(!p)return;
+ if(p.cpLastTalkDay===state.day)return toast('Bu oyuncuyla bugün zaten görüştün. Yarın yeniden konuşabilirsin.');
+ state.pendingPlayerTalk={id:id,choice:choice,phase:0};save();
+ var names={praise:'destek ve güven',criticize:'performans beklentisi',promise:'oynama süresi sözü',rest:'dinlenme talebi',expectation:'oyuncunun beklentisi'};
+ var desc=choice==='promise'?'Süre sözü verildiğinde sonraki 24 oyun günü boyunca kullanımı takip edilir.':choice==='rest'?'Dinlenme kondisyonu yükseltir; ancak maç seçimi ve takım planı etkilenebilir.':choice==='criticize'?'Doğrudan eleştiri bazı oyuncuları motive eder, bazılarını savunmaya iter.':'Görüşmenin tonu, oyuncunun kişiliğine ve son performansına göre değişir.';
+ cpActionBox114('Görüşmenin ikinci hamlesi',esc(p.name)+' ile '+names[choice]+' hakkında konuşuyorsun. '+desc,'<div class="career-list"><button class="option" data-room="player:support"><b>ARKASINDA DUR</b><small>Güveni artır; verdiğin desteğin sorumluluğunu da üstlen.</small></button><button class="option" data-room="player:honest"><b>AÇIK KONUŞ</b><small>Beklentiyi netleştir; ilişkiyi dengeli tut.</small></button><button class="option" data-room="player:pressure"><b>NET BİR SINIR KOY</b><small>Disiplin ve rol beklentisini vurgula; ters tepme riski var.</small></button></div>');
+};
+function cpPlayerAction114(key){
+ var q=state.pendingPlayerTalk;if(!q)return;var p=state.players.find(function(x){return (x.id||x.name)===q.id});if(!p){state.pendingPlayerTalk=null;return}
+ p.cpLastTalkDay=state.day;state.pendingPlayerTalk=null;
+ cpOriginalAnswerPlayer114(q.choice);
+ var d=personData(p),delta=key==='support'?{m:3,t:4}:key==='pressure'?{m:-2,t:-4}:{m:0,t:2};
+ d.mood=lim(d.mood+delta.m);d.trust=lim(d.trust+delta.t);fx({morale:Math.round(delta.m/5)});
+ var title=key==='support'?'Desteğini gösterdin':key==='pressure'?'Sınırını belirledin':'Beklentiyi netleştirdin';
+ notice('OYUNCU GÖRÜŞMESİ · '+p.name,title+'. Seçilen yaklaşım sonraki görüşme ve süre beklentilerinde hatırlanacak.');
+ state.playerTalkMemory=state.playerTalkMemory||{};state.playerTalkMemory[q.id]={day:state.day,choice:q.choice,approach:key};
+ save();
+ cpActionBox114('Görüşme tamamlandı',esc(p.name)+' ile konuşma sonuçlandı. Yaklaşımın kulüp kaydına işlendi.', '<div class="report"><div><span>OYUNCU MORALİ</span><b>'+d.mood+'/100</b></div><div><span>BAŞKANA GÜVEN</span><b>'+d.trust+'/100</b></div><div><span>GÖRÜŞME TONU</span><b>'+(key==='support'?'Destek':key==='pressure'?'Kararlı':'Açık')+'</b></div></div><p class="small">Aynı oyuncuyla bugün tekrar görüşemezsin. Verilen süre sözleri kariyer boyunca takip edilir.</p><div class="row-btn"><button class="btn dark" data-a="close">GÖRÜŞMEYİ KAPAT</button></div>');
+}
+function cpInteractiveClick114(e){
+ var t=e.target.closest('[data-room]');if(!t)return;
+ e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+ var x=t.dataset.room.split(':');
+ if(x[0]==='sponsor')return cpSponsorAction114(x[1]);
+ if(x[0]==='coach')return cpCoachAction114(x[1]);
+ if(x[0]==='player')return cpPlayerAction114(x[1]);
+}
+document.addEventListener('click',cpInteractiveClick114,true);
+
 })();
 </script><script src="./assets/matchday-upgrade.js?v=20261104q"></script></body></html>
