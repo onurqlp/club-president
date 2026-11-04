@@ -813,6 +813,7 @@ function completeSale(o){var p=state.players.find(function(x){return x.id===o.pl
 function settleQueue(){var m=marketState();if(!isWindow(state.date))return;var sales=m.queuedSales.slice();m.queuedSales=[];sales.forEach(function(s){var o=m.incoming.find(function(x){return x.id===s.offerId});if(o&&!completeSale(o))notice(T('TRANSFER AKSADI','TRANSFER FEHLGESCHLAGEN'),T('Anlaşma oyuncu veya bütçe değişimi nedeniyle gerçekleşmedi','Transfer wegen Kader- oder Budgetänderungen gescheitert'))});var buys=m.queuedBuys.slice();m.queuedBuys=[];buys.forEach(function(q){if(state.pendingDeal){m.queuedBuys.push(q);return}var p=byPlayer(q.id);if(!p||state.players.some(function(x){return x.id===q.id})){notice(T('TRANSFER GERÇEKLEŞMEDİ','TRANSFER NICHT ABGESCHLOSSEN'),q.name);return}state.pendingDeal=Object.assign({},q.deal,{stage:'final'});var before=state.players.length;finalizeDeal();if(state.players.length===before){m.queuedBuys.push(q);state.pendingDeal=null}});save()}
 function worldPower(){var ix=clubs.findIndex(function(c){return c[0]===rival()});if(ix<0)return {team:[],value:76};var candidates=squad(ix).slice().sort(function(a,b){return grade(b)-grade(a)}),eleven=candidates.slice(0,11);return{team:eleven,value:eleven.length?eleven.reduce(function(a,p){return a+grade(p)},0)/eleven.length:75}}
 function startMatchRoster(){if(!mt||!state)return[];var ids=mt.xiIds;if(!ids){mt.xiIds=bestXI().map(function(x){return x.id||x.name});ids=mt.xiIds}return ids.map(function(id){return state.players.find(function(p){return p.id===id||(p.name===id)})}).filter(Boolean)}
+function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m.xiIds)?m.xiIds:[],mine=ids.map(function(id){return state.players.find(function(p){return String(p.id||p.name)===String(id)})}).filter(Boolean);if(mine.length!==11)mine=(m.userLineup||lineup()).slice(0,11);return[mine,(m.opponentLineup||[]).slice(0,11)]}
 function subPanel(){if(!mt||mt.min>=90)return '';var xi=startMatchRoster(),ids=new Set(xi.map(function(p){return p.id||p.name})),bench=state.players.filter(function(p){return !ids.has(p.id||p.name)}).sort(function(a,b){return grade(b)-grade(a)}),used=mt.subs||0,active=mt.min>0&&mt.min<89.9;return '<div class="career-panel"><h3>🔄 '+T('MAÇ İÇİ MÜDAHALE','EINGRIFFE IM SPIEL')+' · '+used+'/5</h3><div class="panel-body"><p class="small">'+T('Taktik değişiklikleri ve oyuncu değişimleri yalnız kalan dakikaları etkiler.','Taktikwechsel und Auswechslungen wirken nur auf die verbleibende Spielzeit.')+'</p><div class="cp-sub-control"><select id="cp-out"><option value="">'+T('Çıkacak oyuncu','Spieler raus')+'</option>'+xi.map(function(p){return '<option value="'+esc(p.id||p.name)+'">'+esc(p.name)+' · '+Math.round(p.condition||85)+'%</option>'}).join('')+'</select><select id="cp-in"><option value="">'+T('Girecek oyuncu','Spieler rein')+'</option>'+bench.map(function(p){return '<option value="'+esc(p.id||p.name)+'">'+esc(p.name)+' · '+p.pos+'</option>'}).join('')+'</select><button class="btn" data-cp-sub="1" '+(used>=5?'disabled':'')+'>'+T('OYUNCU DEĞİŞTİR','AUSWECHSELN')+'</button></div><div class="cp-live-tip">'+matchAdvice()+'</div></div></div>'}
 function matchAdvice(){if(!mt)return'';var stats=matchStats(mt.shown,mt.min),a=stats[0],b=stats[1],own=a.shots,opp=b.shots,s=[];if(mt.min<1)return T('Maç başladığında taktik önerileri burada görünecek.','Nach Anpfiff erscheinen hier die taktischen Empfehlungen.');if(opp>own+2)s.push(T('Rakip daha çok şut çekiyor: savunma çizgisini ve pres yoğunluğunu gözden geçir.','Der Gegner schießt häufiger: Überprüfe Abwehrlinie und Pressing.'));if(own>opp+3&&mt.home<=mt.away)s.push(T('Pozisyon üretiyorsun ancak bitiricilik düşük. Santrforu veya kanadı değiştir.','Viele Chancen, aber schwacher Abschluss. Erwäge einen Stürmer- oder Flügelwechsel.'));if(mt.min>65)s.push(T('Son bölüm: yorgun oyuncuların yerine dinç yedekleri değerlendir.','Schlussphase: Wechsle müde Spieler aus.'));if(mt.home>mt.away&&mt.min>72)s.push(T('Öndesin: tempoyu düşürüp top kaybını azaltabilirsin.','Du führst: Senke das Tempo und reduziere Ballverluste.'));if(mt.home<mt.away&&mt.min>65)s.push(T('Geridesin: hücum veya yüksek pres riskini değerlendirebilirsin.','Du liegst zurück: Erwäge Angriff oder hohes Pressing.'));if(!s.length)s.push(T('Maç dengede. Mevcut taktiğin istatistiklerini takip et.','Ausgeglichenes Spiel. Beobachte die Taktikstatistiken.'));return s.slice(0,2).map(esc).join(' ')}
 function substitute(){if(typeof window.CP_SUBSTITUTE_OVERRIDE==='function')return window.CP_SUBSTITUTE_OVERRIDE();if(!state||!mt||mt.min<=0||mt.min>=90||mt.subs>=5)return toast(T('Şu anda değişiklik yapılamaz','Auswechslung momentan nicht möglich'));var out=$('cp-out')?.value,inn=$('cp-in')?.value;if(!out||!inn||out===inn)return toast(T('İki farklı futbolcu seç','Bitte zwei verschiedene Spieler wählen'));var xi=startMatchRoster(),o=xi.find(function(p){return (p.id||p.name)===out}),i=state.players.find(function(p){return (p.id||p.name)===inn});if(!o||!i||xi.includes(i))return toast(T('Geçersiz oyuncu seçimi','Ungültige Spielerauswahl'));var previous=mt.all.filter(function(e){return e.m<=mt.min}),idx=mt.xiIds.indexOf(out);mt.xiIds[idx]=inn;mt.subs=(mt.subs||0)+1;mt.subWindows=mt.subWindows||0;var future=simEvents(mt.tactic,mt.ai.style).filter(function(e){return e.m>mt.min});mt.all=previous.concat(future).sort(function(a,b){return a.m-b.m});mt.pos=previous.length;mt.shown.unshift({m:Math.floor(mt.min),team:0,type:'sub',msg:'🔄 '+o.name+' → '+i.name});i.condition=Math.max(45,(i.condition||90)-3);save();if(frame){cancelAnimationFrame(frame);frame=null}render();updateMatch();toast(T('DEĞİŞİKLİK YAPILDI','AUSWECHSLUNG DURCHGEFÜHRT'))}
@@ -2087,8 +2088,8 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
     m.offerArchive = m.offerArchive.slice(0, 40);
   }
   function expireOffers(s) {
-    if (!s || typeof marketState !== 'function') return false;
-    var m = marketState(), changed = false;
+    if (!s || (!window.CP_V11_API || typeof window.CP_V11_API.marketState !== 'function')) return false;
+    var m = window.CP_V11_API.marketState(), changed = false;
     m.offerArchive = Array.isArray(m.offerArchive) ? m.offerArchive : [];
     (m.incoming || []).forEach(function (offer) {
       if (offer.status !== 'open') return;
@@ -2109,8 +2110,8 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
     return changed;
   }
   function ensureOfferDates(s) {
-    if (!s || typeof marketState !== 'function') return false;
-    var m = marketState(), changed = false;
+    if (!s || (!window.CP_V11_API || typeof window.CP_V11_API.marketState !== 'function')) return false;
+    var m = window.CP_V11_API.marketState(), changed = false;
     (m.incoming || []).forEach(function (offer) {
       if (!Number.isFinite(Number(offer.expiresDay))) {
         offer.expiresDay = (Number(offer.day) || s.day) + 19;
@@ -2149,15 +2150,15 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
     };
   }
 
-  var oldRequestOffers = requestOffers;
+  var oldRequestOffers = window.CP_V11_API && window.CP_V11_API.requestOffers;
   if (typeof oldRequestOffers === 'function') {
-    requestOffers = function () {
+    window.CP_V11_API.requestOffers = function () {
       var s = state();
       if (!s) return oldRequestOffers.apply(this, arguments);
       var changed = expireOffers(s);
-      var before = new Set((marketState().incoming || []).map(function (x) { return x.id; }));
+      var before = new Set((window.CP_V11_API.marketState().incoming || []).map(function (x) { return x.id; }));
       var result = oldRequestOffers.apply(this, arguments);
-      var m = marketState();
+      var m = window.CP_V11_API.marketState();
       (m.incoming || []).forEach(function (offer) {
         if (before.has(offer.id)) return;
         offer.expiresDay = Number(s.day) + 19;
@@ -2172,7 +2173,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
   var oldIncomingResponse = incomingResponse;
   if (typeof oldIncomingResponse === 'function') {
     incomingResponse = function (id, action) {
-      var s = state(), m = s && marketState();
+      var s = state(), m = s && window.CP_V11_API.marketState();
       if (!s || !m) return oldIncomingResponse.apply(this, arguments);
       var expiredNow = expireOffers(s);
       if (expiredNow) { api.save(); api.render(); }
@@ -2213,7 +2214,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
       if (result && s && offer) {
         book(s, txId, 'player-sale', (Number(s.cash) || 0) - cashBefore,
           (Number(s.budget) || 0) - budgetBefore, offer.playerId || '');
-        archiveOffer(marketState(), offer, offer.status || 'completed');
+        archiveOffer(window.CP_V11_API.marketState(), offer, offer.status || 'completed');
         api.save();
       }
       return result;
@@ -2222,9 +2223,9 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
 
   var oldSettleQueue = settleQueue;
   settleQueue = function () {
-    var s = state(), m = s && marketState(), sales = m ? m.queuedSales.slice() : [];
+    var s = state(), m = s && window.CP_V11_API.marketState(), sales = m ? m.queuedSales.slice() : [];
     var result = oldSettleQueue.apply(this, arguments);
-    s = state(); m = s && marketState();
+    s = state(); m = s && window.CP_V11_API.marketState();
     if (s && m) {
       sales.forEach(function (queued) {
         var offer = m.incoming.find(function (x) { return x.id === queued.offerId; });
@@ -2426,7 +2427,7 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
     marketPanel = function () {
       var s = state(), changed = expireOffers(s) | ensureOfferDates(s), html = oldPanel.apply(this, arguments);
       if (changed) api.save();
-      var m = s && marketState(), history = m && m.offerArchive || [];
+      var m = s && window.CP_V11_API.marketState(), history = m && m.offerArchive || [];
       if (!history.length) return html;
       var rows = history.slice(0, 5).map(function (x) {
         var player = (s.players || []).find(function (p) { return p.id === x.playerId; });
