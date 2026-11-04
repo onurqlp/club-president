@@ -81,6 +81,13 @@ Türkçe ve Almanca seçimleri 🌐 menüsünden yapılır. Oyuncu, kulüp, tran
 
 - Türkçe/Almanca çeviri yardımcısı maç ekranının kullandığı ana kapsamda tanımlandı; Maça Çık ekranı artık açılışta hata vermiyor.
 
+## v1.17 — EvoFootball Arena maç motoru
+
+- Maç sonucu ve olay akışı, EvoFootball Arena'nın sabit 60 Hz fizik simülasyonundan üretilir. Oyuncu hareketi, pas, top kapma, şut, kaleci kurtarışı, faul, kart ve duran toplar aynı maç dünyasından çıkar.
+- Motorun 3D renderer'ı kritik anlarda simülasyondan alınan gerçek oyuncu/top durumlarını oynatır; skor, spiker akışı ve maç istatistikleri aynı simülasyon sonucunu izler.
+- Motorun kaynak kodu `vendor/evofootball-arena/` altında tutulur. Bu kaynak MIT lisanslı EvoFootball Arena v0.25.1 projesinden uyarlanmıştır; Three.js renderer'ı da bundle'a dahildir. Lisans ve telif bildirimleri aynı klasördeki `LICENSE` ve `THREE-LICENSE` dosyalarındadır.
+- EvoFootball Arena'nın sahadaki takım modeli 6'ya 6'dır. Kariyer kadrosu ve kayıt alanları korunur; motor ilk 11'den kaleci, savunmacı, orta saha, iki kanat ve forvet seçer.
+
 ## Yayın ayarı
 
 GitHub deposunda **Settings → Pages → Build and deployment → Deploy from a branch → main → /(root) → Save** seçeneğini etkinleştirin. Yayın etkinleşmeden site adresi 404 dönebilir.
