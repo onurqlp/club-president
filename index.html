@@ -2247,6 +2247,38 @@ function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m
     return (s.liabilities || []).map(function (x) { return { id: x.id, left: Number(x.left) || 0, monthly: Number(x.monthly) || 0 }; });
   }
 
+  var oldDecideFinance = decide;
+  decide = function () {
+    var s = state(), cashBefore = s && Number(s.cash) || 0, budgetBefore = s && Number(s.budget) || 0;
+    var result = oldDecideFinance.apply(this, arguments);
+    s = state();
+    var cashDelta = s ? (Number(s.cash) || 0) - cashBefore : 0;
+    var budgetDelta = s ? (Number(s.budget) || 0) - budgetBefore : 0;
+    if (s && (cashDelta || budgetDelta)) {
+      s.financeSerial = (Number(s.financeSerial) || 0) + 1;
+      book(s, 'management-decision:' + String(s.ix || 0) + ':' + String(s.seasonCode || 'career') + ':' + s.day + ':' + s.financeSerial,
+        'management-decision', cashDelta, budgetDelta, t('Başkanlık kararı', 'Präsidiumsentscheidung'));
+      api.save();
+    }
+    return result;
+  };
+
+  var oldCoachFinance = cpCoachAction114;
+  cpCoachAction114 = function () {
+    var s = state(), cashBefore = s && Number(s.cash) || 0, budgetBefore = s && Number(s.budget) || 0;
+    var result = oldCoachFinance.apply(this, arguments);
+    s = state();
+    var cashDelta = s ? (Number(s.cash) || 0) - cashBefore : 0;
+    var budgetDelta = s ? (Number(s.budget) || 0) - budgetBefore : 0;
+    if (s && (cashDelta || budgetDelta)) {
+      s.financeSerial = (Number(s.financeSerial) || 0) + 1;
+      book(s, 'coach-contract:' + String(s.ix || 0) + ':' + String(s.seasonCode || 'career') + ':' + s.day + ':' + s.financeSerial,
+        'coach-contract', cashDelta, budgetDelta, t('Teknik direktör sözleşmesi', 'Trainervertrag'));
+      api.save();
+    }
+    return result;
+  };
+
   var oldDay = day;
   if (typeof oldDay === 'function') {
     day = function () {
