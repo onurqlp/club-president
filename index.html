@@ -792,7 +792,7 @@ function CP11OpponentSquad(){if(!state||!state.worldPlayers)return [];var ix=clu
 /* CLUB PRESIDENT 1.1 — living transfer market, match control and DE/TR */
 (function(){
 'use strict';
-var V='1.13',LANG_KEY='cp-ui-language-2026',lang=(function(){try{return localStorage.getItem(LANG_KEY)==='de'?'de':'tr'}catch(e){return 'tr'}})();
+var V='1.21',LANG_KEY='cp-ui-language-2026',lang=(function(){try{return localStorage.getItem(LANG_KEY)==='de'?'de':'tr'}catch(e){return 'tr'}})();
 function T(tr,de){return lang==='de'?de:tr}
 function money(v){return moneyEUR(Math.round(v||0))}
 function marketState(){if(!state)return null;if(!state.marketV11)state.marketV11={incoming:[],queuedBuys:[],queuedSales:[],log:[],lastOffer:-999,lastWorldMove:-999,serial:0};return state.marketV11}
