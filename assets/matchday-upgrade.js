@@ -12,6 +12,7 @@
   var resizeHandler = null;
   var handledFinish = null;
   var activeHighlight = null;
+  var highlightStartedAt = 0;
   var highlightTimer = 0;
   var commentaryTimer = 0;
   var language = function () { try { return localStorage.getItem('cp-ui-language-2026') === 'de' ? 'de' : 'tr'; } catch (e) { return 'tr'; } };
@@ -171,6 +172,7 @@
     if (!detail.highlight) { refreshCommentary(); return; }
     window.CP_LIVE_MATCH = detail;
     activeHighlight = detail;
+    highlightStartedAt = performance.now();
     var stage = document.getElementById('cp-broadcast-stage');
     if (!stage) return;
     stage.classList.add('is-highlight');
@@ -371,10 +373,10 @@
     var bx = (Number(live.x == null ? 50 : live.x) - 50) * .92;
     var bz = (Number(live.y == null ? 50 : live.y) - 50) * .58;
     var isShot = live.event === 'shot' || live.event === 'goal';
-    var loft = isShot ? Math.max(0, Math.sin(now / 180) * (live.event === 'goal' ? 1.1 : .72)) : 0;
+    var loft = isShot ? Math.sin(Math.PI * shotProgress) * (live.event === 'goal' ? 1.1 : .72) : 0;
     var shotTargetX = (Number(live.team || 0) === 0 ? 49.5 : -49.5);
     var shotTargetZ = Math.max(-3.25, Math.min(3.25, bz * .18));
-    var shotProgress = isShot ? (0.5 + 0.5 * Math.sin(now / 390)) : 0;
+    var shotProgress = isShot ? Math.max(0, Math.min(1, (now - highlightStartedAt) / 2400)) : 0;
     var ballX = isShot ? bx + (shotTargetX - bx) * shotProgress : bx;
     var ballZ = isShot ? bz + (shotTargetZ - bz) * shotProgress : bz;
     ball.position.set(ballX, .11 + loft, ballZ); ball.rotation.set(now*.002,now*.003,now*.0012);
