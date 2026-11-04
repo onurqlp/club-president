@@ -14,6 +14,10 @@ type MatchInput = { club: string; opponent: string; clubKey?: string; seed: stri
 type LegacyEvent = { m: number; type: string; team: number; x: number; y: number; fromX: number; fromY: number; msg: string; player?: string; playerId?: string; completed?: number; passes?: number; xg?: number; onTarget?: boolean; id: string };
 type LegacyStat = { pos: number; passes: number; completed: number; shots: number; on: number; xg: number; corners: number; cards: number; lost: number };
 type EngineResult = { events: LegacyEvent[]; statsHistory: Array<{ minute: number; stats: LegacyStat[] }>; score: [number, number]; duration: number; userIds: string[]; userPlayers: ClubPlayer[]; opponentPlayers: ClubPlayer[]; replays: Record<string, RenderState[]> };
+type ReplayTarget = { id: string; time: number; before: RenderState[] };
+
+const REPLAY_PRE_ROLL_FRAMES = 36; // Six samples per second, about 3.5 seconds before the event.
+const REPLAY_POST_TICKS = 180; // Three seconds after the event at the 60 Hz simulation step.
 
 const roleSlots = ['GK', 'DF', 'MF', 'WG', 'WG', 'ST'];
 const clamp = (n: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, n));
@@ -131,7 +135,7 @@ export function simulate(input: MatchInput): EngineResult {
   const statsHistory: EngineResult['statsHistory'] = [];
   const replays: EngineResult['replays'] = Object.create(null);
   const replayRing: RenderState[] = [];
-  let activeReplay: { ids: string[]; frames: RenderState[]; untilStep: number } | null = null;
+  let activeReplay: { events: ReplayTarget[]; frames: RenderState[]; untilStep: number } | null = null;
   const oldXg = [0, 0], oldOnTarget = [0, 0];
   const track = (minute: number): void => {
     const total = match.teams[0].stats.possessionTime + match.teams[1].stats.possessionTime;
@@ -160,12 +164,18 @@ export function simulate(input: MatchInput): EngineResult {
     return legacy;
   };
   const captureStart = (id: string): void => {
-    if (activeReplay) { activeReplay.ids.push(id); activeReplay.untilStep = Math.max(activeReplay.untilStep, steps + 180); return; }
-    activeReplay = { ids: [id], frames: replayRing.slice(-12), untilStep: steps + 180 };
+    const time = match.simTime;
+    const before = replayRing.filter(frame => frame.t < time).slice(-REPLAY_PRE_ROLL_FRAMES);
+    if (!activeReplay) activeReplay = { events: [], frames: [], untilStep: steps + REPLAY_POST_TICKS };
+    activeReplay.events.push({ id, time, before });
+    activeReplay.untilStep = Math.max(activeReplay.untilStep, steps + REPLAY_POST_TICKS);
   };
   const commitReplay = (): void => {
     if (!activeReplay) return;
-    for (const id of activeReplay.ids) replays[id] = activeReplay.frames;
+    for (const event of activeReplay.events) {
+      const after = activeReplay.frames.filter(frame => frame.t >= event.time && frame.t <= event.time + 3);
+      replays[event.id] = event.before.concat(after);
+    }
     activeReplay = null;
   };
   let oldPasses = [0, 0], oldCompleted = [0, 0], oldDribbles = [0, 0];
@@ -179,7 +189,7 @@ export function simulate(input: MatchInput): EngineResult {
     if (steps % 6 === 0) {
       const frame = buildRenderState(match, false);
       replayRing.push(frame);
-      if (replayRing.length > 12) replayRing.shift();
+      if (replayRing.length > REPLAY_PRE_ROLL_FRAMES) replayRing.shift();
       if (activeReplay) {
         if (steps <= activeReplay.untilStep) activeReplay.frames.push(frame);
         else commitReplay();
