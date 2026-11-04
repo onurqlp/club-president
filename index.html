@@ -1,4 +1,4 @@
-<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><title>CLUB PRESIDENT 1.18 — Türkçe</title><style>
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><title>CLUB PRESIDENT 1.19 — Türkçe</title><style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap');
 :root{--lime:#baf361;--bg:#06111a;--light:#eaf2ec;--muted:#aabcb8;--gold:#ebc581;--red:#ff8e86}
 *{box-sizing:border-box}html,body{margin:0;background:#030a10;color:var(--light);font-family:Barlow,Arial,sans-serif;overflow:hidden}button{font:inherit;border:0;cursor:pointer}button:disabled{opacity:.35;cursor:not-allowed}#game{height:100dvh;min-height:520px;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}.hd{font-family:'Barlow Condensed',Impact,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.02em}.small{font-size:12px;color:var(--muted)}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.18em;color:var(--lime);text-transform:uppercase}#hud{height:64px;flex-shrink:0;background:#0e2028;border-bottom:1px solid #6e8c785e;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 20px}#logo{display:flex;gap:11px;align-items:center}.logo-box{background:var(--lime);color:#0c251b;padding:7px 9px;transform:skew(-7deg);font:900 23px 'Barlow Condensed'}.logo-type{font:900 22px/.83 'Barlow Condensed';white-space:nowrap}.logo-type small{display:block;font:800 8px Barlow;color:var(--lime);letter-spacing:.12em;margin-top:7px}.hud-info{display:flex;gap:22px;align-items:center}.hud-info div{display:flex;flex-direction:column;gap:3px}.hud-info span{font-size:9px;color:#92aaa7;letter-spacing:.12em}.hud-info strong{font:800 18px 'Barlow Condensed'}.tiny-btn{background:#264048;color:#ddf1df;border:1px solid #5d8983;border-radius:3px;font-weight:800;padding:8px 11px}#view{position:relative;flex:1;min-height:0;overflow:hidden;background:radial-gradient(circle at 55% 36%,#36584f,#081722 75%)}#content{position:absolute;inset:0;overflow:hidden}#nav{height:80px;flex-shrink:0;background:linear-gradient(#1c3138,#0a151d);border-top:1px solid #839b8060;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 10px calc(6px + env(safe-area-inset-bottom))}.nav-btn{min-width:76px;max-width:140px;flex:1;height:100%;border-radius:5px;background:transparent;color:#9dafa9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}.nav-btn b{font-size:22px;font-weight:500}.nav-btn small{font-size:10px;font-weight:800;text-transform:uppercase}.nav-btn.on{color:var(--lime);background:#b6f27315;border-top:3px solid var(--lime)}.btn{background:var(--lime);color:#14241a;padding:12px 18px;border-radius:3px;font:900 17px 'Barlow Condensed';text-transform:uppercase;letter-spacing:.04em}.btn:hover:not(:disabled){filter:brightness(1.12)}.btn.dark{background:#28444c;color:#edf7ed;border:1px solid #6c9e91}.btn.red{background:#a5404b;color:white}.btn:active{transform:scale(.97)}
@@ -150,7 +150,7 @@ function team(){var ps=bestXI(),loc=[[50,91],[20,73],[45,73],[70,73],[86,73],[29
 function phone(){return room('BAŞKANIN TELEFONU','KULÜP İÇİ GÜNDEM · KARAR GEÇMİŞİ','phone','<div class="phone-list panel"><div class="panel-hd"><b>📱 GELEN KUTUSU</b><span class="eyebrow">'+state.news.length+' KAYIT</span></div>'+state.news.map(function(n,i){return '<button class="sms" data-msg="'+i+'"><i>✉️</i><div style="flex:1"><b>'+esc(n.title)+'</b><p>'+esc(n.body)+'</p></div>'+(!n.read?'<span class="pulse"></span>':'')+'</button>'}).join('')+'</div>')}
 function matchScene(){var ready=state.date>=state.next,ai=chooseAI(),fixture=(state.seasonCalendar||[])[state.round],home=!!(!fixture||fixture.home!==false),left=home?state.club:rival(),right=home?rival():state.club;return room('MAÇ GÜNÜ','TAKTİK DÜELLO • AKILLI RAKİP • xG • 2D SAHA','match',
 '<div class="match-layout"><div class="match-left"><div class="scorebar"><b>'+esc(left)+'</b><strong id="score">0 : 0</strong><span class="minute" id="minute">0′</span><b>'+esc(right)+'</b></div>'+
-'<div class="canvas-box"><canvas id="pitch" width="900" height="510"></canvas><div class="pitch-watermark">CLUB PRESIDENT · MATCH ENGINE v4 · LINEUP AWARE · v1.16</div></div>'+
+'<div class="canvas-box"><canvas id="pitch" width="900" height="510"></canvas><div class="pitch-watermark">CLUB PRESIDENT · 11v11 MATCH ENGINE · LIVE SQUADS · v1.19</div></div>'+
 '<div class="match-buttons"><button class="btn" data-a="play" id="play" '+(!ready?'disabled':'')+'>▶ BAŞLAT</button><button class="btn dark" data-a="speed" id="speed" '+(!ready?'disabled':'')+'>HIZ 1X</button><button class="btn dark" data-a="fast" '+(!ready?'disabled':'')+'>⚡ HIZLI SİM</button></div>'+
 '<div class="touchline"><div class="touch-title">⚽ TEKNİK ALAN · TAKTİK</div>'+['Dengeli','Hücum','Savunma','Yüksek Pres','Kontra'].map(function(t){return '<button class="touch-btn '+(state.tactic===t?'selected':'')+'" data-mt="'+t+'" '+(!ready?'disabled':'')+'>'+t+'</button>'}).join('')+'</div><div class="cp-intervention-row"><b>'+T('Maç planı','Spielplan')+'</b><span>'+T('Tempo','Tempo')+'</span>'+['Düşük','Normal','Yüksek'].map(function(v){return '<button class="touch-btn '+((mt&&mt.orders&&mt.orders.tempo||'Normal')===v?'selected':'')+'" data-order="tempo" data-value="'+v+'" '+(!ready?'disabled':'')+'>'+T(v,v==='Düşük'?'Niedrig':v==='Yüksek'?'Hoch':'Normal')+'</button>'}).join('')+'<span>'+T('Pres','Pressing')+'</span>'+['Dengeli','Yoğun'].map(function(v){return '<button class="touch-btn '+((mt&&mt.orders&&mt.orders.press||'Dengeli')===v?'selected':'')+'" data-order="press" data-value="'+v+'" '+(!ready?'disabled':'')+'>'+T(v,v==='Yoğun'?'Intensiv':'Ausgewogen')+'</button>'}).join('')+'</div></div>'+
 '<div class="match-right"><div class="panel match-insights"><div class="panel-hd"><b>🧠 RAKİP ANALİZİ</b><span class="eyebrow" id="live">'+(ready?'HAZIR':'BEKLENİYOR')+'</span></div>'+
@@ -241,7 +241,7 @@ for(var k=0;k<12;k++){c.fillStyle=k%2?'#31714b':'#276144';c.fillRect(k*75,0,75,H
 c.strokeStyle='#eaf4dc';c.lineWidth=2;c.strokeRect(25,23,850,464);c.beginPath();c.moveTo(450,23);c.lineTo(450,487);c.stroke();c.beginPath();c.arc(450,255,67,0,Math.PI*2);c.stroke();c.strokeRect(25,133,136,244);c.strokeRect(739,133,136,244);c.strokeRect(25,204,46,102);c.strokeRect(829,204,46,102);
 var ev=mt&&mt.lastEvent?mt.lastEvent:null,q=mt&&mt.ballTs?Math.min(1,(Date.now()-mt.ballTs)/310):1;
 var bx=mt?mt.x:50,by=mt?mt.y:50;if(ev){bx=mt.fromX+(mt.x-mt.fromX)*q;by=mt.fromY+(mt.y-mt.fromY)*q}
-var side=ev?ev.team:0;var homeClub=clubs.find(function(c){return c[0]===state.club}),awayClub=clubs.find(function(c){return c[0]===rival()});window.CP_LIVE_MATCH={minute:mt?mt.min:0,x:bx,y:by,team:side,event:ev?ev.type:'',actorIndex:ev&&ev.actorIndex,receiverIndex:ev&&ev.receiverIndex,player:ev&&ev.player,playerId:ev&&ev.playerId,rosters:mt?[mt.userLineup||[],mt.opponentLineup||[]]:[],formation:state.formation,running:!!(mt&&mt.running),home:mt?mt.home:0,away:mt?mt.away:0,colors:[homeClub&&homeClub[3]||'#18234e',awayClub&&awayClub[4]||'#f1ead7']};var shape=state.formation==='4-4-2'?[4,4,2]:state.formation==='4-2-3-1'?[4,5,1]:[4,3,3],positions=[[7,50]];
+var side=ev?ev.team:0;var homeClub=clubs.find(function(c){return c[0]===state.club}),awayClub=clubs.find(function(c){return c[0]===rival()});window.CP_LIVE_MATCH={minute:mt?mt.min:0,x:bx,y:by,team:side,event:ev?ev.type:'',actorIndex:ev&&ev.actorIndex,receiverIndex:ev&&ev.receiverIndex,player:ev&&ev.player,playerId:ev&&ev.playerId,rosters:mt?cpCurrentRosters(mt):[],formation:state.formation,running:!!(mt&&mt.running),home:mt?mt.home:0,away:mt?mt.away:0,colors:[homeClub&&homeClub[3]||'#18234e',awayClub&&awayClub[4]||'#f1ead7']};var shape=state.formation==='4-4-2'?[4,4,2]:state.formation==='4-2-3-1'?[4,5,1]:[4,3,3],positions=[[7,50]];
 for(var ln=0;ln<3;ln++)for(var a=0;a<shape[ln];a++)positions.push([ln===0?24:ln===1?49:72,(a+1)/(shape[ln]+1)*100]);
 for(var team=0;team<2;team++)for(var j=0;j<11;j++){var pos=positions[j]||[50,50],px=team===0?pos[0]:100-pos[0],py=pos[1],k=team===side?.31:.19;
 px=Math.max(4,Math.min(96,px+(bx-px)*k+Math.sin((mt?mt.min:0)*.2+j*1.2)*1.7));py=Math.max(6,Math.min(94,py+(by-py)*.17+Math.cos((mt?mt.min:0)*.25+j*1.7)*1.6));
@@ -1705,27 +1705,93 @@ window.CP_OFFPITCH_API={
  restorePendingDecision:function(){if(!state||!state.pendingDecisionKey)return false;var saved=dialogues[state.pendingDecisionKey];if(saved&&Array.isArray(saved.choices)&&saved.choices.length){dialog=saved;return true}state.pendingDecisionKey=null;return false}
 };
 
-// The match world, event feed and live statistics all come from the vendored
-// EvoFootball Arena simulation. Career saves and the management layer stay local.
-window.addEventListener('cp:evo-engine-ready',function(){
- if(!window.CP_EVO_ENGINE||!window.CP_EVO_ENGINE.simulate)return;
- var cpStatsBeforeEvo=matchStats;
- simEvents=function(tactic,enemy,start){
-  start=start||{};
-  var base=start.minute===undefined?(mt&&mt.round===state.round?Number(mt.min)||0:0):Number(start.minute)||0;
-  var result=window.CP_EVO_ENGINE.simulate({club:state.club,opponent:rival(),clubKey:String(state.ix)+'|'+String(state.seasonCode||state.season||'2026/27'),seed:String(start.seed||('career-'+state.round+'-'+state.next)),tactic:tactic||state.tactic,enemyTactic:enemy||'Dengeli',players:start.team||lineup(),opponentPlayers:start.enemyRoster||(typeof CP11OpponentSquad==='function'?CP11OpponentSquad():[]),colors:(clubs[state.ix]||[]).slice(3,5),minute:base});
-  window.CP_EVO_REPLAYS=result.replays;
-  if(mt&&mt.round===state.round&&base>0){mt.evoStatsHistory=result.statsHistory;mt.userLineup=result.userPlayers.slice();mt.opponentLineup=result.opponentPlayers.slice()}
-  window.CP_EVO_LAST_RESULT=result;
-  return result.events.filter(function(e){return e.m>base});
- };
- matchStats=function(events,until){
-  if(mt&&Array.isArray(mt.evoStatsHistory)&&mt.evoStatsHistory.length){var rows=mt.evoStatsHistory,chosen=rows[0];for(var i=0;i<rows.length;i++){if(rows[i].minute<=Number(until)||!chosen)chosen=rows[i];else break}return chosen.stats.map(function(s){return Object.assign({},s)})}
-  return cpStatsBeforeEvo(events,until);
- };
- var cpSetupBeforeEvo=setup;
- setup=function(){var m=cpSetupBeforeEvo();if(!m)return m;var result=window.CP_EVO_LAST_RESULT;if(!result&&!m.evoEngineVersion&&m.round===state.round){var base=Math.max(0,Number(m.min)||0),past=(m.all||[]).filter(function(e){return e.m<=base}),future=simEvents(m.tactic||state.tactic,m.ai&&m.ai.style||'Dengeli',{minute:base,seed:m.seed,team:startMatchRoster(),enemyRoster:m.opponentLineup||[],orders:m.orders||{tempo:'Normal',press:'Dengeli'}});m.all=past.concat(future).sort(function(a,b){return a.m-b.m});m.pos=past.length;result=window.CP_EVO_LAST_RESULT}if(result&&m.round===state.round&&!m.evoEngineVersion){m.evoEngineVersion=window.CP_EVO_ENGINE.version;m.evoEngineFormat='6v6';m.evoStatsHistory=result.statsHistory;m.cpStartXI13=result.userIds.slice();m.cpOpponent13=result.opponentPlayers.slice();m.xiIds=result.userIds.slice();m.userLineup=result.userPlayers.slice();m.opponentLineup=result.opponentPlayers.slice();m.subs=m.subs||0;state.engineVersion=4;state.activeMatch=m;window.CP_EVO_LAST_RESULT=null;save()}return m};
-});
-
+// Club President 11v11 engine: one deterministic event stream drives the score,
+// live statistics, player records, commentary, and the 22-player 3D presentation.
+(function(){
+var CP11_VERSION='club-president-11v11@1.19',cp11Last=null;
+function cp11Position(p){return String(p&& (p.pos||p.position)||'').toUpperCase()}
+function cp11Id(p){return String(p&&(p.id||p.name)||'')}
+function cp11Seed(s){var h=2166136261;for(var i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619);return h>>>0}
+function cp11Random(seed){var a=seed>>>0;return function(){a+=0x6D2B79F5;var t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function cp11Clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function cp11Stats(events,until){var out=[{pos:0,passes:0,completed:0,shots:0,on:0,xg:0,corners:0,cards:0,lost:0},{pos:0,passes:0,completed:0,shots:0,on:0,xg:0,corners:0,cards:0,lost:0}];events.forEach(function(e){if(e.m>until||!out[e.team])return;var s=out[e.team];if(e.type==='pos'||e.type==='pass'||e.type==='dribble')s.pos++;if(e.type==='pass'){s.passes+=e.passes||0;s.completed+=e.completed||0}if(e.type==='goal'||e.type==='shot'){s.shots++;s.xg+=e.xg||0;if(e.onTarget)s.on++}if(e.type==='corner')s.corners++;if(e.type==='card')s.cards++;if(e.type==='lost')s.lost++});return out}
+function cp11Simulate(input){
+ input=input||{};var base=cp11Clamp(Number(input.minute)||0,0,89.2),formation=String(input.formation||'4-3-3');
+ var squads=[(input.players||[]).slice(0,11),(input.opponentPlayers||[]).slice(0,11)];
+ function fill(list,side){var pool=list.slice();if(pool.length<11&&side===1&&typeof CP11OpponentSquad==='function')pool=CP11OpponentSquad().slice(0,11);while(pool.length<11){var i=pool.length;pool.push({id:'cp11-'+side+'-replacement-'+i,name:(side?input.opponent:input.club)+' '+(i+1),pos:i===0?'KL':i<5?'STP':i<8?'MO':'SNT',rate:65,technique:65,decisions:65,finishing:65,defending:65,condition:82,stamina:75})}return pool.slice(0,11)}
+ squads[0]=fill(squads[0],0);squads[1]=fill(squads[1],1);
+ var key=[input.seed,input.clubKey,input.club,input.opponent,input.tactic,input.enemyTactic,formation,base.toFixed(2),input.owner,input.x,input.y].join('|'),r=cp11Random(cp11Seed(key));
+ var events=[],minute=base,x=Number(input.x)||50,y=Number(input.y)||50,owner=input.owner===1?1:0,seq=0,redCount=[0,0],dismissed=Object.create(null);
+ (input.dismissedIds||[]).forEach(function(id){dismissed[String(id)]=true});
+ function emit(type,side,nx,ny,msg,extra){var e={id:'cp11-'+cp11Seed(key)+'-'+(seq++),m:Math.round(minute*100)/100,type:type,team:side,x:cp11Clamp(nx,2,98),y:cp11Clamp(ny,5,95),fromX:x,fromY:y,msg:msg||''};if(extra)Object.assign(e,extra);events.push(e);x=e.x;y=e.y;return e}
+ function activePlayers(side){return squads[side].map(function(p,i){return{p:p,i:i}}).filter(function(v){return cp11Position(v.p)!=='KL'&&!dismissed[cp11Id(v.p)]})}
+ function actor(side,depth,shot){var list=activePlayers(side);if(!list.length)return{p:squads[side][1],i:1};var weights=list.map(function(v){var pos=cp11Position(v.p),front=/^(SNT|SLK|SĞK|LW|RW|ST|CF|FW)/.test(pos),mid=/^(MO|DOS|CM|DM|AM)/.test(pos),role=shot?(front?5.4:mid?1.25:.18):depth>62?(front?3.3:mid?2.1:.65):(front?1.15:mid?2.7:3.4);return role*Math.max(.55,Math.min(1.3,.72+(Number(v.p.rate)||68)/190+(Number(v.p.condition)||82)/420))});var n=r()*weights.reduce(function(a,b){return a+b},0);for(var j=0;j<list.length;j++){n-=weights[j];if(n<=0)return list[j]}return list[list.length-1]}
+ var avg=[0,0];squads.forEach(function(team,side){var field=team.filter(function(p){return cp11Position(p)!=='KL'});avg[side]=field.reduce(function(a,p){return a+(Number(p.rate)||68)*.48+(Number(p.technique)||65)*.19+(Number(p.decisions)||65)*.16+(Number(p.condition)||82)*.1+(Number(p.stamina)||75)*.07},0)/Math.max(1,field.length)});
+ var ratings=[(avg[0]-70)/230,((avg[1]+Math.min(8,(Number((window.CP_OFFPITCH_API&&window.CP_OFFPITCH_API.getState().challengeLevel)||0))*2)-72)/240];
+ var tactics=[String(input.tactic||'Dengeli'),String(input.enemyTactic||'Dengeli')],orders=input.orders||{};
+ var tempo=orders.tempo==='Yüksek'?1.16:orders.tempo==='Düşük'?.86:1,press=orders.press==='Yoğun'?.055:0;
+ if(base===0)emit('begin',0,50,50,'Başlama vuruşu. İki takım da 11 oyuncusuyla sahada.');
+ var live=window.CP_LIVE_MATCH;
+ if(base>0&&live&&Math.abs(Number(live.minute)-base)<1.5){x=Number(live.x)||x;y=Number(live.y)||y;owner=live.team===1?1:0}
+ if(base<45&&minute<45){}else if(base>=45&&minute===45)minute=45.05;
+ var possessions=0;
+ while(minute<89.1&&possessions++<260){
+  owner=possessions===1&&base===0?0:owner;
+  var side=owner,dir=side===0?1:-1,actions=0,turnover=false,shotTaken=false;
+  if(possessions===1&&base===0){x=50;y=50}else if((side===0&&x>75)||(side===1&&x<25)){x=50;y=50}else if(possessions>1&&(x===50&&y===50)){x=side===0?32+r()*12:68-r()*12;y=23+r()*54}
+  emit('pos',side,x,y,'');
+  while(actions<6&&minute<89.1&&!turnover&&!shotTaken){
+   actions++;minute+=(.12+r()*.25)/tempo;
+   if(base<45&&minute>=45&&minute<45.5)emit('half',0,50,50,'İlk yarı sona erdi. Teknik direktörler takımlarına talimat veriyor.');
+   var dist=side===0?100-x:x,depth=100-dist,underPress=(side===0&&tactics[1].indexOf('Pres')>=0)||(side===1&&tactics[0].indexOf('Pres')>=0);
+   var pChoice=actor(side,depth,false),p=pChoice.p,actorIndex=pChoice.i,tech=Number(p.technique)||Number(p.rate)||68,decision=Number(p.decisions)||Number(p.rate)||68;
+   var tactical=(tactics[side]==='Hücum'?.065:tactics[side]==='Yüksek Pres'?.04:tactics[side]==='Savunma'?-.045:0)+(side===0?ratings[0]-ratings[1]:ratings[1]-ratings[0]);
+   var canShoot=actions>=2&&depth>57&&r()<(.13+(depth-57)*.002+(tactics[side]==='Hücum'?.05:0));
+   if(canShoot){
+    var shotActor=actor(side,depth,true);p=shotActor.p;actorIndex=shotActor.i;
+    var keeper=squads[1-side].find(function(q){return cp11Position(q)==='KL'})||{rate:70,condition:80},finish=Number(p.finishing)||Number(p.rate)||67,angle=Math.abs(y-50)/50;
+    var xg=cp11Clamp(.31*Math.exp(-Math.max(0,dist-7)/20)*(1-.58*angle)*Math.max(.65,.8+(finish-68)*.009+tactical*.5)/(1+((Number(keeper.rate)||70)-70)*.008),.012,.62);
+    var goal=r()<xg,onTarget=goal||r()<cp11Clamp(.42+xg*.6+(finish-68)*.004-((Number(keeper.rate)||70)-70)*.003,.22,.9);
+    var toX=side===0?98:2,toY=goal?38+r()*24:(r()<.5?6:94);
+    emit(goal?'goal':'shot',side,toX,toY,goal?'GOOOL! '+p.name+' golü attı.':onTarget?p.name+' vurdu; '+(keeper.name||'kaleci')+' kurtardı.':p.name+' şutu auta gitti.',{xg:xg,onTarget:onTarget,player:p.name,playerId:cp11Id(p),actorIndex:actorIndex,keeper:keeper.name||'',keeperId:cp11Id(keeper)});
+    if(!goal&&onTarget&&r()<.15)emit('corner',side,toX,toY,'Kalecinin müdahalesiyle korner.');
+    owner=1-side;shotTaken=true;continue
+   }
+   var nx=cp11Clamp(x+dir*(5+r()*11)*(1+tactical),4,96),ny=cp11Clamp(y+(r()-.5)*25,7,93),pressure=(underPress?.09:0)+(minute>68?Math.max(0,78-(Number(p.stamina)||75))*.001:0),skill=decision*.0012+tech*.0007+tactical-pressure;
+   if(r()<.1){var successful=r()<cp11Clamp(.68+(tech-70)*.004+skill*.24,.43,.91);emit(successful?'dribble':'lost',side,successful?nx:x+dir*3,successful?ny:y,p.name+(successful?' çalımla rakibini geçti.':' baskıda topu kaybetti.'),{player:p.name,playerId:cp11Id(p),actorIndex:actorIndex});if(!successful){owner=1-side;turnover=true}else{x=nx;y=ny}continue}
+   var receivers=activePlayers(side).filter(function(v){return v.i!==actorIndex}),receiver=receivers.length?receivers[Math.floor(r()*receivers.length)]:null,receiverIndex=receiver?receiver.i:-1,receiveEdge=receiver?((Number(receiver.p.decisions)||70)-70)*.0012:0,passChance=cp11Clamp(.79+(tech-70)*.002+(decision-70)*.002+skill-pressure+receiveEdge,.4,.95),passed=r()<passChance;
+   emit('pass',side,passed?nx:(x+nx)/2,passed?ny:(y+ny)/2,passed?'':p.name+' pası kesildi.',{passes:1,completed:passed?1:0,player:p.name,playerId:cp11Id(p),actorIndex:actorIndex,receiverIndex:receiverIndex,receiverPlayer:receiver?cp11Id(receiver.p):null});
+   if(passed){x=nx;y=ny}else{emit('lost',side,nx,ny,'Rakip pas araya girdi ve topu kazandı.',{player:p.name,playerId:cp11Id(p),actorIndex:actorIndex});owner=1-side;turnover=true}
+   if(r()<.0025){
+    var red=r()<.07,cardActor=actor(side,depth,false),cardP=cardActor.p;
+    emit('card',side,x,y,red?cardP.name+' kırmızı kart gördü; takım 10 kişi kaldı.':cardP.name+' sarı kart gördü.',{player:cardP.name,playerId:cp11Id(cardP),actorIndex:cardActor.i,red:red,cardColor:red?'red':'yellow'});
+    if(red&&!dismissed[cp11Id(cardP)]){dismissed[cp11Id(cardP)]=true;redCount[side]++}
+   }
+   if(x<=4||x>=96){owner=1-owner;x=50;y=50}
+  }
+  if(minute>44.85&&minute<45.05)minute=45.05;
+ }
+ if(base<45&&!events.some(function(e){return e.type==='half'}))events.push({id:'cp11-half-'+cp11Seed(key),m:45,type:'half',team:0,x:50,y:50,fromX:50,fromY:50,msg:'İlk yarı sona erdi.'});
+ if(!events.some(function(e){return e.type==='end'}))events.push({id:'cp11-end-'+cp11Seed(key),m:90,type:'end',team:0,x:50,y:50,fromX:50,fromY:50,msg:'Son düdük! Karşılaşma sona erdi.'});
+ events.sort(function(a,b){return a.m-b.m});
+ var lastPass=[null,null];events.forEach(function(e){if(e.type==='pass'&&e.completed&&e.playerId)lastPass[e.team]=e;if(e.type==='goal'){var prev=lastPass[e.team];if(prev&&e.m-prev.m<=5&&prev.playerId!==e.playerId){e.assist=prev.player;e.assistId=prev.playerId}}});
+ var history=[];
+ if(base===0){for(var m=0;m<=90;m++)history.push({minute:m,stats:cp11Stats(events,m)})}
+ var score=[0,0];events.forEach(function(e){if(e.type==='goal')score[e.team]++});
+ return{events:events,statsHistory:history,score:score,duration:90,userIds:squads[0].map(cp11Id),userPlayers:squads[0],opponentPlayers:squads[1],replays:{},format:'11v11',version:CP11_VERSION,matchKey:key,dismissedIds:Object.keys(dismissed)};
+}
+window.CP_ELEVEN_SIMULATOR={version:CP11_VERSION,format:'11v11',simulate:cp11Simulate};
+window.addEventListener('cp:evo-engine-ready',function(){if(!window.CP_EVO_ENGINE)return;window.CP_EVO_ENGINE.version=CP11_VERSION;window.CP_EVO_ENGINE.format='11v11';window.CP_EVO_ENGINE.simulate=cp11Simulate;});
+var cpStatsBefore11=matchStats;
+simEvents=function(tactic,enemy,start){
+ start=start||{};var base=Number(start.minute)||0,shown=(mt&&mt.shown)||[],dismissed=shown.filter(function(e){return e.type==='card'&&(e.red===true||e.cardColor==='red')}).map(function(e){return e.playerId}).filter(Boolean);
+ var result=cp11Simulate({club:state.club,opponent:rival(),clubKey:String(state.ix)+'|'+String(state.seasonCode||state.season||'2026/27'),seed:String(start.seed||('career-'+(state.seasonCode||state.season||'2026/27')+'-'+state.round+'-'+state.next)),tactic:tactic||state.tactic,enemyTactic:enemy||'Dengeli',players:start.team||lineup(),opponentPlayers:start.enemyRoster||(typeof CP11OpponentSquad==='function'?CP11OpponentSquad():[]),formation:state.formation,minute:base,owner:start.owner,x:start.x==null?(mt&&mt.x):start.x,y:start.y==null?(mt&&mt.y):start.y,orders:start.orders||{},dismissedIds:dismissed});
+ if(mt&&mt.round===state.round&&base>0){mt.evoStatsHistory=[];mt.userLineup=result.userPlayers.slice();mt.opponentLineup=result.opponentPlayers.slice()}
+ window.CP_ELEVEN_LAST_RESULT=result;window.CP_EVO_REPLAYS={};return result.events.filter(function(e){return e.m>base});
+};
+matchStats=function(events,until){if(mt&&Array.isArray(mt.evoStatsHistory)&&mt.evoStatsHistory.length){var rows=mt.evoStatsHistory,chosen=rows[0];for(var i=0;i<rows.length;i++){if(rows[i].minute<=Number(until)||!chosen)chosen=rows[i];else break}return chosen.stats.map(function(s){return Object.assign({},s)})}return cpStatsBefore11(events,until)};
+var cpSetupBefore11=setup;
+setup=function(){var m=cpSetupBefore11();if(!m)return m;var result=window.CP_ELEVEN_LAST_RESULT;window.CP_ELEVEN_LAST_RESULT=null;if(result&&m.round===state.round&&m.elevenMatchVersion!==1){m.elevenMatchVersion=1;m.engineVersion=5;m.evoEngineVersion=CP11_VERSION;m.evoEngineFormat='11v11';m.evoStatsHistory=result.statsHistory;m.cpStartXI13=result.userIds.slice();m.cpOpponent13=result.opponentPlayers.slice();m.xiIds=result.userIds.slice();m.userLineup=result.userPlayers.slice();m.opponentLineup=result.opponentPlayers.slice();m.subs=m.subs||0;state.engineVersion=5;state.activeMatch=m;save()}return m};
+function cpCurrentRosters(m){if(!m||!state)return[[],[]];var ids=Array.isArray(m.xiIds)?m.xiIds:[],mine=ids.map(function(id){return state.players.find(function(p){return String(p.id||p.name)===String(id)})}).filter(Boolean);if(mine.length!==11)mine=(m.userLineup||lineup()).slice(0,11);var enemy=(m.opponentLineup||[]).slice(0,11);return[mine,enemy]}
 })();
-</script><script src="./assets/evofootball-engine.js?v=20261104e"></script><script src="./assets/matchday-upgrade.js?v=20261104w"></script><script src="./assets/decision-flow.js?v=20261104a"></script><script src="./assets/sponsorship-contract.js?v=20261104b"></script></body></html>
+</script></body></html>
