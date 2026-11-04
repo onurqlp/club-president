@@ -170,11 +170,11 @@ function coachTip(style){if(style==='Yüksek Pres')return 'Rakip önde baskı ku
 function tacticalAdvantage(own,enemy){var z=0;if(own==='Kontra'&&enemy==='Yüksek Pres')z=.14;if(own==='Hücum'&&enemy==='Derin Blok')z=.10;if(own==='Savunma'&&enemy==='Geçiş Oyunu')z=.10;if(own==='Yüksek Pres'&&enemy==='Geçiş Oyunu')z=-.12;if(own==='Hücum'&&enemy==='Geçiş Oyunu')z=-.08;return z}
 function simEvents(tactic,enemy,start){
  start=start||{};var base=Math.max(0,Number(start.minute)||0),r=random('engine3|'+state.club+'|'+state.round+'|'+state.next+'|'+tactic+'|'+enemy+'|'+state.formation+'|'+(start.seed||'base')+'|'+base+'|'+(start.x||50)+'|'+(start.y||50)+'|'+(start.owner||0)),team=start.team||lineup(),managerEdge=((state.managerAbility||75)-75)/100,quality=(strength()-77)/135+(state.morale-70)/720+managerEdge,adv=tacticalAdvantage(tactic,enemy),tempo=tactic==='Hücum'?.065:tactic==='Yüksek Pres'?.045:tactic==='Savunma'?-.05:0,enemyRoster=start.enemyRoster||(typeof CP11OpponentSquad==='function'?CP11OpponentSquad():[]),enemyAvg=(enemyRoster.length?enemyRoster.reduce(function(s,p){return s+(p.rate||74)},0)/enemyRoster.length:75)+Math.min(8,(state.challengeLevel||0)*2);
-var events=base<=0?[{m:0,type:'begin',team:0,x:50,y:50,fromX:50,fromY:50,msg:'Başlama vuruşu. Takımlar dizilişlerine yerleşiyor.'}]:[],tm=base+.1,owner=start.owner===1?1:0,x=Number(start.x)||50,y=Number(start.y)||50,passes=0;
+var events=base<=0?[{m:0,type:'begin',team:0,x:50,y:50,fromX:50,fromY:50,msg:'Başlama vuruşu. Takımlar dizilişlerine yerleşiyor.'}]:[],tm=base+.1,owner=start.owner===1?1:0,x=Number(start.x)||50,y=Number(start.y)||50,passes=0,dismissed=[0,0];
 function emit(kind,side,toX,toY,fromX,fromY,txt,extra){var e={id:'match-'+(state.seasonCode||'2026/27')+'-'+state.round+'-'+events.length,m:Math.round(tm*100)/100,type:kind,team:side,x:Math.max(2,Math.min(98,toX)),y:Math.max(5,Math.min(95,toY)),fromX:fromX,fromY:fromY,msg:txt||''};if(extra)Object.assign(e,extra);events.push(e)}
 for(var z=0;z<720&&tm<89.3;z++){
  tm+=.13+r()*.28;var fx=x,fy=y,dir=owner===0?1:-1,actors=(owner===0?team:enemyRoster).filter(function(p){return p&&p.pos!=='KL'}),actor=actors.length?actors[Math.floor(r()*actors.length)]:null,who=actor?actor.name:'rakip futbolcu',club=owner===0?state.club:rival();
- var tech=actor?(actor.technique||actor.rate||75):75,bonus=owner===0?quality+adv+tempo:-quality*.6-tempo*.5+(enemyAvg-75)/105,dist=owner===0?100-x:x;
+ var tech=actor?(actor.technique||actor.rate||75):75,bonus=(owner===0?quality+adv+tempo:-quality*.6-tempo*.5+(enemyAvg-75)/105)-dismissed[owner]*.16,dist=owner===0?100-x:x;
  if(dist<31&&r()<(.155+(owner===0&&tactic==='Hücum'?.04:0))){
  var angle=Math.abs(y-50)/50,keeper=(owner===0?enemyRoster:team).find(function(p){return p.pos==='KL'})||{rate:74},keeperSkill=keeper.goalkeeping||keeper.rate||74,xgBase=Math.max(.018,Math.min(.52,.28*Math.exp(-Math.max(0,dist-8)/20)*(1-.6*angle)*(1+bonus*.23))),xg=Math.max(.012,Math.min(.52,xgBase*Math.max(.72,Math.min(1.12,1-(keeperSkill-74)*.008))));
  var goal=r()<xg,onTarget=goal||r()<Math.max(.12,Math.min(.82,.52-(keeperSkill-74)*.006)),toX=owner===0?98:2,toY=goal?38+r()*24:r()<.5?6:94;
@@ -189,7 +189,7 @@ for(var z=0;z<720&&tm<89.3;z++){
  if(dribble){var ok=r()<chance-.05;emit(ok?'dribble':'lost',owner,ok?nx:x+(nx-x)*.6,ok?ny:y,x,y,ok?club+' çalım atarak ilerliyor.':club+' topu kaybetti.',{player:who,playerId:actor&&(actor.id||actor.name)});if(ok){x=nx;y=ny}else{owner=1-owner;x=nx;y=ny}continue}
  passes++;var passed=r()<chance;emit('pass',owner,passed?nx:(x+nx)/2,passed?ny:(y+ny)/2,x,y,passes%12===0?who+' ara pasını gönderdi.':'',{passes:1,completed:passed?1:0,receiver:passes%10,player:who,playerId:actor&&(actor.id||actor.name)});
  if(passed){x=nx;y=ny}else{emit('lost',owner,nx,ny,x,y,club+' pası kesildi!',{player:who,playerId:actor&&(actor.id||actor.name)});owner=1-owner;x=nx;y=ny}
- if(r()<.003)emit('card',owner,x,y,x,y,'Sert faul! Hakem sarı kart gösteriyor.',{player:who,playerId:actor&&(actor.id||actor.name)});
+ if(r()<.003){var redCard=r()<.07;emit('card',owner,x,y,x,y,redCard?'Hakem doğrudan kırmızı kart gösteriyor!':'Sert faul! Hakem sarı kart gösteriyor.',{player:who,playerId:actor&&(actor.id||actor.name),red:redCard,cardColor:redCard?'red':'yellow'});if(redCard)dismissed[owner]=Math.min(2,dismissed[owner]+1)}
  if(x<4||x>96){owner=1-owner;x=50;y=50}
 }
 if(base<45)events.push({m:45,type:'half',team:0,x:50,y:50,fromX:50,fromY:50,msg:'İlk yarı sona erdi. Teknik direktör takıma konuşuyor.'});
@@ -1216,13 +1216,18 @@ try {
       window.CP_LIVE_MATCH = live;
       if (quiet) return;
       var dangerX = e.team === 0 ? Number(e.x) >= 82 : Number(e.x) <= 18;
+      var redCard = e.type === 'card' && (e.red === true || e.cardColor === 'red');
       var dangerous = ['pass', 'dribble'].includes(e.type) && dangerX && mt.min - cpLastDangerMinute >= 5;
-      var highlight = e.type === 'goal' || e.type === 'card' || e.type === 'corner' || e.type === 'shot' && (e.onTarget || Number(e.xg) >= .1) || dangerous;
+      var highlight = e.type === 'goal' || redCard || e.type === 'corner' || e.type === 'shot' && (e.onTarget || Number(e.xg) >= .1) || dangerous;
       if (!highlight) return;
       if (dangerous) cpLastDangerMinute = mt.min;
-      var labels = { goal: 'GOL!', shot: e.onTarget ? 'KALENİN ÖNÜNDE TEHLİKE' : 'ŞUT DENEMESİ', card: 'HAKEM KARTINI ÇIKARDI', corner: 'DURAN TOP FIRSATI' };
-      var detail = Object.assign({}, live, { highlight: true, title: labels[e.type] || (dangerous ? 'TEHLİKELİ ATAK' : 'KİLİT AN'), message: e.msg || '', player: e.player || '', xg: e.xg || 0, onTarget: !!e.onTarget });
-      window.dispatchEvent(new CustomEvent('cp:match-event', { detail: detail }));
+      var labels = { goal: 'GOL!', shot: e.onTarget ? 'KALE ÖNÜNDE TEHLİKE' : 'ŞUT DENEMESİ', card: redCard ? 'KIRMIZI KART! TAKIM 10 KİŞİ' : 'SARI KART' , corner: 'DURAN TOP FIRSATI' };
+      var detail = Object.assign({}, live, { highlight: true, redCard: redCard, title: labels[e.type] || (dangerous ? 'TEHLİKELİ ATAK' : 'KİLİT AN'), message: e.msg || '', player: e.player || '', xg: e.xg || 0, onTarget: !!e.onTarget });
+      if (e.type === 'goal') {
+        var warning = Object.assign({}, detail, { event: 'danger', preGoal: true, title: 'TEHLİKELİ ATAK!', message: (e.team === 0 ? state.club : rival()) + ' ceza sahasına yüklendi, gol tehlikesi büyüyor!' });
+        window.dispatchEvent(new CustomEvent('cp:match-event', { detail: warning }));
+        window.setTimeout(function () { window.dispatchEvent(new CustomEvent('cp:match-event', { detail: detail })); }, 2300);
+      } else window.dispatchEvent(new CustomEvent('cp:match-event', { detail: detail }));
     });
   };
 
@@ -1304,4 +1309,4 @@ try {
 })();
 
 })();
-</script><script src="./assets/matchday-upgrade.js?v=20261104k"></script></body></html>
+</script><script src="./assets/matchday-upgrade.js?v=20261104l"></script></body></html>
