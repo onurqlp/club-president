@@ -1217,11 +1217,11 @@ try {
       if (quiet) return;
       var dangerX = e.team === 0 ? Number(e.x) >= 82 : Number(e.x) <= 18;
       var redCard = e.type === 'card' && (e.red === true || e.cardColor === 'red');
-      var dangerous = ['pass', 'dribble'].includes(e.type) && dangerX && mt.min - cpLastDangerMinute >= 5;
+      var dangerous = (['pass', 'dribble'].includes(e.type) && dangerX && mt.min - cpLastDangerMinute >= 5) || (e.type === 'shot' && (e.onTarget || Number(e.xg) >= .1));
       var highlight = e.type === 'goal' || redCard || e.type === 'corner' || e.type === 'shot' && (e.onTarget || Number(e.xg) >= .1) || dangerous;
       if (!highlight) return;
       if (dangerous) cpLastDangerMinute = mt.min;
-      var labels = { goal: 'GOL!', shot: e.onTarget ? 'KALE ÖNÜNDE TEHLİKE' : 'ŞUT DENEMESİ', card: redCard ? 'KIRMIZI KART! TAKIM 10 KİŞİ' : 'SARI KART' , corner: 'DURAN TOP FIRSATI' };
+      var labels = { goal: 'GOL!', shot: e.onTarget ? 'TEHLİKELİ ATAK!' : 'ŞUT DENEMESİ', card: redCard ? 'KIRMIZI KART! TAKIM 10 KİŞİ' : 'SARI KART' , corner: 'DURAN TOP FIRSATI' };
       var detail = Object.assign({}, live, { highlight: true, redCard: redCard, title: labels[e.type] || (dangerous ? 'TEHLİKELİ ATAK' : 'KİLİT AN'), message: e.msg || '', player: e.player || '', xg: e.xg || 0, onTarget: !!e.onTarget });
       if (e.type === 'goal') {
         var warning = Object.assign({}, detail, { event: 'goal', preGoal: true, title: 'TEHLİKELİ ATAK!', message: (e.team === 0 ? state.club : rival()) + ' ceza sahasına yüklendi, gol tehlikesi büyüyor!' });
@@ -1309,4 +1309,4 @@ try {
 })();
 
 })();
-</script><script src="./assets/matchday-upgrade.js?v=20261104m"></script></body></html>
+</script><script src="./assets/matchday-upgrade.js?v=20261104n"></script></body></html>
