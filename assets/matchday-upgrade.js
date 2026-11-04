@@ -450,7 +450,9 @@
     var possession=Number(live.team||0), actorIndex=Number.isInteger(Number(live.actorIndex))?Number(live.actorIndex):-1, receiverIndex=Number.isInteger(Number(live.receiverIndex))?Number(live.receiverIndex):Number(live.receiver);
     players.forEach(function(player,index) {
       var team=player.userData.team, n=player.userData.number, keeper=n===0;
-      var sideIndex=index%6, roster=live.rosters&&live.rosters[team]||[], profile=roster[n]||{}, role=String(profile.pos||'');
+      var sideIndex=n, roster=live.rosters&&live.rosters[team]||[], profile=roster[n]||{}, role=String(profile.pos||'');
+      var dismissed=live.dismissedIds||[]; player.visible=!dismissed.includes(String(profile.id||profile.name||''));
+      if(!player.visible){player.userData.speed=0;return;}
       keeper=role==='KL'||n===0; var homeX=keeper?-43:(role==='STP'?-29:role==='SLB'||role==='SĞB'?-28:role==='DOS'?-13:role==='MO'?-3:role==='SLK'||role==='SĞK'?17:role==='SNT'?30:(sideIndex<=4?-29:sideIndex<=7?-8:15));
       var homeZ=keeper?0:(role==='SLB'||role==='SLK'?-21:role==='SĞB'||role==='SĞK'?21:((sideIndex%4)-1.5)*12);
       if(team===1) homeX=-homeX;
