@@ -194,6 +194,12 @@
         guard.textContent='.cp-goal-pending .cp-score-card .scorebar,.cp-goal-pending #cp-commentary-stats,.cp-goal-pending #cp-commentary-feed{visibility:hidden!important}.cp-goal-pending .cp-commentary-main{min-height:82px}';
         document.head.appendChild(guard);
       }
+      var suspenseTitle=document.getElementById('cp-commentary-title');
+      var suspenseCopy=document.getElementById('cp-commentary-copy');
+      var suspenseKind=document.getElementById('cp-event-type');
+      if(suspenseKind)suspenseKind.textContent=tr('ATAK GELİŞİYOR','ANGRIFF LÄUFT');
+      if(suspenseTitle)suspenseTitle.textContent=tr('TEHLİKELİ ATAK!','GEFÄHRLICHER ANGRIFF!');
+      if(suspenseCopy)suspenseCopy.textContent=tr('Hücum ceza sahasına girdi. Pozisyon devam ediyor…','Der Angriff erreicht den Strafraum. Die Szene läuft …');
     }
     activeHighlight = detail;
     highlightStartedAt = performance.now();
