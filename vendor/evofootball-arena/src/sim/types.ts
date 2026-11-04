@@ -18,17 +18,17 @@ export type PossessionPhase =
   | { kind: 'deadBall' };
 export type Role = 'GK' | 'DF' | 'MF' | 'WG' | 'ST';
 /**
- * Squad slot order (Phase 30: 11v11). The Role SET is unchanged — WG simply
+ * Squad slot order (Phase 30: 6v6). The Role SET is unchanged — WG simply
  * appears twice (slot 3 = left winger, slot 4 = right winger; two wings was
- * the whole point of the 11th player). Everything player-array-shaped
+ * the whole point of the 6th player). Everything player-array-shaped
  * (playerNames, squad, ages, careers, playerAgg, cup.playerGoals) is indexed
  * by this list; gid = side * TEAM_SIZE + index.
  */
-export const ROLES: Role[] = ['GK', 'DF', 'DF', 'DF', 'DF', 'MF', 'MF', 'MF', 'WG', 'WG', 'ST'];
+export const ROLES: Role[] = ['GK', 'DF', 'MF', 'WG', 'WG', 'ST'];
 export const TEAM_SIZE = ROLES.length;
 
 /**
- * The BENCH (Phase 61, N2): a club's roster is the starting eleven plus three
+ * The BENCH (Phase 61, N2): a club's roster is the starting six plus three
  * substitutes. Bench slots carry NOMINAL roles (market matching, records,
  * founding bias) — on the pitch a substitute ASSUMES the slot he replaces,
  * exactly like a midfielder covering at wing. Everything player-array-shaped
