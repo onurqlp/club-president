@@ -88,3 +88,15 @@ html[data-cp-theme="brand"] :is(button,input,select,summary,[role="button"]):foc
 @media(max-width:390px){html[data-cp-theme="brand"] .global-advance{font-size:13px;padding:7px 8px}html[data-cp-theme="brand"] #nav .nav-btn small{font-size:9px}}
 @media(prefers-reduced-motion:reduce){html[data-cp-theme="brand"] *,html[data-cp-theme="brand"] *::before,html[data-cp-theme="brand"] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media(min-width:1080px){html[data-cp-theme="brand"] #hud{padding-left:140px}}
+/* Readable text on the dark panels retained by earlier game modules. */
+html[data-cp-theme="brand"] #view{--type:#f5f2e9;--type-muted:#cbd9cf}
+html[data-cp-theme="brand"] #start{--type:#173b36;--type-muted:#52675d}
+html[data-cp-theme="brand"] .panel-body,html[data-cp-theme="brand"] .metric-label,
+html[data-cp-theme="brand"] .npc-title,html[data-cp-theme="brand"] .npc-wrap blockquote,
+html[data-cp-theme="brand"] .dialogue .person b,html[data-cp-theme="brand"] .dialogue h2,
+html[data-cp-theme="brand"] .hot b,html[data-cp-theme="brand"] .day .opp,
+html[data-cp-theme="brand"] .cp-economy-summary,
+html[data-cp-theme="brand"] .cp-economy-summary :is(h2,h3,h4,b,strong,span,p){color:#f5f2e9}
+html[data-cp-theme="brand"] .npc-wrap blockquote{line-height:1.25}
+html[data-cp-theme="brand"] .hot i{opacity:1;filter:none}
+@media(min-width:1080px) and (min-height:850px){html[data-cp-theme="brand"] .dialogue{bottom:365px;max-height:32%}}
