@@ -3,7 +3,7 @@
 var API=window.CP_OFFPITCH_API;
 function state(){try{return API&&API.getState()}catch(e){return null}}
 function id(p){return String(p&&(p.id||p.name)||'')}
-function role(p){var x=p&&p.pos||'';return x==='KL'?'gk':['STP','SLB','SĞB'].includes(x)?'def':['DOS','MO'].includes(x)?'mid':['SNT','SLK','SĞK'].includes(x)?'att':'other'}
+function role(p){var x=String(p&&p.pos||'').toUpperCase();if(['KL','GK','GKP'].includes(x))return'gk';if(/^(STP|SLB|SĞB|CB|LB|RB|LWB|RWB|WB|DF)/.test(x))return'def';if(/^(DOS|MO|CM|CDM|DM|CAM|AM|MID)/.test(x))return'mid';if(/^(SNT|SLK|SĞK|LW|RW|ST|CF|FW|ATT)/.test(x))return'att';return'other'}
 function toast(s){if(API&&API.toast)API.toast(s)}
 function render(){if(API&&API.render)API.render()}
 function save(){if(API&&API.save)API.save()}
@@ -32,7 +32,11 @@ function roster(){
   var p=ps.find(function(x){return id(x)===row.dataset.prof});
   row.dataset.uxName=((p&&p.name)||row.innerText).toLocaleLowerCase('tr');row.dataset.uxPos=((p&&p.pos)||'').toLocaleLowerCase('tr');row.dataset.uxRate=String(Number(p&&p.rate)||0);row.dataset.uxCondition=String(Number(p&&p.condition)||0);row.draggable=true;
   row.setAttribute('aria-label',(p&&p.name||'Oyuncu')+'; sürükleyerek sahadaki aynı pozisyon grubundaki oyuncuyla değiştir');
-  if(!row.querySelector('[data-cp-pick]')){var pick=document.createElement('span');pick.className='cp-roster-pick';pick.setAttribute('data-cp-pick','');pick.setAttribute('role','button');pick.setAttribute('tabindex','0');pick.textContent='İlk 11’e seç';row.appendChild(pick)}
+  if(!row.querySelector('[data-cp-pick]')){
+   var xi=(st&&Array.isArray(st.startingXIIds)?st.startingXIIds:[]).map(String),isStarter=xi.indexOf(String(row.dataset.prof))>=0;
+   if(isStarter){var badge=document.createElement('span');badge.className='cp-roster-starting';badge.textContent='İLK 11';row.appendChild(badge)}
+   else{var pick=document.createElement('button');pick.type='button';pick.className='cp-roster-pick';pick.setAttribute('data-cp-pick','');pick.textContent='İlk 11’e seç';row.appendChild(pick)}
+  }
  });
  function arrange(){var rows=Array.prototype.slice.call(grid.querySelectorAll('.roster-player')),q=input.value.trim().toLocaleLowerCase('tr'),key=sort.value;rows.sort(function(a,b){if(key==='name')return a.dataset.uxName.localeCompare(b.dataset.uxName,'tr');var k=key==='rate'?'uxRate':'uxCondition';return (Number(b.dataset[k])||0)-(Number(a.dataset[k])||0)});rows.forEach(function(r){grid.appendChild(r);r.hidden=!!q&&!((r.dataset.uxName+' '+r.dataset.uxPos).includes(q))});count.textContent=rows.filter(function(r){return !r.hidden}).length+' / '+rows.length+' oyuncu · yedek oyuncuyu sahadaki mevkiye sürükle veya “İlk 11’e seç”e dokun'}
  input.addEventListener('input',arrange);sort.addEventListener('change',arrange);arrange()
@@ -52,7 +56,7 @@ function recommend(){
  var card=document.createElement('div');card.className='cp-quick-sub';card.innerHTML='<p><b>Akıllı değişiklik önerisi</b><br>En yorgun ilk 11 oyuncusu için aynı pozisyondan daha dinç bir yedek bulur. Son karar sende.</p><button type="button" class="btn dark">ÖNERİYİ GÖSTER</button>';box.prepend(card);
  card.querySelector('button').addEventListener('click',function(){var st=state(),ps=st&&st.players||[],starters=Array.prototype.slice.call(out.options).slice(1).map(function(o){return ps.find(function(p){return id(p)===o.value})}).filter(Boolean),bench=Array.prototype.slice.call(inn.options).slice(1).map(function(o){return ps.find(function(p){return id(p)===o.value})}).filter(Boolean);starters.sort(function(a,b){return (Number(a.condition)||0)-(Number(b.condition)||0)});var choice=null;for(var i=0;i<starters.length&&!choice;i++){var subs=bench.filter(function(p){return role(p)===role(starters[i])}).sort(function(a,b){return (Number(b.condition)||0)-(Number(a.condition)||0)});if(subs.length&&Number(starters[i].condition||85)<78&&Number(subs[0].condition||0)>Number(starters[i].condition||0)+5)choice=[starters[i],subs[0]]}if(!choice){toast('Şu an kondisyon farkı belirgin olan uygun bir değişiklik yok.');return}out.value=id(choice[0]);inn.value=id(choice[1]);card.querySelector('p').innerHTML='<b>Öneri: '+choice[0].name+' → '+choice[1].name+'</b><br>Kondisyon: '+Math.round(choice[1].condition||0)+'% / '+Math.round(choice[0].condition||0)+'%. “Oyuncu değiştir”e basınca uygulanır.'})
 }
-document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-cp-pick]')){e.preventDefault();e.target.closest('[data-cp-pick]').click()}},true);
+document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches('.roster-player[role=button]')){e.preventDefault();e.target.click()}},true);
 setupTheme();
 var queued=false;function enhance(){if(queued)return;queued=true;requestAnimationFrame(function(){queued=false;nav();roster();recommend();var d=document.querySelector('.cp-subs');if(d&&document.body.classList.contains('cp-match-active')&&!d.dataset.userClosed)d.open=true})}
 new MutationObserver(enhance).observe(document.body,{subtree:true,childList:true});document.addEventListener('toggle',function(e){if(e.target.matches('.cp-subs')&&!e.target.open)e.target.dataset.userClosed='1'},true);enhance()

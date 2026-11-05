@@ -107,3 +107,27 @@ html[data-cp-theme="brand"] .hot i{opacity:1;filter:none}
  html[data-cp-theme="brand"] #nav .cp-more-menu.open{display:grid!important;right:5px;bottom:calc(100% - 2px);max-height:65dvh;overflow-y:auto}
  html[data-cp-theme="brand"] #nav .cp-more-menu button{min-height:44px}
 }
+/* Contrast fixes for legacy styles with important declarations. */
+html[data-cp-theme="brand"] .roster-player{background:#204b46!important;color:#f5f2e9!important;border-color:#78978c!important;border-radius:7px!important}
+html[data-cp-theme="brand"] .roster-player b{color:#f7f4ec!important}
+html[data-cp-theme="brand"] .roster-player small{color:#d1dfd5!important}
+html[data-cp-theme="brand"] .roster-player strong{color:#e3d4aa!important}
+html[data-cp-theme="brand"] .roster-rating{background:#d1bd88!important;color:#173b36!important}
+html[data-cp-theme="brand"] .cp-roster-starting{margin-left:auto;padding:6px 9px;border:1px solid #d1bd88;border-radius:5px;color:#e3d4aa;font-size:11px;font-weight:900;white-space:nowrap}
+html[data-cp-theme="brand"] .cp-roster-pick{min-height:44px;padding:8px 11px;background:#d1bd88!important;color:#173b36!important;border:1px solid #e3d5ac!important;border-radius:6px!important;font-weight:900;cursor:pointer;touch-action:manipulation}
+html[data-cp-theme="brand"] .cp-roster-pick:hover,html[data-cp-theme="brand"] .cp-roster-pick:focus-visible{background:#e0cf9e!important;color:#143b37!important}
+html[data-cp-theme="brand"] .dossier h3,html[data-cp-theme="brand"] .modal h2{color:#f5f2e9!important;text-shadow:none!important}
+html[data-cp-theme="brand"] .dossier,html[data-cp-theme="brand"] .modal{color:#f5f2e9}
+@media(max-width:650px){html[data-cp-theme="brand"] .cp-roster-pick{min-height:44px;padding:7px 9px;font-size:12px}}
+/* Contrast fixes for legacy styles with important declarations. */
+html[data-cp-theme="brand"] .roster-player{background:#204b46!important;color:#f5f2e9!important;border-color:#78978c!important;border-radius:7px!important}
+html[data-cp-theme="brand"] .roster-player b{color:#f7f4ec!important}
+html[data-cp-theme="brand"] .roster-player small{color:#d1dfd5!important}
+html[data-cp-theme="brand"] .roster-player strong{color:#e3d4aa!important}
+html[data-cp-theme="brand"] .roster-rating{background:#d1bd88!important;color:#173b36!important}
+html[data-cp-theme="brand"] .cp-roster-starting{margin-left:auto;padding:6px 9px;border:1px solid #d1bd88;border-radius:5px;color:#e3d4aa;font-size:11px;font-weight:900;white-space:nowrap}
+html[data-cp-theme="brand"] .cp-roster-pick{min-height:44px;padding:8px 11px;background:#d1bd88!important;color:#173b36!important;border:1px solid #e3d5ac!important;border-radius:6px!important;font-weight:900;cursor:pointer;touch-action:manipulation}
+html[data-cp-theme="brand"] .cp-roster-pick:hover,html[data-cp-theme="brand"] .cp-roster-pick:focus-visible{background:#e0cf9e!important;color:#143b37!important}
+html[data-cp-theme="brand"] .dossier h3,html[data-cp-theme="brand"] .modal h2{color:#f5f2e9!important;text-shadow:none!important}
+html[data-cp-theme="brand"] .dossier,html[data-cp-theme="brand"] .modal{color:#f5f2e9}
+@media(max-width:650px){html[data-cp-theme="brand"] .cp-roster-pick{min-height:44px;padding:7px 9px;font-size:12px}}
