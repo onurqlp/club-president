@@ -1,0 +1,89 @@
+/* CLUB PRESIDENT v1.23 — usability refresh */
+:root{--ux-body:15px}
+.small{font-size:14px;line-height:1.45}
+.eyebrow{font-size:12px;letter-spacing:.12em}
+.room-title h1,.scene-title h1{letter-spacing:.01em}
+.room-title{z-index:5}
+.scene-title{max-width:min(62%,720px)}
+.scene-title h1{font-size:clamp(34px,4.6vw,62px);line-height:.98}
+.scene-title .owner-ribbon{font-size:12px;line-height:1.35}
+.dialogue{max-height:58%;padding:18px 22px}
+.dialogue p{font-size:15px;line-height:1.55}
+.answer{min-height:44px;padding:10px 14px;font-size:14px}
+.nav-btn{min-height:48px}
+.nav-btn small{font-size:12px}
+button,.touch-btn,.option,.answer,.hot,.sms{touch-action:manipulation}
+.roster-grid{display:flex;flex-direction:column;gap:7px;padding:12px}
+.roster-player{width:100%;min-height:62px;padding:10px 13px;border-radius:5px;cursor:grab}
+.roster-player:active{cursor:grabbing}
+.roster-player b{font-size:15px;line-height:1.25}
+.roster-player small{font-size:13px;line-height:1.35}
+.roster-player strong{font-size:17px}
+.roster-rating{flex:0 0 40px;width:40px;height:40px;font-size:19px}
+.cp-roster-tools{display:grid;grid-template-columns:minmax(180px,1fr) minmax(145px,.4fr);gap:9px;padding:12px 12px 0}
+.cp-roster-tools input,.cp-roster-tools select{min-width:0;width:100%;min-height:44px;border:1px solid #71968a;border-radius:4px;background:#102b32;color:#eef6ed;padding:9px 11px;font:600 14px Barlow,Arial,sans-serif}
+.cp-roster-tools input::placeholder{color:#bed0c4}
+.cp-roster-count{grid-column:1/-1;color:#c5d8cd;font-size:12px}
+.cp-roster-player-selected{outline:3px solid var(--gold);outline-offset:1px}
+.ppl{font-size:12px;min-width:72px;min-height:48px;padding:3px;background:#09241bd9;border-radius:8px;cursor:copy}
+.ppl span{width:36px;height:36px;line-height:32px;font-size:14px}
+[data-xi]{min-height:52px;padding:10px 12px;text-align:left;flex:1 1 220px}
+[data-xi] b{font-size:14px}
+[data-xi] small{font-size:12px}
+.cp-subs{border:1px solid #80a18e;border-radius:6px;background:#102831;overflow:hidden}
+.cp-subs>summary{min-height:48px;padding:13px 15px;color:#f1f5df;background:#214238;font-weight:900;font-size:15px;cursor:pointer}
+.cp-subs[open]>summary{border-bottom:1px solid #638878}
+.cp-subs-inner{padding:10px}
+.cp-subs-inner .career-panel{border:0}
+.cp-subs-inner .career-panel h3{font-size:20px}
+.cp-sub-control{gap:9px}
+.cp-sub-control select{min-height:46px;font:600 14px Barlow,Arial,sans-serif}
+.cp-sub-control .btn{min-height:46px;font-size:15px}
+.cp-quick-sub{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 10px;padding:11px;background:#183a34;border:1px solid #719681;border-radius:5px}
+.cp-quick-sub p{margin:0;flex:1 1 220px;color:#d9e9d7;font-size:13px;line-height:1.4}
+.cp-quick-sub button{min-height:42px}
+.cp-fatigue-chip{display:inline-flex;align-items:center;gap:5px;margin-left:6px;padding:3px 7px;border:1px solid #89aa88;border-radius:999px;font-size:11px;color:#e3efcd}
+.cp-more-nav,.cp-more-menu{display:none}
+.nav-btn,.btn,.touch-btn,.answer,.hot,.sms,.option{font-size-adjust:.5}
+@media(max-width:650px){
+ #nav{height:74px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;padding:4px 4px calc(4px + env(safe-area-inset-bottom));position:relative}
+ #nav .nav-btn{min-width:0;width:auto;max-width:none;height:100%;min-height:56px}
+ #nav .nav-btn b{font-size:20px}
+ #nav .nav-btn small{font-size:10px;white-space:nowrap}
+ #nav .nav-btn[data-sc="board"],#nav .nav-btn[data-sc="phone"]{display:none}
+ .cp-more-nav{display:flex;min-width:0;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:3px;border-radius:5px;background:transparent;color:#eaf2ec;font:800 10px Barlow,Arial,sans-serif}
+ .cp-more-nav b{font-size:19px;font-weight:500}
+ .cp-more-nav[aria-expanded="true"]{color:var(--lime);background:#b6f27315}
+ .cp-more-menu{position:absolute;display:none;right:5px;bottom:calc(100% - 2px);z-index:80;min-width:168px;padding:6px;background:#0d222b;border:1px solid #809d89;border-radius:6px;box-shadow:0 10px 35px #000b}
+ .cp-more-menu.open{display:grid;gap:4px}
+ .cp-more-menu button{display:flex;align-items:center;gap:10px;min-height:44px;padding:8px 10px;border-radius:4px;background:#18343b;color:#eff7ed;text-align:left;font:800 13px Barlow,Arial,sans-serif}
+ .cp-more-menu button b{font-size:17px;font-weight:500}
+ .scene-title{max-width:calc(100% - 18px);top:14px;left:11px}
+ .scene-title h1{font-size:clamp(31px,8vw,44px);max-width:100%;line-height:.98}
+ .scene-title .eyebrow,.owner-ribbon{max-width:95%;font-size:10px}
+ .hotspots{top:auto;bottom:calc(31% + 15px);left:10px;right:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hot{min-width:0;min-height:46px;padding:7px 9px}
+ .hot b{font-size:12px}
+ .dialogue{bottom:7px;max-height:46%;padding:10px}
+ .dialogue p{font-size:13px;line-height:1.4}
+ .room-scroll{top:88px}
+ .small{font-size:13px}
+ .eyebrow{font-size:11px}
+ .panel-body{padding:11px}
+ .cp-roster-tools{grid-template-columns:1fr 135px;padding:9px 8px 0}
+ .roster-grid{padding:8px}
+ .roster-player{min-height:60px;padding:8px}
+ .roster-player b{font-size:14px}
+ .roster-player small{font-size:12px}
+ .ppl{font-size:10px;min-width:58px;min-height:43px}
+ .ppl span{width:31px;height:31px;line-height:27px}
+ .cp-subs-inner{padding:7px}
+ .cp-sub-control{display:grid;grid-template-columns:1fr 1fr}
+ .cp-sub-control select,.cp-sub-control .btn{width:100%;min-width:0}
+ .cp-quick-sub{padding:8px}
+}
+@media(max-width:390px){#nav .nav-btn small{font-size:9px}.cp-roster-tools{grid-template-columns:1fr}.cp-roster-count{grid-column:auto}}
+
+.cp-roster-pick{margin-left:auto;flex:0 0 auto;min-height:38px;display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border:1px solid #809f87;border-radius:4px;background:#26473e;color:#eaf2ec;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}
+.cp-roster-pick:hover,.cp-roster-pick:focus{background:#3a5b45;color:#fff;outline:2px solid var(--lime);outline-offset:1px}
+@media(max-width:650px){.cp-roster-pick{min-height:36px;padding:5px 7px;font-size:11px}.roster-rating{flex-basis:34px;width:34px;height:34px}}
