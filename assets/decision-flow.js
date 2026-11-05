@@ -40,11 +40,15 @@
       var pending = hasChoice();
       if (pending) {
         var label = tx('KARAR BEKLİYOR ›', 'ENTSCHEIDUNG OFFEN ›');
-        var buttons = document.querySelectorAll('[data-a="day"], [data-a="quickDay"], [data-a="toMatch"]');
+        var buttons = document.querySelectorAll('[data-a="day"], [data-a="quickDay"], [data-a="toMatch"], [data-a="nextSeason"], [data-a="play"], [data-a="fast"], #nav [data-sc="match"]');
+        var blockedLabel = tx('Önce açık başkanlık kararını yanıtla', 'Beantworte zuerst die offene Präsidiumsanfrage');
+        var blockedHint = tx('Bu işlem için önce açık başkanlık kararını yanıtla.', 'Beantworte zuerst die offene Präsidiumsanfrage, bevor du fortfährst.');
         buttons.forEach(function (button) {
-          button.textContent = label;
-          button.setAttribute('aria-label', tx('Önce açık başkanlık kararını yanıtla', 'Beantworte zuerst die offene Präsidiumsanfrage'));
-          button.title = tx('Kararı yanıtlamadan gün ilerlemez', 'Der Tag kann erst nach der Entscheidung fortgesetzt werden');
+          if (button.matches('[data-a="day"], [data-a="quickDay"], [data-a="toMatch"]')) button.textContent = label;
+          button.setAttribute('aria-label', blockedLabel);
+          button.setAttribute('aria-disabled', 'true');
+          button.setAttribute('data-cp-decision-blocked', '');
+          button.title = blockedHint;
         });
         var dialogue = document.querySelector('.dialogue');
         if (dialogue && !dialogue.querySelector('.cp-decision-ribbon')) {
