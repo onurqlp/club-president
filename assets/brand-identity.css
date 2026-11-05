@@ -87,3 +87,4 @@ html[data-cp-theme="brand"] :is(button,input,select,summary,[role="button"]):foc
 }
 @media(max-width:390px){html[data-cp-theme="brand"] .global-advance{font-size:13px;padding:7px 8px}html[data-cp-theme="brand"] #nav .nav-btn small{font-size:9px}}
 @media(prefers-reduced-motion:reduce){html[data-cp-theme="brand"] *,html[data-cp-theme="brand"] *::before,html[data-cp-theme="brand"] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media(min-width:1080px){html[data-cp-theme="brand"] #hud{padding-left:140px}}
