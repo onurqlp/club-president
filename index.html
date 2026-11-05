@@ -726,8 +726,8 @@ var CP10={"caps":{"Galatasaray":299.5,"Fenerbahçe":266.1,"Beşiktaş":157.8,"Tr
     return rows.map(function(row,j){return cpTRPlayer(row,ix,j)})
   }
   var CP_OLD_TR_CLUBS=['Samsunspor','Başakşehir','Konyaspor','Göztepe','Alanyaspor','Kocaelispor','Antalyaspor','Kasımpaşa','Gaziantep FK','Eyüpspor','Kayserispor','Çaykur Rizespor','Erzurumspor','Amed Sportif'];
-  var CP_TR_ALIASES={'Amed Sportif':'Amed Sportif Faaliyetler','Çorum FK':'Arca Çorum FK','Başakşehir':'İstanbul Başakşehir','Konyaspor':'Tümosan Konyaspor','Alanyaspor':'Corendon Alanyaspor','Erzurumspor':'Erzurumspor FK'};
-  function cpTRCanonicalClub(name){return CP_TR_ALIASES[name]||name}
+  var CP_TR_ALIASES={'amed sportif':'Amed Sportif Faaliyetler','çorum fk':'Arca Çorum FK','başakşehir':'İstanbul Başakşehir','konyaspor':'Tümosan Konyaspor','alanyaspor':'Corendon Alanyaspor','erzurumspor':'Erzurumspor FK'};
+  function cpTRCanonicalClub(name){var key=String(name||'').trim().toLocaleLowerCase('tr-TR');return CP_TR_ALIASES[key]||name}
   function cpTROldIndexToCurrent(oldIndex){
     oldIndex=Number(oldIndex);if(!Number.isFinite(oldIndex))return oldIndex;
     if(oldIndex<12)return oldIndex;
