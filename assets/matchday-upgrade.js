@@ -252,8 +252,9 @@
     import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js').then(function (THREE) {
       startPending = false;
       if (active) build3D(THREE);
-    }).catch(function () {
+    }).catch(function (error) {
       startPending = false;
+      try { var previewStatus = window.parent.document.getElementById('preview-status'); if (previewStatus) previewStatus.textContent = '3D kurulum hatası: ' + String(error && error.message || error); } catch (e) { }
       document.body.classList.add('cp-3d-fallback');
       var status = document.getElementById('cp-stage-status');
       if (status) status.textContent = tr('3D tekrar bu cihazda açılamadı', '3D-Wiederholung auf diesem Gerät nicht verfügbar');
