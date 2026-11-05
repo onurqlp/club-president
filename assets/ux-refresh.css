@@ -374,3 +374,8 @@ html[data-cp-theme="soft"] .report{background:#e8ece4;border-left-color:#a8796e;
 html[data-cp-theme="soft"] .event.goal{background:#e4ece2}
 html[data-cp-theme="soft"] #cp-theme-toggle{background:#f7f7f1;color:#4d5d52}
 html[data-cp-theme="club"] #cp-theme-toggle{background:#263630;color:#f8f7f1}
+
+html[data-cp-theme="soft"] #start .start-inner>p{color:#5b6a60!important;opacity:1}
+html[data-cp-theme="soft"] #start .eyebrow{color:#697c6e!important}
+html[data-cp-theme="soft"] #start .club-card small{color:#647268!important;opacity:1!important}
+html[data-cp-theme="soft"] #start .club-card:before{opacity:.16}
