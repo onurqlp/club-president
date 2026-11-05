@@ -180,6 +180,16 @@
         option('Sorumluluğu üstlen','Die Verantwortung übernehmen',{fans:1,trust:1,morale:1},{promise:'resolve'}),
         option('Takıma baskı yap, hemen cevap iste','Das Team unter Druck setzen',{coach:-1,morale:-2,trust:-1},{promise:'resolve'})
       ];
+    } else if (id === 'player_incident') {
+      type = '📰'; who = tx('KULÜP İLETİŞİMİ','VEREINSKOMMUNIKATION');
+      title = tx('Yıldız oyuncu hakkında gece haberi','Bericht über einen Starspieler');
+      body = tx(context.playerName+' gece geç saatte dışarıda görüntülendi. Haber maç öncesi büyüyor; oyuncuyla ve taraftarlarla nasıl ilgilenelim?',
+        context.playerName+' wurde spät in der Nacht gesehen. Die Nachricht verbreitet sich vor dem Spiel. Wie gehen wir mit dem Spieler und den Fans um?');
+      choices = [
+        option('Disiplin uyarısı ver, bir maç dinlendir','Verwarnung aussprechen und ein Spiel pausieren lassen',{morale:-2,trust:1,coach:-1},{suspendPlayer:context.playerId}),
+        option('Taraftara açıkla, iletişim bütçesi ayır · €250K','Fans informieren und Kommunikationsbudget einsetzen · 250.000 €',{cash:-250000,fans:2,trust:1}),
+        option('Oyuncuyu kamuoyu önünde destekle','Den Spieler öffentlich unterstützen',{fans:-2,morale:2,coach:1})
+      ];
     } else if (id === 'fatigue') {
       type = '🩺'; who = tx('SAĞLIK EKİBİ','MEDIZINISCHES TEAM');
       title = tx('Kondisyon ekibinden rotasyon uyarısı','Das Trainerteam empfiehlt Rotation');
@@ -232,6 +242,7 @@
   var SCENARIOS = [
     { id:'academy_report', category:'academy', cooldown:18, eligible:function(s){return !!(engine(s).threads.academy && Number(s.day)>=engine(s).threads.academy.dueDay)}, priority:10 },
     { id:'press_review', category:'press', cooldown:20, eligible:function(s){var p=engine(s).pressPromise;return !!(p && Number(s.round)>p.round && history(s)[p.round])}, priority:10 },
+    { id:'player_incident', category:'press', cooldown:70, eligible:function(s){return Number(s.round)>=2&&(s.players||[]).length>=11&&seed((s.club||'')+'|'+(s.seasonCode||'')+'|'+Number(s.day||0)+'|player-incident-v1')()<0.12}, priority:3 },
     { id:'finance_review', category:'finance', cooldown:35, eligible:function(s){return Number(s.cash)<7000000 && Number(s.round)>1}, priority:8 },
     { id:'board_confidence', category:'staff', cooldown:30, eligible:function(s){return Number(s.trust)<48 || losses(s,3)>=2 || Number(s.managerStability16||70)<42}, priority:8 },
     { id:'supporters', category:'fans', cooldown:32, eligible:function(s){return Number(s.fans)<58 || (losses(s,3)>=2 && Number(s.fans)<72)}, priority:7 },
@@ -261,6 +272,10 @@
     return candidates[0];
   }
   function chooseContext(id, state) {
+    if (id === 'player_incident') {
+      var player = (state.players || []).slice().sort(function(a,b){return (Number(b.rate)||0)-(Number(a.rate)||0)})[0];
+      return player ? {playerId:player.id||player.name,playerName:player.name} : {};
+    }
     if (id === 'fatigue') {
       var player = (state.players || []).slice().sort(function(a,b){return (Number(a.condition)||80)-(Number(b.condition)||80)})[0];
       return player ? {playerId:player.id||player.name, playerName:player.name} : {};
@@ -353,6 +368,10 @@
       data.pressPromise={round:Number(state.round)||0,type:choiceMeta.promise,day:day};
     }
     if(choiceMeta.promise==='resolve')data.pressPromise=null;
+    if(choiceMeta.suspendPlayer){
+      var disciplined=(state.players||[]).find(function(p){return String(p.id||p.name)===String(choiceMeta.suspendPlayer)});
+      if(disciplined)disciplined.suspendedUntilRound=(Number(state.round)||0)+1;
+    }
     if(choiceMeta.restPlayer){
       var rested=(state.players||[]).find(function(p){return String(p.id||p.name)===String(choiceMeta.restPlayer)});
       if(rested){rested.restUntilRound17=Number(state.round)||0;rested.condition=clamp((Number(rested.condition)||80)+3,0,100)}
