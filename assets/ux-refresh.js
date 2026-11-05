@@ -7,6 +7,24 @@ function role(p){var x=p&&p.pos||'';return x==='KL'?'gk':['STP','SLB','SĞB'].in
 function toast(s){if(API&&API.toast)API.toast(s)}
 function render(){if(API&&API.render)API.render()}
 function save(){if(API&&API.save)API.save()}
+
+function setupTheme(){
+ var root=document.documentElement,key='cp-visual-theme-2026',saved='soft';
+ try{saved=localStorage.getItem(key)||'soft'}catch(e){}
+ if(saved!=='club'&&saved!=='soft')saved='soft';
+ function setTheme(name){
+  saved=name==='soft'?'soft':'club';
+  root.setAttribute('data-cp-theme',saved);
+  try{localStorage.setItem(key,saved)}catch(e){}
+  var button=document.getElementById('cp-theme-toggle');
+  if(button){button.textContent=saved==='soft'?'◐':'◑';button.setAttribute('aria-pressed',String(saved==='soft'));button.setAttribute('aria-label',saved==='soft'?'Kulüp temasına geç':'Yumuşak temaya geç');button.title=saved==='soft'?'Kulüp temasına geç':'Yumuşak temaya geç'}
+ }
+ root.setAttribute('data-cp-theme',saved);
+ var hud=document.getElementById('hud');if(!hud||document.getElementById('cp-theme-toggle'))return;
+ var button=document.createElement('button');button.type='button';button.className='tiny-btn cp-theme-toggle';button.id='cp-theme-toggle';button.textContent=saved==='soft'?'◐':'◑';button.setAttribute('aria-pressed',String(saved==='soft'));button.setAttribute('aria-label',saved==='soft'?'Kulüp temasına geç':'Yumuşak temaya geç');button.title=saved==='soft'?'Kulüp temasına geç':'Yumuşak temaya geç';
+ var help=hud.querySelector('[data-a="help"]');if(help)help.insertAdjacentElement('beforebegin',button);else hud.appendChild(button);
+ button.addEventListener('click',function(){setTheme(saved==='soft'?'club':'soft')})
+}
 function swap(inId,outId){
  var st=state(),ps=st&&st.players;if(!st||!Array.isArray(ps))return false;
  var a=ps.find(function(p){return id(p)===String(inId)}),b=ps.find(function(p){return id(p)===String(outId)});
@@ -47,6 +65,7 @@ function recommend(){
  card.querySelector('button').addEventListener('click',function(){var st=state(),ps=st&&st.players||[],starters=Array.prototype.slice.call(out.options).slice(1).map(function(o){return ps.find(function(p){return id(p)===o.value})}).filter(Boolean),bench=Array.prototype.slice.call(inn.options).slice(1).map(function(o){return ps.find(function(p){return id(p)===o.value})}).filter(Boolean);starters.sort(function(a,b){return (Number(a.condition)||0)-(Number(b.condition)||0)});var choice=null;for(var i=0;i<starters.length&&!choice;i++){var subs=bench.filter(function(p){return role(p)===role(starters[i])}).sort(function(a,b){return (Number(b.condition)||0)-(Number(a.condition)||0)});if(subs.length&&Number(starters[i].condition||85)<78&&Number(subs[0].condition||0)>Number(starters[i].condition||0)+5)choice=[starters[i],subs[0]]}if(!choice){toast('Şu an kondisyon farkı belirgin olan uygun bir değişiklik yok.');return}out.value=id(choice[0]);inn.value=id(choice[1]);card.querySelector('p').innerHTML='<b>Öneri: '+choice[0].name+' → '+choice[1].name+'</b><br>Kondisyon: '+Math.round(choice[1].condition||0)+'% / '+Math.round(choice[0].condition||0)+'%. “Oyuncu değiştir”e basınca uygulanır.'})
 }
 document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-cp-pick]')){e.preventDefault();e.target.closest('[data-cp-pick]').click()}},true);
+setupTheme();
 var queued=false;function enhance(){if(queued)return;queued=true;requestAnimationFrame(function(){queued=false;roster();recommend();var d=document.querySelector('.cp-subs');if(d&&document.body.classList.contains('cp-match-active')&&!d.dataset.userClosed)d.open=true})}
 new MutationObserver(enhance).observe(document.body,{subtree:true,childList:true});document.addEventListener('toggle',function(e){if(e.target.matches('.cp-subs')&&!e.target.open)e.target.dataset.userClosed='1'},true);enhance()
 })();
