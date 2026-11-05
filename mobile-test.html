@@ -10,12 +10,16 @@ body{display:grid;grid-template-columns:minmax(270px,1fr) 390px minmax(270px,1fr
 aside{max-width:310px;color:#c4cbbf}aside h1{font-size:26px;line-height:1.05;color:#f3ebd5;margin:0 0 12px}aside p{font-size:14px;line-height:1.5}.badge{display:inline-block;border:1px solid #637469;border-radius:999px;padding:7px 10px;color:#c6e89a;font-size:11px;font-weight:800;letter-spacing:.08em}
 .device{width:390px;height:min(844px,calc(100vh - 48px));min-height:650px;border:8px solid #27312e;border-radius:32px;overflow:hidden;background:#071318;box-shadow:0 20px 80px #000a,0 0 0 1px #768277}
 .device iframe{display:block;width:100%;height:100%;border:0;background:#073c3b}
+#load-error{color:#ffb29f;font-size:12px}
 @media(max-width:760px){body{display:block;padding:0}.notes{display:none}.device{width:100vw;height:100dvh;min-height:0;border:0;border-radius:0;box-shadow:none}}
 </style>
 </head>
 <body>
-<aside class="notes"><span class="badge">AYRI TEST ÖNİZLEMESİ</span><h1>Club President<br>telefon görünümü</h1><p>Oyun, bu çerçevenin içinde gerçek 390 × 844 telefon alanında çalışıyor. Maç ekranına girip bir kritik anı bekleyerek 3D sahnenin boyutunu ve katmanlarını kontrol edebilirsin.</p><p>Bu sayfa test dalındadır; ana oyun sayfasını değiştirmez.</p></aside>
-<main class="device"><iframe src="./index.html" title="Club President telefon testi"></iframe></main>
+<aside class="notes"><span class="badge">AYRI TEST ÖNİZLEMESİ</span><h1>Club President<br>telefon görünümü</h1><p>Oyun, bu çerçevenin içinde gerçek 390 × 844 telefon alanında çalışıyor. Maç ekranına girip bir kritik anı bekleyerek 3D sahnenin boyutunu ve katmanlarını kontrol edebilirsin.</p><p>Bu sayfa test dalındadır; ana oyun sayfasını değiştirmez.</p><span id="load-error"></span></aside>
+<main class="device"><iframe id="gamePreview" title="Club President telefon testi"></iframe></main>
 <aside class="notes"><span class="badge">MOBİL · 390 × 844</span><h1>Kontrol alanı</h1><p>Önizleme, telefon CSS kurallarını normal viewport genişliğinde uygular. Sahne gizlenince alan yüksekliğini korur; 3D tuval yatay/dikey döndürme ve yeniden boyutlandırmaya yanıt verir.</p></aside>
+<script>
+fetch('./index.html').then(function(response){if(!response.ok)throw new Error('Oyun dosyası açılamadı: '+response.status);return response.text()}).then(function(source){source=source.replace(/<head>/i,'<head><base href="./">');document.getElementById('gamePreview').srcdoc=source}).catch(function(error){document.getElementById('load-error').textContent=error.message});
+</script>
 </body>
 </html>
