@@ -725,6 +725,31 @@ var CP10={"caps":{"Galatasaray":299.5,"Fenerbahçe":266.1,"Beşiktaş":157.8,"Tr
     cpTRDecode();var club=clubs[ix]&&clubs[ix][0],rows=CP_TR&&CP_TR.byTeam[club]||[];
     return rows.map(function(row,j){return cpTRPlayer(row,ix,j)})
   }
+  var CP_OLD_TR_CLUBS=['Samsunspor','Başakşehir','Konyaspor','Göztepe','Alanyaspor','Kocaelispor','Antalyaspor','Kasımpaşa','Gaziantep FK','Eyüpspor','Kayserispor','Çaykur Rizespor','Erzurumspor','Amed Sportif'];
+  var CP_TR_ALIASES={'Amed Sportif':'Amed Sportif Faaliyetler','Çorum FK':'Arca Çorum FK','Başakşehir':'İstanbul Başakşehir','Konyaspor':'Tümosan Konyaspor','Alanyaspor':'Corendon Alanyaspor','Erzurumspor':'Erzurumspor FK'};
+  function cpTRCanonicalClub(name){return CP_TR_ALIASES[name]||name}
+  function cpTROldIndexToCurrent(oldIndex){
+    oldIndex=Number(oldIndex);if(!Number.isFinite(oldIndex))return oldIndex;
+    if(oldIndex<12)return oldIndex;
+    if(oldIndex<26){var oldName=CP_OLD_TR_CLUBS[oldIndex-12];if(!oldName)return oldIndex;var resolved=clubs.findIndex(function(c){return c[0]===cpTRCanonicalClub(oldName)});return resolved>=0?resolved:oldIndex}
+    return oldIndex+20
+  }
+  function cpTRReindexCareer(){
+    if(!state||state.trIndexVersion)return;
+    state.club=cpTRCanonicalClub(state.club||'');
+    var currentIx=clubs.findIndex(function(c){return c[0]===state.club});if(currentIx>=0)state.ix=currentIx;
+    if(state.players)state.players.forEach(function(p){p.clubIx=state.ix});
+    if(state.worldPlayers)Object.keys(state.worldPlayers).forEach(function(id){var p=state.worldPlayers[id];if(!p||String(id).indexOf('tr-')===0)return;p.clubIx=cpTROldIndexToCurrent(p.clubIx)});
+    if(state.scout19&&Array.isArray(state.scout19.prospects))state.scout19.prospects.forEach(function(p){p.clubIx=cpTROldIndexToCurrent(p.clubIx)});
+    (state.seasonCalendar||[]).forEach(function(f){if(f&&f.opp)f.opp=cpTRCanonicalClub(f.opp)});
+    (((state.leagueLedger||{}).fixtures)||[]).forEach(function(week){(week||[]).forEach(function(f){if(f){if(f.home)f.home=cpTRCanonicalClub(f.home);if(f.away)f.away=cpTRCanonicalClub(f.away)}})});
+    state.trIndexVersion='2026-11-05';
+  }
+  function cpTRRepairExternalRosters(){
+    if(!state||!state.worldPlayers||state.trWorldRepairVersion)return;
+    clubs.forEach(function(c,i){if(i===state.ix||c[1]==='Türkiye')return;var has=Object.keys(state.worldPlayers).some(function(id){var p=state.worldPlayers[id];return p&&p.clubIx===i});if(!has)v10MakeRoster(i).forEach(function(p){state.worldPlayers[p.id]=p})});
+    state.trWorldRepairVersion='2026-11-05';
+  }
   function v10MakeRoster(ix){
     if(!clubs[ix])return[];
     if(clubs[ix][1]==='Türkiye'&&CP_TR){var tr=cpTRRoster(ix);if(tr.length)return tr}
@@ -745,7 +770,7 @@ var CP10={"caps":{"Galatasaray":299.5,"Fenerbahçe":266.1,"Beşiktaş":157.8,"Tr
   estimateValue=function(p){return Number.isFinite(p.value)&&p.value>0?p.value:originalEstimateValue(p)};
   var oldCreate=create;
   create=function(i){var s=oldCreate(i),club=clubs[i],market=CP10.caps[club[0]]||Math.max(10,club[5]*3.5);
-    s.v=3;s.dataVersion='1.0';s.schemaVersion=2;s.gameVersion='1.25';s.seasonCode='2026/27';s.fixtureType='oyun-üretimi';s.fixtureSource='oyun-üretimi';s.fixtureSourceAsOf='2026-11-04';s.realSnapshot=s.players.some(function(p){return p.real});
+    s.v=3;s.dataVersion='1.0';s.schemaVersion=2;s.gameVersion='1.25';s.trIndexVersion='2026-11-05';s.seasonCode='2026/27';s.fixtureType='oyun-üretimi';s.fixtureSource='oyun-üretimi';s.fixtureSourceAsOf='2026-11-04';s.realSnapshot=s.players.some(function(p){return p.real});
     s.cash=Math.round(Math.max(4,market*.10)*1e6);s.budget=Math.round(Math.max(3,market*.07)*1e6);
     s.wage=s.players.reduce(function(a,p){return a+(p.wage||0)},0);
     s.sourceAsOf=CP10.snapshot;
@@ -755,7 +780,7 @@ var CP10={"caps":{"Galatasaray":299.5,"Fenerbahçe":266.1,"Beşiktaş":157.8,"Tr
     if(!state.worldPlayers){state.worldPlayers={};clubs.forEach(function(c,i){if(i===state.ix)return;v10MakeRoster(i).forEach(function(p){state.worldPlayers[p.id]=p})})}
     if(CP_TR&&!state.trRosterVersion){
       var trIndexes=clubs.map(function(c,i){return c[1]==='Türkiye'?i:-1}).filter(function(i){return i>=0});
-      Object.keys(state.worldPlayers).forEach(function(id){var p=state.worldPlayers[id];if(p&&trIndexes.includes(p.clubIx)&&(String(id).indexOf('cp10-')===0||String(id).indexOf('cp-legacy-')===0))delete state.worldPlayers[id]});
+      Object.keys(state.worldPlayers).forEach(function(id){var p=state.worldPlayers[id];if(p&&clubs[p.clubIx]&&clubs[p.clubIx][1]==='Türkiye'&&(String(id).indexOf('cp10-')===0||String(id).indexOf('cp-legacy-')===0))delete state.worldPlayers[id]});
       trIndexes.forEach(function(i){if(i===state.ix)return;v10MakeRoster(i).forEach(function(p){state.worldPlayers[p.id]=p})});
       if(clubs[state.ix]&&clubs[state.ix][1]==='Türkiye'&&state.round===0&&!(state.transfers||[]).length&&!(state.history||[]).length)state.players=v10MakeRoster(state.ix);
       state.trRosterVersion='2026-11-05';state.sourceAsOf='2026-11-05';
@@ -782,7 +807,7 @@ var CP10={"caps":{"Galatasaray":299.5,"Fenerbahçe":266.1,"Beşiktaş":157.8,"Tr
     state.next=start;state.v10Fixtures=true;state.fixtureType='oyun-üretimi';state.fixtureSource='oyun-üretimi';state.fixtureSourceAsOf='2026-11-04';
   }
   var prevWorldInit=worldInit;
-  worldInit=function(){prevWorldInit();if(!state)return;v10PlayersInit();window.cpTRYouthClass();var hasOfficial=(state.seasonCalendar||[]).some(function(f){return f&&f.real===true});if(!state.fixtureSource){state.fixtureSource=hasOfficial?'resmi':'oyun-üretimi';state.fixtureSourceAsOf='2026-11-04'}
+  worldInit=function(){cpTRReindexCareer();prevWorldInit();if(!state)return;v10PlayersInit();cpTRRepairExternalRosters();if(clubs[state.ix]&&clubs[state.ix][1]==='Türkiye'&&!state.trFixtureVersion){var leagueNamesNow=clubsOfLeague(),badFixture=(state.seasonCalendar||[]).some(function(f){return f&&f.opp&&!leagueNamesNow.includes(f.opp)})||(((state.leagueLedger||{}).fixtures)||[]).some(function(w){return(w||[]).some(function(f){return f&&(!leagueNamesNow.includes(f.home)||!leagueNamesNow.includes(f.away))})});state.leagueRounds=leagueNamesNow.length===18?34:38;if(badFixture&&state.round===0&&!(state.history||[]).length){state.seasonCalendar=null;state.leagueLedger=null;state.v10Fixtures=false;state.fixtureSource=null;state.fixtureType=null;state.next=state.next||state.date}state.trFixtureVersion='2026-11-05'}window.cpTRYouthClass();var hasOfficial=(state.seasonCalendar||[]).some(function(f){return f&&f.real===true});if(!state.fixtureSource){state.fixtureSource=hasOfficial?'resmi':'oyun-üretimi';state.fixtureSourceAsOf='2026-11-04'}
     if(!state.v10Fixtures&&state.round===0&&(!state.history||!state.history.length)&&!hasOfficial){resetFixtures();save()}
     // Market-based strength ratings affect rivals' simulated results and scouting.
     if(state.worldClubs){clubsOfLeague().forEach(function(n){var p=state.worldClubs[n];if(!p)return;var market=CP10.caps[n];if(market){p.marketCap=market*1e6;p.quality=Math.max(42,Math.min(97,Math.round(42+14*Math.log10(1+market))))}})}
