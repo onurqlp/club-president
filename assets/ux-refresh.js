@@ -33,7 +33,7 @@ function roster(){
   row.dataset.uxName=((p&&p.name)||row.innerText).toLocaleLowerCase('tr');row.dataset.uxPos=((p&&p.pos)||'').toLocaleLowerCase('tr');row.dataset.uxRate=String(Number(p&&p.rate)||0);row.dataset.uxCondition=String(Number(p&&p.condition)||0);row.draggable=true;
   row.setAttribute('aria-label',(p&&p.name||'Oyuncu')+'; sürükleyerek sahadaki aynı pozisyon grubundaki oyuncuyla değiştir');
   if(!row.querySelector('[data-cp-pick]')){
-   var xi=(st&&Array.isArray(st.startingXIIds)?st.startingXIIds:[]).map(String),isStarter=xi.indexOf(String(row.dataset.prof))>=0;
+   var isStarter=Array.prototype.some.call(document.querySelectorAll('.ppl'),function(el){return String(el.dataset.prof)===String(row.dataset.prof)});
    if(isStarter){var badge=document.createElement('span');badge.className='cp-roster-starting';badge.textContent='İLK 11';row.appendChild(badge)}
    else{var pick=document.createElement('button');pick.type='button';pick.className='cp-roster-pick';pick.setAttribute('data-xi',String(row.dataset.prof));pick.textContent='İlk 11’e al';row.appendChild(pick)}
   }
