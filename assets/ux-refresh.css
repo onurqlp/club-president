@@ -174,7 +174,9 @@ body,button,input,select,.hd,.eyebrow,.btn,.nav-btn,.panel-hd b,.dialogue h2,.ho
  --brand-panel:var(--paper);--brand-edge:var(--paper-line);
 }
 html,body,#game{background:var(--ink);color:var(--light)}
-#start .small,#start p{color:#d8ddd2}
+#start .start-inner>p{color:#d8ddd2}
+#start .panel p,#start .panel .small,#start .club-card p,#start .club-card .small{color:var(--type-muted)}
+#start .panel .eyebrow,#start .club-card .eyebrow{color:var(--moss)}
 .scene-title .small{color:#ece9df}
 #hud .small{color:#bac3b8}
 body,button,input,select{font-family:Barlow,Arial,sans-serif}
