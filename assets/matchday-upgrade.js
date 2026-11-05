@@ -10,7 +10,6 @@
   var players = [];
   var frame = 0;
   var resizeHandler = null;
-  var resizeObserver = null;
   var handledFinish = null;
   var activeHighlight = null;
   var highlightStartedAt = 0;
@@ -317,17 +316,8 @@
     ball = new THREE.Mesh(new THREE.SphereGeometry(.11, 20, 16), new THREE.MeshStandardMaterial({ color: '#f5f1df', roughness: .42, metalness: .02 })); ball.position.y = .11; scene.add(ball);
     var ballPatch = new THREE.Mesh(new THREE.SphereGeometry(.112, 10, 8, 0, Math.PI, .15, .7), new THREE.MeshStandardMaterial({ color: '#20282b', roughness: .7 })); ball.add(ballPatch);
     renderer.domElement.setAttribute('aria-label', 'Canlı 3D futbol maçı');
-    resizeHandler = function () {
-      if (!active || !host.isConnected) return;
-      var w = Math.max(1, host.clientWidth), h = Math.max(1, host.clientHeight);
-      camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h, false);
-    };
+    resizeHandler = function () { if (!active || !host.isConnected) return; var w = Math.max(320, host.clientWidth), h = Math.max(220, host.clientHeight); camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h, false); };
     window.addEventListener('resize', resizeHandler);
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', resizeHandler);
-    if (window.ResizeObserver) {
-      resizeObserver = new ResizeObserver(resizeHandler);
-      resizeObserver.observe(host);
-    }
     window.__cp3D = { scene: scene, camera: camera, renderer: renderer, THREE: THREE };
     window.__cp3DScene = scene; window.__cp3DCamera = camera;
     window.__cp3DRender = renderer;
@@ -524,7 +514,7 @@
   function stop3D() {
     if (window.CP_EVO_ENGINE && window.CP_EVO_ENGINE.stopRenderer) { try { window.CP_EVO_ENGINE.stopRenderer(); } catch (e) { } }
     if(frame)cancelAnimationFrame(frame);frame=0;
-    if(resizeHandler)window.removeEventListener('resize',resizeHandler);if(resizeHandler&&window.visualViewport)window.visualViewport.removeEventListener('resize',resizeHandler);if(resizeObserver)resizeObserver.disconnect();resizeObserver=null;resizeHandler=null;
+    if(resizeHandler)window.removeEventListener('resize',resizeHandler);resizeHandler=null;
     if(renderer){renderer.dispose();if(renderer.domElement.parentNode)renderer.domElement.parentNode.removeChild(renderer.domElement)}
     renderer=null;scene3=null;camera=null;ball=null;players=[];startPending=false;
     document.body.classList.remove('cp-3d-ready','cp-3d-fallback');
