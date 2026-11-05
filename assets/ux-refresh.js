@@ -35,7 +35,7 @@ function roster(){
   if(!row.querySelector('[data-cp-pick]')){
    var xi=(st&&Array.isArray(st.startingXIIds)?st.startingXIIds:[]).map(String),isStarter=xi.indexOf(String(row.dataset.prof))>=0;
    if(isStarter){var badge=document.createElement('span');badge.className='cp-roster-starting';badge.textContent='İLK 11';row.appendChild(badge)}
-   else{var pick=document.createElement('button');pick.type='button';pick.className='cp-roster-pick';pick.setAttribute('data-cp-pick','');pick.textContent='İlk 11’e seç';row.appendChild(pick)}
+   else{var pick=document.createElement('button');pick.type='button';pick.className='cp-roster-pick';pick.setAttribute('data-xi',String(row.dataset.prof));pick.textContent='İlk 11’e al';row.appendChild(pick)}
   }
  });
  function arrange(){var rows=Array.prototype.slice.call(grid.querySelectorAll('.roster-player')),q=input.value.trim().toLocaleLowerCase('tr'),key=sort.value;rows.sort(function(a,b){if(key==='name')return a.dataset.uxName.localeCompare(b.dataset.uxName,'tr');var k=key==='rate'?'uxRate':'uxCondition';return (Number(b.dataset[k])||0)-(Number(a.dataset[k])||0)});rows.forEach(function(r){grid.appendChild(r);r.hidden=!!q&&!((r.dataset.uxName+' '+r.dataset.uxPos).includes(q))});count.textContent=rows.filter(function(r){return !r.hidden}).length+' / '+rows.length+' oyuncu · yedek oyuncuyu sahadaki mevkiye sürükle veya “İlk 11’e seç”e dokun'}
@@ -46,11 +46,7 @@ var selected=null;
 document.addEventListener('dragstart',function(e){var row=e.target.closest('.roster-player');if(!row)return;selected=row.dataset.prof;if(e.dataTransfer){e.dataTransfer.setData('text/plain',selected);e.dataTransfer.effectAllowed='move'}});
 document.addEventListener('dragover',function(e){if(e.target.closest('.ppl'))e.preventDefault()});
 document.addEventListener('drop',function(e){var target=e.target.closest('.ppl');if(!target)return;e.preventDefault();var from=e.dataTransfer&&e.dataTransfer.getData('text/plain')||selected;selected=null;if(from)swap(from,target.dataset.prof)});
-document.addEventListener('click',function(e){
- var pick=e.target.closest('[data-cp-pick]'),starter=e.target.closest('.ppl');
- if(pick){var row=pick.closest('.roster-player');if(!row)return;document.querySelectorAll('.cp-roster-player-selected').forEach(function(x){x.classList.remove('cp-roster-player-selected')});selected=row.dataset.prof;row.classList.add('cp-roster-player-selected');toast('Şimdi sahadaki değiştirmek istediğin oyuncuya dokun.');e.preventDefault();e.stopPropagation();return}
- if(starter&&selected){var from=selected;selected=null;document.querySelectorAll('.cp-roster-player-selected').forEach(function(x){x.classList.remove('cp-roster-player-selected')});e.preventDefault();e.stopImmediatePropagation();swap(from,starter.dataset.prof)}
-},true);
+document.addEventListener('click',function(e){if(e.target.closest('[data-xi]'))selected=null},true);
 function recommend(){
  var box=document.querySelector('.cp-subs-inner'),out=document.getElementById('cp-out'),inn=document.getElementById('cp-in');if(!box||!out||!inn||box.querySelector('.cp-quick-sub'))return;
  var card=document.createElement('div');card.className='cp-quick-sub';card.innerHTML='<p><b>Akıllı değişiklik önerisi</b><br>En yorgun ilk 11 oyuncusu için aynı pozisyondan daha dinç bir yedek bulur. Son karar sende.</p><button type="button" class="btn dark">ÖNERİYİ GÖSTER</button>';box.prepend(card);
