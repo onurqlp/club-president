@@ -1,0 +1,89 @@
+/* Club President · 05.11.2026 brand identity. Loaded last to unify legacy screens. */
+html[data-cp-theme="brand"]{
+ --bg:#073c3b;--petrol:#073c3b;--ink:#102d2c;--paper:#f3f0e8;
+ --light:#f7f5ef;--muted:#c2d2cb;--lime:#d1bd88;--gold:#d1bd88;
+ --champagne:#d1bd88;--red:#b96a64;--brand-edge:#8b9f93;
+ color-scheme:dark;
+}
+html[data-cp-theme="brand"],html[data-cp-theme="brand"] body,
+html[data-cp-theme="brand"] #game{background:#082b2b;color:#f5f2e9}
+html[data-cp-theme="brand"] #hud{background:#073b39;color:#f7f5ef;border-bottom:1px solid #8b826455;box-shadow:none}
+html[data-cp-theme="brand"] #hud #logo{flex:0 0 auto;min-width:0}
+html[data-cp-theme="brand"] .cp-brand-lockup{display:block;flex:0 0 auto;width:174px;height:56px;background-image:url('./club-president-identity.jpg');background-repeat:no-repeat;background-size:168% 336%;background-position:9% 95%;border-radius:3px}
+html[data-cp-theme="brand"] #hud .cp-brand-fallback{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+html[data-cp-theme="brand"] .hud-info span{color:#bdcfc8}
+html[data-cp-theme="brand"] #view{background:#123a39}
+html[data-cp-theme="brand"] #nav{background:#0b3736;border-color:#8b826455;box-shadow:none}
+html[data-cp-theme="brand"] .nav-btn{color:#cbd8d0}
+html[data-cp-theme="brand"] .nav-btn:hover{background:#23514c;color:#fff}
+html[data-cp-theme="brand"] .nav-btn.on{background:#d1bd8824;color:#f0dcaa;border-color:#d1bd88;box-shadow:inset 0 3px #d1bd88}
+html[data-cp-theme="brand"] .tiny-btn,html[data-cp-theme="brand"] .btn.dark{background:#24514b;color:#f7f5ef;border:1px solid #77958a;box-shadow:none}
+html[data-cp-theme="brand"] .global-advance,html[data-cp-theme="brand"] .btn{background:#d1bd88;color:#143b37;border:1px solid #e3d5ac;border-radius:6px;box-shadow:none;text-shadow:none}
+html[data-cp-theme="brand"] .btn:hover:not(:disabled),html[data-cp-theme="brand"] .global-advance:hover{filter:none;background:#e0cf9e}
+html[data-cp-theme="brand"] .btn.red{background:#a7504e;color:#fff;border-color:#c37d78}
+html[data-cp-theme="brand"] .eyebrow{color:#e1cd9d}
+html[data-cp-theme="brand"] .small,html[data-cp-theme="brand"] .note{color:#d0ddd3}
+html[data-cp-theme="brand"] #start{background:#f3f0e8;color:#123c39;background-image:radial-gradient(ellipse at 80% 0%,#e5e0d4,#f3f0e8 68%)}
+html[data-cp-theme="brand"] #start .start-inner{max-width:1120px}
+html[data-cp-theme="brand"] .cp-start-wordmark{width:min(690px,100%);aspect-ratio:3.85;background-image:url('./club-president-identity.jpg');background-repeat:no-repeat;background-size:117% 299%;background-position:53% 23%;mix-blend-mode:multiply;margin:10px 0 14px}
+html[data-cp-theme="brand"] #start .start-title{font-size:clamp(48px,8vw,96px);line-height:.9;letter-spacing:-.015em;margin:15px 0;color:#0a3d39}
+html[data-cp-theme="brand"] #start .start-title em{color:#947d45}
+html[data-cp-theme="brand"] #start .small{color:#46615a!important}
+html[data-cp-theme="brand"] #start .eyebrow{color:#43655c}
+html[data-cp-theme="brand"] #start .panel{background:#fffcf5;color:#183c37;border:1px solid #c9c3ad;box-shadow:0 6px 18px #1a3f3414}
+html[data-cp-theme="brand"] #start .club-card{background:#fffdf7;color:#153c37;border:1px solid #c5cbbd;border-radius:8px;box-shadow:none}
+html[data-cp-theme="brand"] #start .club-card:before{opacity:.12}
+html[data-cp-theme="brand"] #start .club-card.on{border:2px solid #947d45;background:#f4f0e5}
+html[data-cp-theme="brand"] #start .club-card small{color:#4a6258}
+html[data-cp-theme="brand"] #start .club-card .crest{background:#e4e9df;border-color:#aab9a9}
+html[data-cp-theme="brand"] .room,html[data-cp-theme="brand"] .room.transfer,html[data-cp-theme="brand"] .room.team,html[data-cp-theme="brand"] .room.match,html[data-cp-theme="brand"] .room.phone{background:linear-gradient(155deg,#234c47,#0c302f 72%)}
+html[data-cp-theme="brand"] .room:before{background:linear-gradient(90deg,transparent 49.9%,#ffffff05 50%,transparent 50.1%)}
+html[data-cp-theme="brand"] .room-scroll{scrollbar-color:#78958b #123734}
+html[data-cp-theme="brand"] .room-title h1{color:#f6f2e9;text-shadow:none}
+html[data-cp-theme="brand"] .panel,html[data-cp-theme="brand"] .dossier,html[data-cp-theme="brand"] .npc-wrap,html[data-cp-theme="brand"] .cp-subs,html[data-cp-theme="brand"] .career-panel{background:#123b39;color:#f5f2e9;border-color:#7d968a;border-radius:8px;box-shadow:0 4px 16px #041b1b33}
+html[data-cp-theme="brand"] .panel-hd,html[data-cp-theme="brand"] .career-panel>h3{background:#24524b;color:#f6f3eb;border-color:#829e8d}
+html[data-cp-theme="brand"] .option,html[data-cp-theme="brand"] .tactic,html[data-cp-theme="brand"] .sms,html[data-cp-theme="brand"] .answer,html[data-cp-theme="brand"] .roster-player,html[data-cp-theme="brand"] .career-task,html[data-cp-theme="brand"] .fixture,html[data-cp-theme="brand"] .vision{background:#204b46;color:#f5f2e9;border:1px solid #78978c;border-radius:6px;box-shadow:none}
+html[data-cp-theme="brand"] .option:hover,html[data-cp-theme="brand"] .tactic:hover,html[data-cp-theme="brand"] .sms:hover,html[data-cp-theme="brand"] .answer:hover,html[data-cp-theme="brand"] .roster-player:hover,html[data-cp-theme="brand"] .fixture:hover{background:#326059;border-color:#d1bd88}
+html[data-cp-theme="brand"] .tactic.on,html[data-cp-theme="brand"] .vision.selected,html[data-cp-theme="brand"] .fixture.highlight{background:#365950;border-color:#d1bd88}
+html[data-cp-theme="brand"] .option small,html[data-cp-theme="brand"] .tactic small,html[data-cp-theme="brand"] .sms p,html[data-cp-theme="brand"] .roster-player small,html[data-cp-theme="brand"] .career-task small,html[data-cp-theme="brand"] .vision small,html[data-cp-theme="brand"] .fixture small{color:#cadbd1}
+html[data-cp-theme="brand"] .roster-player strong{color:#e3d4aa!important}
+html[data-cp-theme="brand"] .roster-rating,html[data-cp-theme="brand"] .profile-number{background:#d1bd88;color:#173b36;border-radius:5px}
+html[data-cp-theme="brand"] .cp-roster-tools input,html[data-cp-theme="brand"] .cp-roster-tools select,html[data-cp-theme="brand"] .cp-sub-control select,html[data-cp-theme="brand"] .transfer-search input,html[data-cp-theme="brand"] .transfer-search select,html[data-cp-theme="brand"] .deal-form input,html[data-cp-theme="brand"] .deal-form select{background:#103431;color:#f8f6ed;border-color:#91a99b}
+html[data-cp-theme="brand"] input::placeholder{color:#c5d2c7}
+html[data-cp-theme="brand"] .cp-subs>summary,html[data-cp-theme="brand"] .cp-quick-sub,html[data-cp-theme="brand"] .training-ribbon,html[data-cp-theme="brand"] .report,html[data-cp-theme="brand"] .transfer-info,html[data-cp-theme="brand"] .touchline{background:#234b44;color:#f6f3eb;border-color:#819a8b}
+html[data-cp-theme="brand"] .cp-roster-pick,html[data-cp-theme="brand"] .touch-btn{background:#28544d;color:#f5f2e9;border-color:#91a69a;box-shadow:none}
+html[data-cp-theme="brand"] .touch-btn.selected{background:#d1bd88;color:#143b37;border-color:#e3d5ac}
+html[data-cp-theme="brand"] .scene-bg{filter:saturate(.58) brightness(.72)}
+html[data-cp-theme="brand"] .scene-gradient{background:linear-gradient(90deg,#061e1f9e,transparent 74%),linear-gradient(0deg,#061e1fdf,transparent 54%)}
+html[data-cp-theme="brand"] .hot,html[data-cp-theme="brand"] .day,html[data-cp-theme="brand"] .dialogue{background:#113936ed;color:#f7f4ec;border:1px solid #93a696;border-radius:8px;box-shadow:0 6px 22px #041b1b55}
+html[data-cp-theme="brand"] .dialogue{border-left:4px solid #d1bd88}
+html[data-cp-theme="brand"] .hot small,html[data-cp-theme="brand"] .day p,html[data-cp-theme="brand"] .dialogue p{color:#d1dfd5}
+html[data-cp-theme="brand"] .owner-ribbon{background:#d1bd88;color:#173b36;box-shadow:none}
+html[data-cp-theme="brand"] .scorebar,html[data-cp-theme="brand"] .modal{background:#123b39;color:#f7f4ec;border-color:#91a795;border-radius:8px}
+html[data-cp-theme="brand"] .scorebar strong,html[data-cp-theme="brand"] .insight-box b{color:#e8d39e}
+html[data-cp-theme="brand"] .modal p{color:#d7e1d7}
+html[data-cp-theme="brand"] .minute,html[data-cp-theme="brand"] #toast{background:#d1bd88;color:#143b37}
+html[data-cp-theme="brand"] .close{background:#2d5b53;color:#fff}
+html[data-cp-theme="brand"] .cp-more-menu{background:#123b39;border-color:#91a795}
+html[data-cp-theme="brand"] .cp-more-menu button{background:#28544d;color:#f7f4ec}
+html[data-cp-theme="brand"] :is(button,input,select,summary,[role="button"]):focus-visible{outline:3px solid #e3d5ac;outline-offset:2px}
+@media(max-width:650px){
+ html[data-cp-theme="brand"] #hud{min-height:56px;padding:0 8px;gap:5px}
+ html[data-cp-theme="brand"] .cp-brand-lockup{width:43px;height:43px;background-size:526% 351%;background-position:89.6% 98%;border-radius:8px}
+ html[data-cp-theme="brand"] #nav{height:69px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible;gap:2px;padding:4px 3px calc(4px + env(safe-area-inset-bottom))}
+ html[data-cp-theme="brand"] #nav .nav-btn{min-width:0;width:100%;max-width:none;flex:auto;min-height:52px}
+ html[data-cp-theme="brand"] #nav .nav-btn[data-sc="board"],html[data-cp-theme="brand"] #nav .nav-btn[data-sc="phone"]{display:none}
+ html[data-cp-theme="brand"] .cp-more-nav{display:flex;color:#d1ddd2}
+ html[data-cp-theme="brand"] .cp-more-nav[aria-expanded="true"]{background:#d1bd8824;color:#e8d39e}
+ html[data-cp-theme="brand"] #start .start-title{font-size:clamp(48px,13vw,70px)}
+ html[data-cp-theme="brand"] .cp-start-wordmark{margin:4px 0 10px}
+ html[data-cp-theme="brand"] .hotspots{top:auto;bottom:calc(34% + 14px);left:9px;right:9px;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+ html[data-cp-theme="brand"] .hot{min-height:45px;padding:6px 8px}
+ html[data-cp-theme="brand"] .dialogue{bottom:7px;max-height:32%;padding:9px 10px}
+ html[data-cp-theme="brand"] .room-scroll{top:85px}
+ html[data-cp-theme="brand"] .match-layout{height:auto;min-height:100%}
+ html[data-cp-theme="brand"] .match-left,html[data-cp-theme="brand"] .match-right{height:auto}
+ html[data-cp-theme="brand"] .canvas-box{height:min(37dvh,290px);min-height:190px;flex:none}
+}
+@media(max-width:390px){html[data-cp-theme="brand"] .global-advance{font-size:13px;padding:7px 8px}html[data-cp-theme="brand"] #nav .nav-btn small{font-size:9px}}
+@media(prefers-reduced-motion:reduce){html[data-cp-theme="brand"] *,html[data-cp-theme="brand"] *::before,html[data-cp-theme="brand"] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}

@@ -9,22 +9,10 @@ function render(){if(API&&API.render)API.render()}
 function save(){if(API&&API.save)API.save()}
 
 function setupTheme(){
- var root=document.documentElement,key='cp-visual-theme-2026',saved='soft';
- try{saved=localStorage.getItem(key)||'soft'}catch(e){}
- if(saved!=='club'&&saved!=='soft')saved='soft';
- function setTheme(name){
-  saved=name==='soft'?'soft':'club';
-  root.setAttribute('data-cp-theme',saved);
-  try{localStorage.setItem(key,saved)}catch(e){}
-  var button=document.getElementById('cp-theme-toggle');
-  if(button){button.textContent=saved==='soft'?'◐':'◑';button.setAttribute('aria-pressed',String(saved==='soft'));button.setAttribute('aria-label',saved==='soft'?'Kulüp temasına geç':'Yumuşak temaya geç');button.title=saved==='soft'?'Kulüp temasına geç':'Yumuşak temaya geç'}
- }
- root.setAttribute('data-cp-theme',saved);
- var hud=document.getElementById('hud');if(!hud||document.getElementById('cp-theme-toggle'))return;
- var button=document.createElement('button');button.type='button';button.className='tiny-btn cp-theme-toggle';button.id='cp-theme-toggle';button.textContent=saved==='soft'?'◐':'◑';button.setAttribute('aria-pressed',String(saved==='soft'));button.setAttribute('aria-label',saved==='soft'?'Kulüp temasına geç':'Yumuşak temaya geç');button.title=saved==='soft'?'Kulüp temasına geç':'Yumuşak temaya geç';
- var help=hud.querySelector('[data-a="help"]');if(help)help.insertAdjacentElement('beforebegin',button);else hud.appendChild(button);
- button.addEventListener('click',function(){setTheme(saved==='soft'?'club':'soft')})
+ document.documentElement.setAttribute('data-cp-theme','brand');
+ var old=document.getElementById('cp-theme-toggle');if(old)old.remove();
 }
+
 function swap(inId,outId){
  var st=state(),ps=st&&st.players;if(!st||!Array.isArray(ps))return false;
  var a=ps.find(function(p){return id(p)===String(inId)}),b=ps.find(function(p){return id(p)===String(outId)});
