@@ -174,6 +174,9 @@ body,button,input,select,.hd,.eyebrow,.btn,.nav-btn,.panel-hd b,.dialogue h2,.ho
  --brand-panel:var(--paper);--brand-edge:var(--paper-line);
 }
 html,body,#game{background:var(--ink);color:var(--light)}
+#start .small,#start p{color:#d8ddd2}
+.scene-title .small{color:#ece9df}
+#hud .small{color:#bac3b8}
 body,button,input,select{font-family:Barlow,Arial,sans-serif}
 .hd,.room-title h1,.scene-title h1,.dialogue h2,.panel-hd b,.hot b,.day .opp,.dossier h3,.npc-title,.modal h2{
  font-family:"Barlow Condensed",Impact,sans-serif;letter-spacing:.005em
