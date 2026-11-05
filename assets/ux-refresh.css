@@ -379,3 +379,9 @@ html[data-cp-theme="soft"] #start .start-inner>p{color:#5b6a60!important;opacity
 html[data-cp-theme="soft"] #start .eyebrow{color:#697c6e!important}
 html[data-cp-theme="soft"] #start .club-card small{color:#647268!important;opacity:1!important}
 html[data-cp-theme="soft"] #start .club-card:before{opacity:.16}
+
+/* v1.26 readability correction: player values and soft-theme headings */
+.roster-player strong{color:#405a49!important}
+html[data-cp-theme="soft"] .room-title h1{color:#35443b!important;text-shadow:none!important}
+html[data-cp-theme="soft"] .room-title .eyebrow{color:#65796a!important}
+html[data-cp-theme="soft"] .room-title .small{color:#4c5c51!important}
