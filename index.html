@@ -300,7 +300,7 @@ if(a==='resetAsk')modal('<h2>KARİYERİ SİL?</h2><p>Yerel kaydın silinecek. Em
 if(a==='reset'){localStorage.removeItem(KEY);localStorage.removeItem(OLD);state=null;dialog=null;clearInterval(interval);close();showStart()}
 }
 
-function newControls(e){var x=e.target.closest('[data-prof],[data-negotiate],[data-dealbid],[data-dealcontract],[data-dealfinal],[data-canceldeal],[data-startxi],[data-coachpolicy]');if(!x)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+function newControls(e){if(e.target.closest('[data-xi]'))return;var x=e.target.closest('[data-prof],[data-negotiate],[data-dealbid],[data-dealcontract],[data-dealfinal],[data-canceldeal],[data-startxi],[data-coachpolicy]');if(!x)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
 if(x.dataset.prof!==undefined)return playerProfile(x.dataset.prof);
 if(x.dataset.negotiate!==undefined)return beginDeal(x.dataset.negotiate);
 if(x.dataset.dealbid!==undefined)return bidDeal();
